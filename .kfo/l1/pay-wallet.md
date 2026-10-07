@@ -3,7 +3,7 @@
 | 字段 | 值 |
 |---|---|
 | KFO 层级 | L1 — 设计层(模块级参考) |
-| 最后更新 | 2026-06-20 |
+| 最后更新 | 2026-10-07 |
 | 覆盖模块 | `internal/pay`、`internal/wallet`、`internal/item` |
 | 关联 | L0 `l0/architecture.md` · L2 `l2/2026-06-20-driftbottle-v1-and-api-tests.md` · L4 `l4/cross-platform-api-patterns.md` |
 
@@ -80,3 +80,37 @@ HandleCallback:
 - **回调带租户**:路由 `/pay/callback/:platform/:tenantId`;下单时按租户 `notify_url` 写入,回调直接拿 tenantId 选验签凭证。
 - **钱包/订单带 tenant_id**:`wallet.Credit/Debit(tenantID, userID, …)` 入账与流水均写 `tenant_id`;`pay_order.tenant_id` 用于回调入账与隔离。
 - 入账复用 `wallet.CreditTx(tx, tenantID, …)`(回调事务内,免嵌套事务)。详见 `l1/tenant-saas.md`。
+
+## 八、服务商配置独立化(2026-10-06)
+
+见 `l1/provider-configs.md` 与 L2 [2026-10-06-provider-configs](../l2/2026-10-06-provider-configs.md)。
+
+- 支付服务商凭据从 `app_credentials` 搬进 `provider_configs` 的 `pay` 域,四家并存:
+  **微信支付 / 支付宝 / Apple IAP / Google Play**。`app_credentials` 的支付列**只读不删**(回滚源),后台凭证页已去掉支付字段。
+- **渠道名统一为 `wechat` / `alipay` / `apple` / `google_play`**;历史订单里的 `wx` / `wx_app` /
+  `alipay_app` / `ios` 经 `canonicalChannel` 折回,旧回调路径仍可达。
+- 新增 `POST /pay/play/verify`(Google Play 服务端校验)。⚠️ `purchaseState=1/2`(已退款 / 待处理)
+  不得入账,必须返回明确错误。
+- ⚠️ 微信回调按 `Wechatpay-Serial` 查租户时,同商户号服务两个租户会同时命中两行 ——
+  命中后必须用解密出的 `mch_id` 再核对,不能取第一个。
+- `app_pay_mock_enabled` 仍在 sysconfig「支付联调」分组(**上线必须为 0**)。
+
+### 国内版渠道(2026-10-06)
+
+`pay.Driver` 新增微信 APP 交易类型与支付宝 App 支付两种实现,并加可选 `Querier` 做主动查单。
+客户端只换 `PayChannelAdapter`,**支付六屏状态机不动**。签名/金额细节(裸 prepay_id、支付宝值的
+两次编码规则、元 vs 分)见 L2 [2026-10-06-app-zh-china-build](../l2/2026-10-06-app-zh-china-build.md) §4。
+⚠️ `SyncIfStale` 的唯一写操作必须是幂等的 `HandleCallback`,不得另开入账口。
+
+## 九、送礼:背包先抵扣(2026-10-04)
+
+`chat.SendGift` 与 `moment.SendGift` 统一:同事务内先消耗自己持有的 `ItemOrder` 存量,
+差额才扣币,**每单位记一条 `ItemOrder(target)`** —— 聊天里送的礼也会进礼物墙。
+客户端只对差额标价。
+
+首次点赞给被赞者加魅力:**魅力只增不减**(取消赞不扣回),与 relation 行同事务,并失效周榜缓存。
+
+## 十、后台手动调币(2026-10-05)
+
+`wallet.AdminAdjust`(**只动余额**)+ `POST /admin/users/:id/coins`;流水带备注,场景记 `admin`。
+另有 `GET /item/orders` 按用户的道具账本(买入 / 送出 / 收到)。

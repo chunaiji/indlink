@@ -3,7 +3,7 @@
 | 字段 | 值 |
 |---|---|
 | KFO 层级 | L1 — 设计层(模块级参考) |
-| 最后更新 | 2026-06-23 |
+| 最后更新 | 2026-10-07 |
 | 覆盖模块 | `internal/chat/hub.go`、`service.go`、`handler.go` · `client/src/utils/ws.js` · `client/src/App.vue` |
 | 关联 | L0 `l0/architecture.md` · L1 `l1/pay-wallet.md`(开聊扣币) · L2 `l2/2026-06-23-ws-reconnect-online-status.md` |
 
@@ -114,3 +114,27 @@ Hub.PushTo(对方, {event:'message', chat_id, message})
 ## 七、待办(多实例扩展点)
 
 当前 Hub 是**单实例内存**:多实例部署时,A 连实例1、B 连实例2,`PushTo(B)` 在实例1 找不到 B 的连接 → 推送丢失。扩展方案:在 `PushTo` 之上接 **Redis Pub/Sub** 广播,各实例订阅后再投递本地连接(L0 已预留此层)。
+
+## 八、扣费规则三键(2026-10-04)
+
+后台「价格」分组:
+
+| 键 | 含义 | 默认 |
+|---|---|---|
+| `price_chat` | 开聊扣 M | 5 |
+| `price_msg` | 每条扣 N | 0(不扣) |
+| `chat_free_msgs` | 每个会话**发送方**前 L 条免费 | 0 |
+
+真扣在 `chat/service.go`:`StartChat` / `SendMessage` + `withinFreeMsgs`(按会话内该发送方的
+非系统消息条数判定)。`/app-config` 的 `pricing` 段下发给 App,打招呼按钮标价与聊天页顶部提示
+都从这里取(**之前写死 5**)。
+
+⚠️ **低余额系统提示只在 N>0 时发** —— 按条不收费却弹「余额不足」,用户点了没扣钱,提示是假的。
+⚠️ App 与小程序是两个租户,改规则要改 App 那个租户。
+
+## 九、免费开聊入口(2026-10-07)
+
+`EnsureRobotChat` 更名 **`EnsureFreeChat`**(旧名留作薄包装),成为不扣费建会话的唯一入口,
+由机器人主动搭讪与主动匹配(火花)共用。**只免开聊费,`price_msg` 照常收。**
+两者还共用每人每日计数键 `outreach:<租户>:<uid>:<日期>`(`ClaimDailyReach`),当天互斥。
+详见 `l1/spark.md`。

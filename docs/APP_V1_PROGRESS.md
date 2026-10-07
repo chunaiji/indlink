@@ -2,8 +2,8 @@
 
 | 字段 | 值 |
 |---|---|
-| 更新日期 | 2026-09-22 |
-| 范围 | Flutter App（`app/bottles`）+ 后端增量（`server/`） |
+| 更新日期 | 2026-10-07 |
+| 范围 | Flutter App（`app/bottles` 海外版 + `app/bottles_zh` 国内版）+ 后端增量（`server/`） |
 | 验证状态 | `go build ./...` ✅　`go vet ./...` ✅　`flutter analyze` ✅　`flutter test` ✅ |
 | 关联 | `docs/prototype/v1-screens.html`（53 屏原型）· `docs/superpowers/specs/2026-09-15-app-v1-scope.md`（17 模块范围）· `docs/superpowers/specs/2026-09-21-app-payment-flows-design.md`（支付全链路） |
 
@@ -285,6 +285,99 @@ App 的 UI 按 V1 原型做，要的是 `id` + 数组 + 嵌套 author。两边�
 - 真机核对（规范 §8.3）：小米 9 标准 / 大字体各一遍，截图放 `效果图/`，用 `compare.py` 并排。
 - 其余页面的像素级 golden。
 
+## 二·九、聊天扣费与送礼口径（2026-10-04）
+
+真机第四轮反馈集中在「标价与实扣不一致」，本质是客户端自己算了价。一条规则收口：
+**客户端不许自己算价，一律问服务端。**
+
+| 键 | 含义 | 默认 |
+|---|---|---|
+| `price_chat` | 开聊扣 M | 5 |
+| `price_msg` | 每条扣 N | 0（不扣） |
+| `chat_free_msgs` | 每个会话**发送方**前 L 条免费 | 0 |
+
+三键并入后台「价格」分组；真扣在 `chat/service.go`（`StartChat` / `SendMessage` + `withinFreeMsgs`）。
+`/app-config` 新增 `pricing` 段，打招呼按钮标价与聊天页顶部提示都从这里取（**之前写死 5**）。
+发现页的 rewind / skip 价格也进了 `pricing`，**不登录就能拿到**，首次撤回不再显示 0 金币。
+
+> ⚠️ 低余额系统提示**只在 N>0 时发**——按条不收费却弹「余额不足」，用户点了没扣钱，提示是假的。
+> ⚠️ App 与小程序是两个租户，改规则要改 App 那个租户。
+
+**送礼**：`chat.SendGift` 与 `moment.SendGift` 统一成「背包先抵扣、差额扣币」，同一事务内完成，
+每单位记一条 `ItemOrder(target)`，所以聊天里送的礼也进礼物墙；客户端只对差额标价。
+**点赞**：首次点赞给被赞者加魅力，只增不减，取消赞不扣回。
+**瓶子回信**：整瓶解锁改为**按条解锁**（`/bottle/reply/:rid/unlock`）。
+
+其它同批：`Config.Value` 改 longtext（中英文协议正文此前被 255 截断）、`/legal` 未登录时解析 App 租户
+（此前读小程序租户，登录页永远显示「准备中」）、`User.Birthday` + 服务端算年龄、性别只能设一次、
+self DTO 补 `bottle_count` / `moment_count`（「我的」页此前所有人都是 0 个瓶子）。
+
+详见 `.kfo/l2/2026-10-04-chat-pricing-and-gift-bag.md`。
+
+## 二·十、海面玩法与运营手段（2026-10-05）
+
+- **海面**：真实瓶子美术（六槽六倾角，全部落在地平线以下、避开灯塔），**点一下漂浮的瓶子就捞**
+  （删掉预览气泡）；昼 / 黄昏（17:00–21:00）/ 夜三态，夜态优先；登录页与启动页复用同一个 sprite。
+- **漂流轨迹**：服务端把 `MatchLog` 聚合成按城市的节点（thrown / seen / replied），内嵌进瓶子详情、
+  我的瓶子、轨迹三个响应；**捞过这只瓶子的人才看得到**。App 详情页渲染「这只瓶子去过哪」时间线。
+- **运营**：后台手动调币（`wallet.AdminAdjust`，只动余额，流水带备注、场景 `admin`）、
+  在线人数曲线（`online_base` + 24h 曲线 + 按分钟确定性抖动 `online_jitter`）、
+  远程启动图 `app_splash_image_1..5`（经 `/app-config` 的 `splash.images`）、道具账本 `GET /item/orders`。
+- **机器人按语言生成**：档案（名字 / 城市 / 兴趣 / 简介）成套按 `robot_language` 生成，
+  LLM 回复与搭讪开场白都跟随该机器人的语言——**这是出海前置**，此前英文用户看到的是一池中文昵称。
+
+详见 `.kfo/l2/2026-10-05-sea-artwork-drift-trace-ops.md`。
+
+## 二·十一、服务商配置独立化（2026-10-06 / 10-07）
+
+第三方服务商的凭据过去分两处（`app_credentials` 表 + 散落的 sysconfig 键），加一家要动四个地方。
+现在统一落 `provider_configs` 表，**一行 = 租户 × 域 × 服务商**，字段整体 AES 加密成 JSON blob，
+由 `internal/provider/schema.go` 的声明式 `Definition` 描述。
+**加一家服务商 = 加一个 `Definition` + 一个适配器。**
+
+| 域 | 服务商 | 选择 |
+|---|---|---|
+| `pay` | 微信支付 / 支付宝 / Apple IAP / Google Play | 并存 |
+| `map` | 腾讯 / Google / **高德**(新) / **百度**(新) | 单选 |
+| `moderation` | 微信 / **支付宝**(新) | 单选 |
+| `sso` | 微信 / 支付宝 / Google / Apple | 并存，全部 App 专属 |
+
+后台侧边栏新增「服务商」四页。渠道名统一为 `wechat` / `alipay` / `apple` / `google_play`，
+历史订单值经 `canonicalChannel` 折回，旧回调路径仍可达。新增 `POST /pay/play/verify`。
+
+**SSO 这一域解决的是「能不能用」此前有三套答案**：微信查开关+凭证行、支付宝查了错的凭证行
+（它的密钥其实在支付卡片上）、Google 与 Apple 根本没查过——按钮无条件渲染，租户想关都关不掉。
+现在 `/app-config` 的 `auth` 段统一按**「启用 且 必填齐全」**下发四个布尔，两端登录页据此显示按钮；
+支付宝登录卡片用 `DependsOn` 声明依赖 `pay/alipay`。
+
+> ⚠️ 迁移标记两个且必须独立：`provider_migrated`（支付/地图/审核）与 **`sso_migrated`**。
+> 线上前者早已是 `1`，SSO 复用它等于迁移永不执行。
+> ⚠️ 已删键：`app_login_wechat_enabled` / `app_login_alipay_enabled` / `app_google_client_id` /
+> `app_apple_bundle_id` / `app_wechat_universal_link`；`app_credentials` 的 `wx_app` / `alipay_app` 不再被读。
+
+详见 `.kfo/l2/2026-10-06-provider-configs.md`、`.kfo/l2/2026-10-07-sso-provider-configs.md`、
+`.kfo/l1/provider-configs.md`。
+
+## 二·十二、国内版 App 与主动匹配（2026-10-06 / 10-07）
+
+**国内版 `app/bottles_zh`**：`app/bottles` 的分支而非开关，包名 `com.ambertu.bottles.cn`，
+独立租户 `drift_app_cn`。Android 用微信 / 支付宝登录与支付，iOS 用微信 / 支付宝 / Apple 登录 + IAP。
+服务端全部是加法；客户端**只换 `oauth.dart` 与两个 `PayChannelAdapter`，支付六屏状态机一行不动**
+——2026-09-21 留的扩展点第一次兑现。海外版 `app/bottles` 一个字没改。
+详见 `.kfo/l2/2026-10-06-app-zh-china-build.md`。
+
+**主动匹配（火花）**：在线真人每隔随机 N–M 分钟被系统配一个人（`spark_real_ratio` 概率配真人、
+其余配机器人），弹窗后点进去**免开聊费**。调度是每分钟一次 tick + 每人一个 Redis TTL 键，
+不是每个在线用户一个 timer。机器人配对**预建会话 + 发开场白再弹窗**；真人配对双向弹窗但不预建，
+点击走 `POST /spark/accept`。
+
+> ⚠️ **`/spark/accept` 必须校验 Redis 里的配对记录**，否则任何人都能和任意人免费开聊、绕过 `price_chat`。
+> ⚠️ `spark_interval_min > spark_interval_max`（运营填反）会让 `rand.Intn` panic，**把常驻调度器静默打死**——
+> `nextInterval` 自带交换与全 0 守卫。
+
+10 个配置键全部默认关或空，总开关 `spark_enabled` 默认关；与机器人搭讪共用每日计数键
+`outreach:<租户>:<uid>:<日期>`，当天互斥。详见 `.kfo/l1/spark.md`。
+
 ## 三、还没做完的
 
 ### A. 需要外部凭证才能继续（代码框架已就位）
@@ -293,10 +386,10 @@ App 的 UI 按 V1 原型做，要的是 `id` + 数组 + 嵌套 author。两边�
 |---|---|---|
 | **短信真实发送** | 印度需先在 **TRAI DLT 平台**注册实体与模板（开户前置，非代码工作）；还要选服务商 | `user/otp.go: sendSMS()` 留了分支点，provider 为空时只打日志 |
 | **邮件真实发送** | 选服务商（SendGrid / SES / 阿里云邮推）+ 给发信域名配 **SPF / DKIM / DMARC**，不配验证码直接进垃圾箱 | `user/otp.go: sendEmail()` 与 `sendSMS` 同构，provider 为空时只打日志。**其余链路已完整**：频控、归一、登录建号都通 |
-| **Google / Apple 登录** | 只差**后台填值**：`app_google_client_id` / `app_apple_bundle_id`，填在 **App 租户**下（Apple 还需 Apple Developer 开 Sign in with Apple） | **代码两端都已打通**（2026-09-22 修完）：客户端 `core/platform/oauth.dart` 接了 `google_sign_in` + `sign_in_with_apple`，取到真 idToken 后交 `loginWithProvider`；服务端 JWKS 验签完整。<br>两个键都**接受逗号分隔的多个 aud**——Android 签出来的 aud 是 Web client ID，iOS 是 iOS 的，只填一个必然拒掉一端。约定**第一个是 Web client ID**，`/app-config` 下发的就是它（Android 拿它当 `serverClientId`，拿不到则 `idToken` 恒为 null）|
+| **Google / Apple 登录** | 只差**后台填值**：后台「服务商 → 登录」页的 Google / Apple 两张卡片，填在 **App 租户**下（Apple 还需 Apple Developer 开 Sign in with Apple）。<br>⚠️ 2026-10-07 起旧键 `app_google_client_id` / `app_apple_bundle_id` **已删除**，填在那里不再有任何效果 | **代码两端都已打通**（2026-09-22 修完）：客户端 `core/platform/oauth.dart` 接了 `google_sign_in` + `sign_in_with_apple`，取到真 idToken 后交 `loginWithProvider`；服务端 JWKS 验签完整。<br>两张卡片的 audience 都**接受逗号分隔的多个 aud**——Android 签出来的 aud 是 Web client ID，iOS 是 iOS 的，只填一个必然拒掉一端。约定**第一个是 Web client ID**，`/app-config` 下发的就是它（Android 拿它当 `serverClientId`，拿不到则 `idToken` 恒为 null）|
 | **Google 地图（App 选地点页空白）** | Maps key 所在的 Google Cloud 项目**没开通计费**：Static Maps / Geocoding 用同一把 key 直接返回 `You must enable Billing`，Maps SDK for Android 则表现为米色空白 + Google 水印（2026-10-04 真机现象）。处理：给该项目绑卡开通 Billing → 启用 **Maps SDK for Android** → 把 key 限制到 Android 应用（包名 `com.ambertu.bottles` + 调试 / 正式签名 SHA-1，正式签名还没配见 `build.gradle.kts` TODO）。另：大陆网络不翻墙也看不到瓦片，测试机需能访问 Google | key 从 `android/local.properties` 的 `MAPS_API_KEY` 注入 manifest，代码链路完整；选点功能不依赖瓦片（坐标 + 逆地理走自家 `/geo/regeo`），所以空白地图下「用这个地点」仍可用 |
 | **IAP 真实入账** | 需要 App Store Connect 商品 ID、Issuer ID、.p8 私钥 | 服务端校验与幂等已完整；**客户端未接 StoreKit**。<br>客户端渠道适配器已就位（2026-09-21）：接 StoreKit 时实现一份 `StoreKitAdapter` 即可，**六个屏幕与状态机的代码不用动** |
-| **Android 支付** | 需要印度收款主体资质（RBI 规定持牌 PA）+ 渠道商户号 | `pay.Driver` 接口现成，加一份 Driver 即可 |
+| **Android 支付（海外）** | 需要印度收款主体资质（RBI 规定持牌 PA）+ 渠道商户号 | `pay.Driver` 接口现成，加一份 Driver 即可。<br>**国内版已经接完**（2026-10-06）：微信支付 / 支付宝两份 Driver + 两个 `PayChannelAdapter`，见 §二·十二 |
 | **FCM / APNs 下发** | 需要 Firebase 项目与 APNs 证书 | 设备登记已完成；**下发逻辑未写**（`push/device.go` 只到 `ActiveDevices`） |
 | **AdMob 激励视频** | 需要广告位 ID；且「是否要做广告」本身还没定（原 C5 冲突） | 入账接口 `POST /api/ad/reward` 现成，客户端是占位——`purchase_flows.dart:87` 直接调入账、全程不播广告。<br>**现在这按钮一个币都发不出来**（服务端要求 `ad_reward_unit` 非空，App 租户配不了广告分组），所以暂时无害。<br>⚠️ 顺序必须是**先接 SDK 再放配置**：反过来做，运营一开就是点一下白送币 |
 
@@ -333,7 +426,7 @@ App 的 UI 按 V1 原型做，要的是 `id` + 数组 + 嵌套 author。两边�
 | 3 | 隐私政策 URL | ❌ 客户端已留入口，指向占位地址，**正式文本待产出** |
 | 4 | 年龄分级 17+ | ⬜ 提审时填写 |
 | 5 | Google Play 数据安全表单 | ❌ 待填写 |
-| 6 | 有 Google 登录则必须有 Apple 登录 | ✅ 两端代码都已打通（SDK 已接、验签完整）；Apple 按钮仅 iOS 显示（`showAppleSignIn`）。<br>⚠️ 剩下的是**配置**：`app_apple_bundle_id` 要在 App 租户下填上，不填则 Apple 登录必被拒 |
+| 6 | 有 Google 登录则必须有 Apple 登录 | ✅ 两端代码都已打通（SDK 已接、验签完整）；Apple 按钮仅 iOS 显示（`showAppleSignIn`）。<br>⚠️ 剩下的是**配置**：后台「服务商 → 登录」的 Apple 卡片要在 App 租户下填上 bundle ID，不填则按钮根本不显示（`/app-config` 按「启用且必填齐全」下发） |
 | 7 | iOS 数字商品走 IAP | ✅ 充值页已按平台分叉，iOS 只显示 App Store |
 
 ---

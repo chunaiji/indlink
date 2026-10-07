@@ -3,7 +3,7 @@
 | 字段 | 值 |
 |---|---|
 | KFO 层级 | L1 — 设计层(模块级参考) |
-| 最后更新 | 2026-06-20 |
+| 最后更新 | 2026-10-07 |
 | 覆盖模块 | `internal/user/oauth.go`、`service.go`、`handler.go` |
 | 关联 | L0 `l0/architecture.md` · L1 `l1/pay-wallet.md`(注册奖励/openid)· L4 `l4/cross-platform-api-patterns.md` |
 
@@ -78,3 +78,30 @@ EnsureVerifiedIfRequired(uid):
   - **关(默认)**:`tenant_id = DefaultTenantID`,用 `.env` 凭证(appid 可空)。
 - `wxCode2Session(appid, secret, code)` 参数化(不再读全局 cfg);建号写 `tenant_id`;按 `(tenant_id, openid)` find-or-create。
 - 签发 JWT 带 `tenant_id`;`GetWxOpenID` 供 pay 下单。详见 `l1/tenant-saas.md`。
+
+## 九、App 登录与第三方登录服务商化(2026-10-07)
+
+见 `l1/provider-configs.md` 与 L2 [2026-10-07-sso-provider-configs](../l2/2026-10-07-sso-provider-configs.md)。
+
+- **四家登录(微信 / 支付宝 / Google / Apple)的凭证与开关搬进 `provider_configs` 的 `sso` 域**。
+  `app_credentials` 从此**只管登录用的 appid+secret**,`wx_app` / `alipay_app` 两行不再被读。
+- `/app-config` 的 `auth` 段按统一标准下发四个布尔:**启用 且 必填齐全**。
+  此前三套答案(微信查开关+凭证行、支付宝查错了凭证行、Google/Apple 根本没查)已废。
+- **支付宝登录的密钥不在登录卡片上**:它与支付同一个应用、同一把私钥,登录卡片用 `DependsOn`
+  声明依赖 `pay/alipay`。支付那边缺密钥 → 登录页直接不显示支付宝按钮。
+- `google_client_id` 是逗号分隔多值,第一个按约定是 Web client ID,下发只取第一个。
+- 已删键:`app_login_wechat_enabled` / `app_login_alipay_enabled` / `app_google_client_id` /
+  `app_apple_bundle_id` / `app_wechat_universal_link`。迁移标记 **`sso_migrated`**(不是 `provider_migrated`)。
+- App 登录方式开关:`app_login_phone_enabled` / `app_login_email_enabled`(默认 1),
+  经 `/app-config` 下发 `auth.phone` / `auth.email`;**两个都关按两个都开处理**,避免锁死所有人。
+
+### 国内版 App(`app/bottles_zh`,2026-10-06)
+
+独立租户 `drift_app_cn`。微信 / 支付宝登录并入既有 `loginOrCreateOAuth` 链路,不另开一条;
+iOS 保留 Apple 登录(有 Google 登录就必须有 Apple)。详见 L2 [2026-10-06-app-zh-china-build](../l2/2026-10-06-app-zh-china-build.md)。
+
+### 资料字段(2026-10-04)
+
+`User.Birthday`(YYYY-MM-DD),**年龄服务端算**,只在本人资料里返回;最小年龄取 `app_profile_min_age`。
+**性别只能设一次**,再改返回业务错误并透传到前端。
+`/user/profile`、`/user/update`、App 登录响应共用同一个 self DTO(含 `bottle_count` / `moment_count`)。
