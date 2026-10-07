@@ -132,9 +132,20 @@ func (h *Handler) appBottles(c *gin.Context, list []model.Bottle) []appdto.Bottl
 // 与 appBottles 的区别只是不批量——单条路径(捞一个、瓶子详情)复用它,
 // 免得每处各写一遍算距离的三行。
 func (h *Handler) appBottle(c *gin.Context, b *model.Bottle, liked, collected bool) appdto.Bottle {
+	tid, uid := middleware.TenantID(c), middleware.UserID(c)
 	d := appdto.FromBottleWith(b, 0, 0, liked, collected)
-	vLat, vLng := h.svc.ViewerFix(middleware.TenantID(c), middleware.UserID(c))
+	vLat, vLng := h.svc.ViewerFix(tid, uid)
 	d.DistanceKM = appdto.DistanceFrom(vLat, vLng, b.Lat, b.Lng)
+	// 轨迹跟着单条路径一起下发:详情页要它渲染「这个瓶子漂过哪些地方」,
+	// 捞一个也要它——捞起那一刻就能提示「你在 X 捞起了来自 Y 的瓶子」,
+	// 不必为一句提示再打一次 /trace。
+	//
+	// **只在单条路径做**:列表(appBottles)带上就是 N+1。
+	if h.svc.CanSeeTrace(b, uid) {
+		if a := h.svc.TraceAggFor(tid, []model.Bottle{*b})[b.BottleID]; a != nil {
+			d.ViewCount, d.CityCount, d.Trace = a.ScoopCount, a.CityCount, a.Nodes
+		}
+	}
 	return d
 }
 
@@ -245,12 +256,6 @@ func (h *Handler) detail(c *gin.Context) {
 		flags := h.svc.ViewerFlagsFor(tid, uid, []int64{b.BottleID})
 		liked, collected := flags.Of(b.BottleID)
 		d := h.appBottle(c, b, liked, collected)
-		// 详情页带上轨迹:B3「这个瓶子漂过哪些地方」直接从详情读,不用再打一次 /trace。
-		if h.svc.CanSeeTrace(b, uid) {
-			if a := h.svc.TraceAggFor(tid, []model.Bottle{*b})[b.BottleID]; a != nil {
-				d.ViewCount, d.CityCount, d.Trace = a.ScoopCount, a.CityCount, a.Nodes
-			}
-		}
 		response.OK(c, d)
 		return
 	}

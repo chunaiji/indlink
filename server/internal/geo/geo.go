@@ -31,20 +31,6 @@ func (h *Handler) regeo(c *gin.Context) {
 		return
 	}
 	tenantID := middleware.TenantID(c)
-	if h.providers == nil {
-		empty(c)
-		return
-	}
-	row, ok := h.providers.Active(tenantID, provider.KindMap)
-	if !ok {
-		empty(c)
-		return
-	}
-	g, ok := GeocoderFor(row)
-	if !ok {
-		empty(c)
-		return
-	}
 	lang := "en"
 	if al := c.GetHeader("Accept-Language"); al != "" {
 		if i := strings.IndexAny(al, ",;"); i > 0 {
@@ -53,12 +39,44 @@ func (h *Handler) regeo(c *gin.Context) {
 			lang = strings.TrimSpace(al)
 		}
 	}
-	res, err := g.Regeo(lat, lng, lang)
-	if err != nil {
-		apilog.Record(tenantID, "geo_"+row.Provider, lat+","+lng, -1, err.Error(), false)
+	res, ok := regeoWith(h.providers, tenantID, lat, lng, lang)
+	if !ok {
 		empty(c)
 		return
 	}
-	apilog.Record(tenantID, "geo_"+row.Provider, lat+","+lng, 0, res.Address, true)
 	response.OK(c, gin.H{"address": res.Address, "city": res.City, "place": res.Place})
+}
+
+// CityFor 反查某个坐标所在城市,供 HTTP 之外的调用方(如用户资料更新)复用。
+//
+// 抽出来是因为「选哪个服务商」这件事只该有一处实现:它牵涉单选域的
+// Active() 语义与适配器分派,各写一遍迟早走岔。
+func CityFor(ps *provider.Store, tenantID int64, lat, lng string) (string, bool) {
+	res, ok := regeoWith(ps, tenantID, lat, lng, "zh")
+	if !ok {
+		return "", false
+	}
+	return res.City, res.City != ""
+}
+
+// regeoWith 真正干活的那一段:挑服务商 → 建适配器 → 调用 → 记接口日志。
+func regeoWith(ps *provider.Store, tenantID int64, lat, lng, lang string) (Result, bool) {
+	if ps == nil {
+		return Result{}, false
+	}
+	row, ok := ps.Active(tenantID, provider.KindMap)
+	if !ok {
+		return Result{}, false
+	}
+	g, ok := GeocoderFor(row)
+	if !ok {
+		return Result{}, false
+	}
+	res, err := g.Regeo(lat, lng, lang)
+	if err != nil {
+		apilog.Record(tenantID, "geo_"+row.Provider, lat+","+lng, -1, err.Error(), false)
+		return Result{}, false
+	}
+	apilog.Record(tenantID, "geo_"+row.Provider, lat+","+lng, 0, res.Address, true)
+	return res, true
 }

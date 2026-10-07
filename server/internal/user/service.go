@@ -231,6 +231,29 @@ func (s *Service) UpdateProfile(userID int64, in UpdateProfileInput) error {
 	// 位置成对更新：只有一个坐标的记录没有意义，还会污染距离筛选。
 	if in.Lat != nil && in.Lng != nil {
 		upd["lat"], upd["lng"] = *in.Lat, *in.Lng
+		// 顺带把城市反查出来。
+		//
+		// 没有它,App 用户的 users.city 恒为空(只有在资料页手填才有值),
+		// 而漂流轨迹的 seen/replied 节点在聚合时会被「城市为空就跳过」直接丢掉
+		// ——「在 XXX 捞起瓶子」因此永远不显示。同城筛选同样受益。
+		//
+		// in.City 非空时以用户手填为准,不覆盖。
+		if in.City == nil {
+			// 连 tenant_id 一起取:UpdateProfile 的签名里没有租户,
+			// 为了一次反查去改所有调用方不值当。
+			var cur struct {
+				TenantID int64
+				City     string
+				Lat, Lng float64
+			}
+			s.db.Model(&model.User{}).Select("tenant_id", "city", "lat", "lng").
+				Where("user_id = ?", userID).Scan(&cur)
+			if shouldRefreshCity(cur.City, cur.Lat, cur.Lng, *in.Lat, *in.Lng) {
+				if city := s.cityAt(cur.TenantID, *in.Lat, *in.Lng); city != "" {
+					upd["city"] = city
+				}
+			}
+		}
 	}
 	if len(upd) == 0 {
 		return nil
