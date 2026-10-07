@@ -1,0 +1,108 @@
+{
+  "pages": [
+    {
+      "path": "pages/privacy/privacy",
+      "style": { "navigationBarTitleText": "小纸条水印相机" }
+    },
+    {
+      "path": "pages/ocean/ocean",
+      "style": { "navigationStyle": "custom", "navigationBarTextStyle": "white" }
+    },
+    {
+      "path": "pages/city/city",
+      "style": { "navigationBarTitleText": "同城", "enablePullDownRefresh": true }
+    },
+    {
+      "path": "pages/expand/expand",
+      "style": { "navigationBarTitleText": "扩列墙", "enablePullDownRefresh": true }
+    },
+    {
+      "path": "pages/message/message",
+      "style": { "navigationBarTitleText": "消息", "enablePullDownRefresh": true }
+    },
+    {
+      "path": "pages/mine/mine",
+      "style": { "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/detail/detail",
+      "style": { "navigationBarTitleText": "收件详情" }
+    },
+    {
+      "path": "pages/chat/chat",
+      "style": { "navigationBarTitleText": "聊天" }
+    },
+    {
+      "path": "pages/recharge/recharge",
+      "style": { "navigationBarTitleText": "充值金币" }
+    },
+    {
+      "path": "pages/items/items",
+      "style": { "navigationBarTitleText": "道具商城" }
+    },
+    {
+      "path": "pages/blocklist/blocklist",
+      "style": { "navigationBarTitleText": "黑名单" }
+    },
+    {
+      "path": "pages/mybottles/mybottles",
+      "style": { "navigationBarTitleText": "我的瓶子" }
+    },
+    {
+      "path": "pages/profile-edit/profile-edit",
+      "style": { "navigationBarTitleText": "完善资料" }
+    },
+    {
+      "path": "pages/notifications/notifications",
+      "style": { "navigationBarTitleText": "互动通知" }
+    },
+    {
+      "path": "pages/viewed/viewed",
+      "style": { "navigationBarTitleText": "浏览记录" }
+    }
+    ,{
+      "path": "pages/collection/collection",
+      "style": { "navigationBarTitleText": "我的收藏" }
+    },
+    {
+      "path": "pages/wallet-log/wallet-log",
+      "style": { "navigationBarTitleText": "金币流水" }
+    },
+    {
+      "path": "pages/orders/orders",
+      "style": { "navigationBarTitleText": "我的订单", "enablePullDownRefresh": true, "onReachBottomDistance": 50 }
+    },
+    {
+      "path": "pages/moments/moments",
+      "style": { "navigationBarTitleText": "我的动态" }
+    },
+    {
+      "path": "pages/rank/rank",
+      "style": { "navigationBarTitleText": "魅力周榜" }
+    },
+    {
+      "path": "pages/moment-detail/moment-detail",
+      "style": { "navigationBarTitleText": "动态详情" }
+    }
+  ],
+  "tabBar": {
+    "custom": true,
+    "color": "#9DBDC8",
+    "selectedColor": "#FF6B5B",
+    "backgroundColor": "#FBFEFF",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/ocean/ocean", "text": "首页" },
+      { "pagePath": "pages/city/city", "text": "同城" },
+      { "pagePath": "pages/expand/expand", "text": "扩列" },
+      { "pagePath": "pages/message/message", "text": "消息" },
+      { "pagePath": "pages/mine/mine", "text": "我的" }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "漂流瓶",
+    "navigationBarBackgroundColor": "#FBFEFF",
+    "backgroundColor": "#DCEFF2"
+  }
+}

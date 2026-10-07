@@ -1,0 +1,55 @@
+/* ===== 企业级设计令牌(精致化海洋社交风)===== */
+
+/* 品牌色(唯一行动色:珊瑚;金币:日光金;辅助:浅海青) */
+$coral: #FF6B5B;
+$coral-deep: #F2543F;
+$gold: #FFC23C;
+$sea-1: #BDEAF0;
+$sea-2: #6FCFE0;
+$sea-3: #3BA9CC;
+$sea-deep: #2C8FB0;
+$sand: #F6ECD4;
+
+/* 中性灰阶(企业级精致感的来源) */
+$ink-900: #0C2A33;
+$ink-600: #4A6670;
+$ink-400: #8AA0A8;
+$ink-200: #D6E2E6;
+$ink-50:  #F4F8F9;
+
+/* 语义色 */
+$success: #2BB673;
+$warning: #FFB020;
+$danger:  #F2543F;
+$wechat:  #07C160;
+$alipay:  #1677FF;
+
+/* 兼容别名(旧页面变量名 → 新灰阶/白卡) */
+$ink:       $ink-900;
+$ink-soft:  $ink-600;
+$ink-faint: $ink-400;
+$line:      $ink-200;
+$card:      #FFFFFF;
+$ground:    $ink-50;
+
+/* 圆角阶梯 */
+$r-xs: 8rpx;       /* 标签/小徽章 */
+$r-sm: 12rpx;      /* 按钮/输入框 */
+$r-md: 16rpx;      /* 列表项/内元素/内容图 */
+$r-lg: 24rpx;      /* 主卡片/弹窗 */
+$r-img: 16rpx;     /* 内容图统一圆角 */
+$r-avatar: 24rpx;  /* 方形头像(超椭圆) */
+$r-full: 999rpx;   /* 圆形/胶囊 */
+$radius-card: $r-lg;
+$radius-btn: $r-sm;
+
+/* 阴影(柔、浅、中性,分两层) */
+$shadow-card: 0 2rpx 12rpx rgba(12, 42, 51, 0.06);
+$shadow-pop:  0 8rpx 32rpx rgba(12, 42, 51, 0.12);
+
+/* 间距(8 栅格;页边距统一 32rpx) */
+$sp-1: 8rpx;
+$sp-2: 16rpx;
+$sp-3: 24rpx;
+$sp-4: 32rpx;
+$sp-5: 48rpx;

@@ -1,0 +1,8 @@
+{
+  "_说明": "复制本文件为 deploy.local.json 并填入真实值(该文件已被 .gitignore 忽略,不会提交)。也可改用同名环境变量。",
+  "SSH_PASS": "<部署服务器 root SSH 密码>",
+  "MYSQL_DSN": "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=true&loc=Local",
+  "REDIS_URL": "redis://:<pass>@127.0.0.1:6379/2",
+  "JWT_SECRET": "<随机长字符串>",
+  "CRED_MASTER_KEY": "<32 字节主密钥>"
+}

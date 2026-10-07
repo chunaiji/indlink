@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drift Google Credentials</title>
+<style>
+  :root {
+    --ground: #f6f8f7;
+    --panel: #ffffff;
+    --panel-2: #eef2f1;
+    --line: #d6dedb;
+    --line-soft: #e6ecea;
+    --ink: #14201e;
+    --ink-2: #475854;
+    --ink-3: #6d7f7a;
+    --accent: #0f6f68;
+    --accent-ink: #0b544f;
+    --accent-wash: #e2f0ee;
+    --caution: #8a5a0c;
+    --caution-wash: #f8eeda;
+    --caution-line: #e3cda0;
+    --blocked: #97323f;
+    --blocked-wash: #f9e6e8;
+    --blocked-line: #e8c2c7;
+    --shadow: 0 1px 2px rgba(20, 32, 30, .05), 0 8px 24px -12px rgba(20, 32, 30, .18);
+
+    --display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #121817;
+      --panel: #1a2220;
+      --panel-2: #212b29;
+      --line: #2f3d3a;
+      --line-soft: #273330;
+      --ink: #e4ece9;
+      --ink-2: #a7b8b3;
+      --ink-3: #7d918c;
+      --accent: #4bb3a8;
+      --accent-ink: #79cdc3;
+      --accent-wash: #16302e;
+      --caution: #d7a44e;
+      --caution-wash: #2e2617;
+      --caution-line: #4d3f21;
+      --blocked: #e0888f;
+      --blocked-wash: #301b1e;
+      --blocked-line: #4e2c30;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -12px rgba(0, 0, 0, .6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #121817;
+    --panel: #1a2220;
+    --panel-2: #212b29;
+    --line: #2f3d3a;
+    --line-soft: #273330;
+    --ink: #e4ece9;
+    --ink-2: #a7b8b3;
+    --ink-3: #7d918c;
+    --accent: #4bb3a8;
+    --accent-ink: #79cdc3;
+    --accent-wash: #16302e;
+    --caution: #d7a44e;
+    --caution-wash: #2e2617;
+    --caution-line: #4d3f21;
+    --blocked: #e0888f;
+    --blocked-wash: #301b1e;
+    --blocked-line: #4e2c30;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -12px rgba(0, 0, 0, .6);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 56px 28px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 44px;
+  }
+
+  /* ── masthead ─────────────────────────────── */
+  .mast { display: flex; flex-direction: column; gap: 18px; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(34px, 5vw, 46px);
+    line-height: 1.12;
+    letter-spacing: -.015em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .standfirst {
+    margin: 0;
+    max-width: 62ch;
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1px;
+    margin: 0;
+    background: var(--line-soft);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .fact { background: var(--panel); padding: 13px 16px; display: flex; flex-direction: column; gap: 3px; }
+  .fact dt { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); }
+  .fact dd { margin: 0; font-family: var(--mono); font-size: 13px; color: var(--ink); word-break: break-all; }
+
+  /* ── sections ─────────────────────────────── */
+  section { display: flex; flex-direction: column; gap: 18px; }
+
+  .head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--line);
+  }
+
+  h2 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 27px;
+    letter-spacing: -.01em;
+    margin: 0;
+    flex: 1;
+    min-width: 260px;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-family: var(--body);
+    font-weight: 650;
+    font-size: 15px;
+    letter-spacing: .01em;
+    margin: 12px 0 -4px;
+    color: var(--ink);
+  }
+
+  /* status chip — encodes real readiness, not decoration */
+  .chip {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .chip.go { color: var(--accent-ink); background: var(--accent-wash); border-color: var(--accent); }
+  .chip.warn { color: var(--caution); background: var(--caution-wash); border-color: var(--caution-line); }
+  .chip.stop { color: var(--blocked); background: var(--blocked-wash); border-color: var(--blocked-line); }
+
+  p { margin: 0; max-width: 68ch; }
+  p + p { margin-top: 12px; }
+
+  ul, ol { margin: 0; padding-left: 22px; max-width: 68ch; display: flex; flex-direction: column; gap: 7px; }
+  li::marker { color: var(--ink-3); }
+
+  strong { font-weight: 650; }
+  code { font-family: var(--mono); font-size: .875em; background: var(--panel-2); padding: 1.5px 5px; border-radius: 4px; word-break: break-word; }
+
+  a { color: var(--accent-ink); text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+
+  /* ── tables ───────────────────────────────── */
+  .scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 11px 15px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  thead th {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    background: var(--panel-2);
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  .mono-cell { font-family: var(--mono); font-size: 13px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ── callouts ─────────────────────────────── */
+  .note {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-wash);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    max-width: 68ch;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .note.warn { border-left-color: var(--caution); background: var(--caution-wash); }
+  .note.stop { border-left-color: var(--blocked); background: var(--blocked-wash); }
+  .note-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    color: var(--accent-ink);
+  }
+  .note.warn .note-label { color: var(--caution); }
+  .note.stop .note-label { color: var(--blocked); }
+
+  pre {
+    margin: 0;
+    background: var(--panel-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+
+  /* ── numbered sequences ───────────────────── */
+  .steps { counter-reset: s; list-style: none; padding: 0; gap: 12px; }
+  .steps li { counter-increment: s; display: grid; grid-template-columns: 26px 1fr; gap: 13px; align-items: start; }
+  .steps li::before {
+    content: counter(s);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 24px;
+    text-align: center;
+    color: var(--accent-ink);
+    background: var(--accent-wash);
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    height: 24px;
+  }
+
+  footer { border-top: 1px solid var(--line); padding-top: 18px; color: var(--ink-3); font-size: 13.5px; }
+
+  @media (max-width: 620px) {
+    .wrap { padding: 36px 18px 64px; gap: 36px; }
+    h2 { font-size: 23px; }
+  }
+
+  @media print {
+    body { background: #fff; }
+    .wrap { max-width: none; padding: 0; gap: 28px; }
+    .scroll, .note, pre { box-shadow: none; break-inside: avoid; }
+    section { break-inside: avoid-page; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="mast">
+    <span class="eyebrow">Drift · Provisioning guide</span>
+    <h1>Google credentials for the Drift app</h1>
+    <p class="standfirst">Three Google features need credentials, and they need three <em>different kinds</em> of credential. This is what to create, where to create it, and the exact place each value lands.</p>
+    <dl class="facts">
+      <div class="fact"><dt>Android package</dt><dd>com.ambertu.bottles</dd></div>
+      <div class="fact"><dt>iOS bundle ID</dt><dd>com.ambertu.bottles</dd></div>
+      <div class="fact"><dt>Server IP</dt><dd>175.178.182.166</dd></div>
+      <div class="fact"><dt>App tenant ID</dt><dd>358804313465688064</dd></div>
+    </dl>
+  </header>
+
+  <!-- ── orientation ─────────────────────────── -->
+  <section>
+    <div class="head">
+      <h2>Start here: they are not interchangeable</h2>
+    </div>
+    <p>The most common and most expensive mistake is assuming one Google credential covers everything. These three come from different consoles, look nothing alike, and cannot substitute for one another.</p>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th>Feature</th><th>Credential type</th><th>Created in</th><th>Carries a secret?</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Google Sign-In</td>
+            <td><strong>OAuth 2.0 client</strong></td>
+            <td>Google Cloud Console → Credentials</td>
+            <td>The web client has one, but this project never uses it</td>
+          </tr>
+          <tr>
+            <td>Google Maps</td>
+            <td><strong>API key</strong></td>
+            <td>Google Cloud Console → Credentials</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>Play Billing</td>
+            <td><strong>Service account key</strong></td>
+            <td>Google <em>Play</em> Console → API access</td>
+            <td>Yes — a JSON private key</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Two consequences worth stating plainly. An OAuth client JSON cannot be used for Maps, and an API key cannot be used for Sign-In. And the product behind in-app coin purchases is <strong>Google Play Billing</strong>, not Google Pay — Google Pay is for physical goods and services, while coins are digital goods consumed inside the app, which Google requires to go through Play Billing. Shipping Google Pay for this would fail review.</p>
+
+    <div class="note stop">
+      <span class="note-label">Never commit</span>
+      No <code>client_secret</code>, service account JSON, or API key value belongs in the repository. <code>android/local.properties</code> and <code>ios/Flutter/Maps.xcconfig</code> are already gitignored — key values live there, never inline in <code>AndroidManifest.xml</code> or <code>Info.plist</code>. Guard the Maps keys hardest: a leaked one is billed to your account until somebody notices.
+    </div>
+  </section>
+
+  <!-- ── sign-in ─────────────────────────────── -->
+  <section>
+    <div class="head">
+      <h2>Google Sign-In</h2>
+      <span class="chip warn">Configurable · code gaps remain</span>
+    </div>
+
+    <h3>What the backend actually checks</h3>
+    <p>The server never calls Google's token endpoint. It fetches Google's public keys from the JWKS endpoint, verifies the ID token's RS256 signature, and checks <code>iss</code>, <code>aud</code> and <code>exp</code>.</p>
+    <p>So the <code>client_secret</code> is <strong>not used anywhere in this project</strong>. A client secret is only needed for the authorization-code exchange, which we never perform. If somebody hands you a <code>client_secret_*.json</code>, you need exactly one field out of it — <code>client_id</code> — and the rest can be discarded.</p>
+
+    <h3>Create three OAuth clients</h3>
+    <p>All three live in the same Google Cloud project, under <strong>APIs &amp; Services → Credentials → Create credentials → OAuth client ID</strong>.</p>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th>Application type</th><th>What you must supply</th><th>What comes back</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Web application</strong></td>
+            <td>Nothing</td>
+            <td>Client ID — this is the one the backend verifies against</td>
+          </tr>
+          <tr>
+            <td><strong>Android</strong></td>
+            <td>Package name <span class="mono-cell">com.ambertu.bottles</span> + SHA-1 fingerprint</td>
+            <td>Client ID. Nothing to download — the pairing itself is what matters</td>
+          </tr>
+          <tr>
+            <td><strong>iOS</strong></td>
+            <td>Bundle ID <span class="mono-cell">com.ambertu.bottles</span></td>
+            <td>Client ID + a reversed-client-ID URL scheme</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The Android and iOS clients produce no file to copy into the project. Google identifies the app by package name plus signing fingerprint on Android, and by bundle ID on iOS. Creating them is what makes sign-in work; there is nothing further to paste.</p>
+
+    <div class="note">
+      <span class="note-label">Not this one</span>
+      A credential of type <strong>Desktop app</strong> — its JSON has an <code>"installed"</code> key — is not usable here. It exists for CLI and desktop programs. If you have one, set it aside.
+    </div>
+
+    <h3>Getting the Android SHA-1 fingerprints</h3>
+    <p>You need <strong>two</strong>, and both must be registered. Register only one and sign-in works on a developer machine while silently failing on the installed release build.</p>
+    <pre><code># Debug keystore — identical on any machine using the default Android debug key
+keytool -list -v \
+  -keystore ~/.android/debug.keystore \
+  -alias androiddebugkey -storepass android -keypass android
+
+# Release keystore — substitute your own path and alias
+keytool -list -v -keystore /path/to/release.keystore -alias &lt;your-alias&gt;</code></pre>
+    <p>Take the <code>SHA1:</code> line from each. If the app ships through Google Play with Play App Signing enabled, also register the SHA-1 shown in Play Console under <strong>Release → Setup → App signing</strong> — Google re-signs the uploaded artifact, and that is the fingerprint end users actually run.</p>
+
+    <h3>Where the values go</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Value</th><th>Destination</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Web</strong> client ID</td><td>Admin → System settings → App sign-in → <span class="mono-cell">app_google_client_id</span></td></tr>
+          <tr><td>Apple bundle ID</td><td>Admin → System settings → App sign-in → <span class="mono-cell">app_apple_bundle_id</span></td></tr>
+          <tr><td>Android / iOS client IDs</td><td>Nowhere — creating them is enough</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note warn">
+      <span class="note-label">Switch tenant first</span>
+      These settings are per-tenant. Use the tenant selector in the top-right corner and pick the app tenant <code>358804313465688064</code> <em>before</em> saving. Saving while “All tenants” is selected writes a global default instead, which is almost certainly not what you want.
+    </div>
+
+    <h3>Two code gaps that block sign-in regardless</h3>
+    <p>Configuring everything above is necessary but not sufficient. These are recorded here so nobody spends a day re-checking console settings that were already correct.</p>
+    <ul>
+      <li><strong>Android never receives an ID token.</strong> <code>oauth.dart</code> calls <code>GoogleSignIn().signIn()</code> with no <code>serverClientId</code>, and the project has no <code>google-services.json</code> to supply <code>default_web_client_id</code>. With neither present, <code>auth.idToken</code> comes back null and the app throws “Google did not return an ID token”. The fix is to pass the <em>web</em> client ID as <code>serverClientId</code> — no Firebase project and no Gradle plugin needed.</li>
+      <li><strong>The backend accepts only one audience.</strong> It validates <code>aud</code> against the single <code>app_google_client_id</code>. In practice Android yields <code>aud</code> = the web client ID once <code>serverClientId</code> is set, while iOS yields <code>aud</code> = the iOS client ID. Google's own guidance is to accept <em>any</em> of your client IDs, so as written one platform will always be rejected. The fix is to allow a list.</li>
+    </ul>
+  </section>
+
+  <!-- ── maps ────────────────────────────────── -->
+  <section>
+    <div class="head">
+      <h2>Google Maps</h2>
+      <span class="chip go">Ready — code is waiting on keys</span>
+    </div>
+
+    <h3>Enable these APIs</h3>
+    <p>Under <strong>APIs &amp; Services → Library</strong>: Maps SDK for Android, Maps SDK for iOS, and Geocoding API.</p>
+
+    <h3>Create three separate keys</h3>
+    <p>Under <strong>Credentials → Create credentials → API key</strong>. Use three distinct keys, one per surface. Do not reuse a single key — each carries a different restriction, and a key restricted for one surface will not work on the others.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Key</th><th>Application restriction</th><th>API restriction</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Android Maps</td>
+            <td>Android apps → package <span class="mono-cell">com.ambertu.bottles</span> + the same SHA-1 fingerprints as above</td>
+            <td>Maps SDK for Android</td>
+          </tr>
+          <tr>
+            <td>iOS Maps</td>
+            <td>iOS apps → bundle ID <span class="mono-cell">com.ambertu.bottles</span></td>
+            <td>Maps SDK for iOS</td>
+          </tr>
+          <tr>
+            <td>Server geocoding</td>
+            <td>IP addresses → <span class="mono-cell num">175.178.182.166</span></td>
+            <td>Geocoding API</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The server key is the one that would hurt most if it leaked, because an IP restriction is the only thing between it and open internet use. Restrict it before pasting it anywhere.</p>
+
+    <h3>Where the values go</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Key</th><th>Destination</th></tr></thead>
+        <tbody>
+          <tr><td>Android Maps</td><td>Add <span class="mono-cell">MAPS_API_KEY=&lt;key&gt;</span> to <span class="mono-cell">app/bottles/android/local.properties</span></td></tr>
+          <tr><td>iOS Maps</td><td>Copy <span class="mono-cell">ios/Flutter/Maps.xcconfig.example</span> to <span class="mono-cell">Maps.xcconfig</span>, replace the placeholder</td></tr>
+          <tr><td>Server geocoding</td><td>Admin → System settings → App location → <span class="mono-cell">app_google_map_key</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Both local files are gitignored. The Android key is injected at build time via <code>manifestPlaceholders</code>, keeping <code>AndroidManifest.xml</code> free of secrets; the iOS key reaches <code>Info.plist</code> through the xcconfig and is read in <code>AppDelegate.swift</code>.</p>
+
+    <div class="note warn">
+      <span class="note-label">Easy to miss</span>
+      Set <code>app_maps_provider</code> to <code>google</code> under Admin → System settings → App location. Left empty, the server keeps using Tencent Location Service — the existing mini-program behaviour. You can configure the geocoding key perfectly and still see zero Google traffic if this switch is not flipped.
+    </div>
+
+    <h3>What happens without a key</h3>
+    <p>Nothing hard-fails, so it is safe to configure one surface at a time. Android still builds; the map renders as a blank grey area and logs a key error while the rest of the app works normally. The server falls back to returning raw latitude and longitude with an empty place name instead of erroring, so a user can still drop a pin — it just has no readable label.</p>
+  </section>
+
+  <!-- ── play billing ────────────────────────── -->
+  <section>
+    <div class="head">
+      <h2>Google Play Billing</h2>
+      <span class="chip stop">Blocked — nothing to configure yet</span>
+    </div>
+
+    <p>There is nowhere to put a Play credential right now. Obtaining one today means holding a private key with no home.</p>
+    <ul>
+      <li><strong>Backend:</strong> the database tables and the price-selection helper exist. The service-account authentication layer, the purchase-verification endpoint, refund polling and admin price management do not.</li>
+      <li><strong>Config:</strong> the four <code>sysconfig</code> keys this feature needs have not been created, so the admin console shows no Play fields at all.</li>
+      <li><strong>Client:</strong> <code>pubspec.yaml</code> has no <code>in_app_purchase</code> dependency; no Flutter work has started.</li>
+    </ul>
+    <p>Roughly 9 of 31 planned steps are complete.</p>
+
+    <h3>What it will require, once the work is scheduled</h3>
+    <p>A <strong>service account key</strong>, obtained through Google Play Console rather than Google Cloud Console:</p>
+    <ol class="steps">
+      <li>Play Console → <strong>Setup → API access</strong></li>
+      <li>Link the Google Cloud project — the same one used for Sign-In and Maps</li>
+      <li>Create a service account, then grant it <strong>View financial data</strong> and <strong>Manage orders and subscriptions</strong></li>
+      <li>Back in Google Cloud Console, create and download a <strong>JSON key</strong> for that service account</li>
+    </ol>
+    <p>That JSON is a private key. It belongs in the admin console's encrypted credential storage — never in the repository, and never in a chat message.</p>
+    <p>Separately, every coin package must exist as a <strong>managed product</strong> in Play Console, with the product ID matching what the backend stores and prices aligned by hand between the two consoles. The server rejects any purchase whose paid amount does not match.</p>
+  </section>
+
+  <!-- ── reference ───────────────────────────── -->
+  <section>
+    <div class="head">
+      <h2>Every value and where it lands</h2>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Value</th><th>Type</th><th>Destination</th></tr></thead>
+        <tbody>
+          <tr><td>Web OAuth client ID</td><td>OAuth client</td><td>Admin → App sign-in → <span class="mono-cell">app_google_client_id</span></td></tr>
+          <tr><td>Apple bundle ID</td><td>Identifier</td><td>Admin → App sign-in → <span class="mono-cell">app_apple_bundle_id</span></td></tr>
+          <tr><td>Android OAuth client</td><td>OAuth client</td><td>Create only — nothing to paste</td></tr>
+          <tr><td>iOS OAuth client</td><td>OAuth client</td><td>Create only — nothing to paste</td></tr>
+          <tr><td>Android Maps key</td><td>API key</td><td><span class="mono-cell">android/local.properties</span> → <span class="mono-cell">MAPS_API_KEY</span></td></tr>
+          <tr><td>iOS Maps key</td><td>API key</td><td><span class="mono-cell">ios/Flutter/Maps.xcconfig</span> → <span class="mono-cell">MAPS_API_KEY</span></td></tr>
+          <tr><td>Server geocoding key</td><td>API key</td><td>Admin → App location → <span class="mono-cell">app_google_map_key</span></td></tr>
+          <tr><td>Maps provider switch</td><td>Setting</td><td>Admin → App location → <span class="mono-cell">app_maps_provider</span> = <span class="mono-cell">google</span></td></tr>
+          <tr><td>Play service account</td><td>JSON key</td><td>Not yet — feature incomplete</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Suggested order</h3>
+    <ol class="steps">
+      <li>Create the web, Android and iOS OAuth clients, then set <code>app_google_client_id</code> and <code>app_apple_bundle_id</code>.</li>
+      <li>Enable the three Maps APIs, create the three restricted keys, then set <code>app_google_map_key</code> and <code>app_maps_provider=google</code>.</li>
+      <li>Get the two code gaps fixed, then verify sign-in on real Android and iOS hardware.</li>
+      <li>Leave Play Billing until the backend and client work is scheduled.</li>
+    </ol>
+    <p>Steps 1 and 2 are independent and can happen in either order. Step 3 needs real hardware — an emulator without Google Play services cannot complete Google Sign-In.</p>
+  </section>
+
+  <footer>
+    Drift · <span class="num">2026-09-21</span> · Self-contained file — no network access required. Open in any browser, or print to PDF.
+  </footer>
+
+</div>
+
+</body>
+</html>

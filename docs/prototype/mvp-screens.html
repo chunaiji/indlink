@@ -1,0 +1,1395 @@
+<title>Drift MVP Wireframes</title>
+
+<style>
+  /* ============ tokens: light (complete palette) ============ */
+  :root {
+    --ground:      #F2FAFB;
+    --surface:     #FBFEFF;
+    --surface-2:   #E6F3F6;
+    --sea:         #DCEFF2;
+    --ink:         #0E2F38;
+    --ink-2:       #3C6270;
+    --muted:       #7C9FAC;
+    --line:        #C9E2E8;
+    --line-soft:   #DEEDF1;
+    --coral:       #E8513F;
+    --coral-soft:  #FFE8E4;
+    --ok:          #1F7A5C;
+    --warn:        #9A6A12;
+    --warn-soft:   #FFF3D6;
+    --phone-shell: #0E2F38;
+    --shadow:      0 1px 2px rgba(14,47,56,.06), 0 8px 24px rgba(14,47,56,.08);
+    --shadow-lift: 0 2px 4px rgba(14,47,56,.08), 0 18px 44px rgba(14,47,56,.14);
+
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+            "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --note: Georgia, "Songti SC", "Noto Serif", serif;
+  }
+
+  /* ============ tokens: dark via OS (un-stamped default) ============ */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #07171C;
+      --surface:     #0E262E;
+      --surface-2:   #143039;
+      --sea:         #102B34;
+      --ink:         #DCEFF2;
+      --ink-2:       #A8CBD6;
+      --muted:       #6F98A6;
+      --line:        #1E4350;
+      --line-soft:   #163640;
+      --coral:       #FF8272;
+      --coral-soft:  #3A1B18;
+      --ok:          #5FD3A8;
+      --warn:        #E7B75A;
+      --warn-soft:   #35290F;
+      --phone-shell: #020C10;
+      --shadow:      0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.34);
+      --shadow-lift: 0 2px 4px rgba(0,0,0,.45), 0 18px 44px rgba(0,0,0,.5);
+    }
+  }
+
+  /* ============ tokens: dark via explicit toggle ============ */
+  :root[data-theme="dark"] {
+    --ground:      #07171C;
+    --surface:     #0E262E;
+    --surface-2:   #143039;
+    --sea:         #102B34;
+    --ink:         #DCEFF2;
+    --ink-2:       #A8CBD6;
+    --muted:       #6F98A6;
+    --line:        #1E4350;
+    --line-soft:   #163640;
+    --coral:       #FF8272;
+    --coral-soft:  #3A1B18;
+    --ok:          #5FD3A8;
+    --warn:        #E7B75A;
+    --warn-soft:   #35290F;
+    --phone-shell: #020C10;
+    --shadow:      0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.34);
+    --shadow-lift: 0 2px 4px rgba(0,0,0,.45), 0 18px 44px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px 96px; }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    display: flex; flex-wrap: wrap; align-items: flex-end;
+    gap: 20px 32px;
+    padding: 56px 0 28px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .masthead h1 {
+    margin: 0; font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08;
+    letter-spacing: -.022em; font-weight: 700; text-wrap: balance;
+  }
+  .masthead p { margin: 6px 0 0; color: var(--ink-2); max-width: 60ch; }
+  .meta {
+    margin-left: auto; font-family: var(--mono); font-size: 11.5px;
+    color: var(--muted); text-align: right; line-height: 1.9;
+    font-variant-numeric: tabular-nums;
+  }
+  .meta b { color: var(--ink-2); font-weight: 600; }
+
+  /* ---------- section headers ---------- */
+  .sec { margin-top: 56px; }
+  .sec-head {
+    display: flex; align-items: baseline; gap: 14px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--line);
+    margin-bottom: 26px;
+  }
+  .sec-head h2 {
+    margin: 0; font-size: 19px; letter-spacing: -.012em; font-weight: 650;
+  }
+  .sec-head .tag {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .sec-head .rule { flex: 1; }
+
+  /* ---------- flow strip ---------- */
+  .flow-scroll { overflow-x: auto; padding-bottom: 12px; }
+  .flow {
+    display: flex; align-items: center; gap: 0; min-width: max-content;
+  }
+  .flow-node { text-align: center; width: 132px; }
+  .flow-card {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 12px; padding: 14px 8px 12px; box-shadow: var(--shadow);
+  }
+  .flow-card .ico { font-size: 20px; line-height: 1; }
+  .flow-card .nm { font-size: 12.5px; font-weight: 600; margin-top: 7px; }
+  .flow-card .id {
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+    letter-spacing: .06em; margin-top: 3px;
+  }
+  .flow-card.gap { border-style: dashed; border-color: var(--warn); background: var(--warn-soft); }
+  .arrow {
+    flex: 0 0 46px; text-align: center; color: var(--muted);
+    font-size: 13px; font-family: var(--mono);
+  }
+  .arrow small { display: block; font-size: 9.5px; letter-spacing: .04em; }
+
+  /* ---------- screen rows ---------- */
+  .row {
+    display: grid; grid-template-columns: 320px 1fr; gap: 40px;
+    align-items: start; padding: 30px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .row:first-of-type { border-top: none; }
+  @media (max-width: 860px) {
+    .row { grid-template-columns: 1fr; gap: 26px; justify-items: center; }
+    .notes { width: 100%; }
+  }
+
+  /* ---------- phone ---------- */
+  .phone {
+    width: 300px; height: 624px; flex: none;
+    background: var(--phone-shell); border-radius: 34px; padding: 9px;
+    box-shadow: var(--shadow-lift);
+  }
+  .screen {
+    width: 100%; height: 100%; background: var(--surface);
+    border-radius: 26px; overflow: hidden;
+    display: flex; flex-direction: column;
+    font-size: 12.5px; line-height: 1.45; color: var(--ink);
+  }
+  .statusbar {
+    flex: none; height: 26px; display: flex; align-items: center;
+    justify-content: space-between; padding: 0 16px;
+    font-family: var(--mono); font-size: 9.5px; color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .navbar {
+    flex: none; display: flex; align-items: center; gap: 8px;
+    padding: 6px 14px 10px; border-bottom: 1px solid var(--line-soft);
+  }
+  .navbar .t { font-weight: 650; font-size: 14px; }
+  .navbar .sp { flex: 1; }
+  .body-area { flex: 1; overflow: hidden; padding: 14px; }
+  .body-area.sea {
+    background: linear-gradient(175deg, var(--sea) 0%, var(--surface) 62%);
+  }
+  .tabbar {
+    flex: none; display: flex; border-top: 1px solid var(--line-soft);
+    background: var(--surface);
+  }
+  .tabbar div {
+    flex: 1; text-align: center; padding: 8px 0 11px;
+    font-size: 9.5px; color: var(--muted);
+  }
+  .tabbar div .g { font-size: 15px; display: block; line-height: 1.3; }
+  .tabbar div.on { color: var(--coral); font-weight: 600; }
+
+  /* ---------- in-screen atoms ---------- */
+  .fld {
+    border: 1px solid var(--line); border-radius: 9px;
+    padding: 9px 11px; color: var(--muted); background: var(--surface);
+    margin-bottom: 9px;
+  }
+  .btn {
+    background: var(--coral); color: #fff; text-align: center;
+    border-radius: 9px; padding: 10px; font-weight: 650; font-size: 13px;
+  }
+  .btn.ghost {
+    background: transparent; color: var(--coral);
+    border: 1px solid var(--coral); font-weight: 600;
+  }
+  .btn.danger { background: transparent; color: var(--coral); text-align: left; padding: 10px 0; }
+  .seg {
+    display: flex; background: var(--surface-2); border-radius: 9px;
+    padding: 3px; margin-bottom: 14px;
+  }
+  .seg div { flex: 1; text-align: center; padding: 6px; border-radius: 7px; font-size: 12px; color: var(--muted); }
+  .seg div.on { background: var(--surface); color: var(--ink); font-weight: 650; box-shadow: var(--shadow); }
+  .card {
+    background: var(--surface); border: 1px solid var(--line-soft);
+    border-radius: 12px; padding: 12px; margin-bottom: 10px;
+  }
+  .chip {
+    display: inline-block; background: var(--surface-2); color: var(--ink-2);
+    border-radius: 999px; padding: 2px 8px; font-size: 10px; margin-right: 5px;
+  }
+  .chip.coin {
+    background: var(--coral-soft); color: var(--coral); font-weight: 650;
+    font-family: var(--mono); font-variant-numeric: tabular-nums;
+  }
+  .note-body {
+    font-family: var(--note); font-size: 13px; line-height: 1.62;
+    color: var(--ink); margin: 6px 0 10px;
+  }
+  .rowline {
+    display: flex; align-items: center; gap: 9px;
+    padding: 9px 0; border-bottom: 1px solid var(--line-soft);
+  }
+  .rowline:last-child { border-bottom: none; }
+  .av {
+    width: 34px; height: 34px; border-radius: 50%; flex: none;
+    background: linear-gradient(140deg, var(--sea), var(--muted));
+  }
+  .av.sm { width: 26px; height: 26px; }
+  .grow { flex: 1; min-width: 0; }
+  .ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dim { color: var(--muted); font-size: 11px; }
+  .badge {
+    background: var(--coral); color: #fff; border-radius: 999px;
+    font-size: 9.5px; padding: 1px 6px; font-family: var(--mono);
+  }
+  .bub {
+    max-width: 78%; padding: 8px 11px; border-radius: 13px;
+    margin-bottom: 8px; font-size: 12px; line-height: 1.5;
+  }
+  .bub.them { background: var(--surface-2); border-top-left-radius: 4px; }
+  .bub.me {
+    background: var(--coral); color: #fff; margin-left: auto;
+    border-top-right-radius: 4px;
+  }
+  .sysline {
+    text-align: center; font-size: 10px; color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .inputbar {
+    display: flex; gap: 7px; align-items: center;
+    border-top: 1px solid var(--line-soft); padding: 9px 12px; flex: none;
+  }
+  .inputbar .fld { flex: 1; margin: 0; padding: 7px 10px; border-radius: 999px; }
+  .send {
+    background: var(--coral); color: #fff; border-radius: 999px;
+    padding: 7px 13px; font-size: 12px; font-weight: 650;
+  }
+  .bottle-art {
+    height: 128px; display: flex; align-items: center; justify-content: center;
+    font-size: 52px; filter: saturate(.85);
+  }
+  .quota {
+    display: flex; gap: 7px; font-family: var(--mono); font-size: 10px;
+    color: var(--ink-2); justify-content: center; margin-top: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  .quota span { background: var(--surface-2); border-radius: 6px; padding: 3px 8px; }
+  .locked {
+    background: var(--surface-2); border: 1px dashed var(--line);
+    border-radius: 9px; padding: 9px; margin-bottom: 8px;
+  }
+
+  /* ---------- annotations ---------- */
+  .notes { max-width: 640px; }
+  .notes h3 {
+    margin: 0 0 3px; font-size: 17px; letter-spacing: -.01em; font-weight: 650;
+  }
+  .screen-id {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+  .notes h3 + p { margin: 8px 0 16px; color: var(--ink-2); }
+
+  .spec { display: grid; grid-template-columns: 84px 1fr; gap: 0; margin-bottom: 4px; }
+  .spec dt {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--muted);
+    padding: 9px 0; border-top: 1px solid var(--line-soft);
+  }
+  .spec dd {
+    margin: 0; padding: 9px 0; border-top: 1px solid var(--line-soft);
+    font-size: 13.5px;
+  }
+  .spec dd ul { margin: 0; padding-left: 17px; }
+  .spec dd li { margin-bottom: 3px; }
+  .spec dd li:last-child { margin-bottom: 0; }
+
+  code {
+    font-family: var(--mono); font-size: 12px;
+    background: var(--surface-2); border-radius: 4px; padding: 1px 5px;
+    color: var(--ink);
+  }
+  .req {
+    display: inline-block; font-family: var(--mono); font-size: 10px;
+    background: var(--coral-soft); color: var(--coral);
+    border-radius: 4px; padding: 1px 6px; font-weight: 650;
+    letter-spacing: .04em;
+  }
+
+  .callout {
+    border-left: 3px solid var(--warn); background: var(--warn-soft);
+    color: var(--ink); padding: 13px 16px; border-radius: 0 9px 9px 0;
+    margin: 18px 0 0;
+  }
+  .callout b { display: block; margin-bottom: 4px; }
+  .callout p { margin: 0; font-size: 13.5px; }
+
+  /* ---------- legend / footer table ---------- */
+  .tbl-scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 520px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line-soft); }
+  th {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .07em;
+    text-transform: uppercase; color: var(--muted); font-weight: 500;
+    border-bottom: 1px solid var(--line);
+  }
+  td:first-child { white-space: nowrap; }
+
+  .foot {
+    margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 12.5px;
+  }
+  .foot code { font-size: 11.5px; }
+
+  /* ============================================================
+     S2 首页海洋场景 — 1:1 复刻 client/src/pages/ocean/ocean.vue
+     以下颜色是小程序品牌色，固定不随文档主题变化（这是设备内画面）
+     ============================================================ */
+  .ocean-screen {
+    flex: 1; position: relative; overflow: hidden;
+    color: #0C2A33;
+  }
+  .ocean-screen.day {
+    background: linear-gradient(180deg, #BFE9F4 0%, #9BDCEB 34%, #6FC6DD 52%,
+                                        #5AB6CE 62%, #E7DFC4 76%, #EFE6CC 100%);
+  }
+  .ocean-screen.night {
+    background: linear-gradient(180deg, #0A1733 0%, #122A4E 30%, #173963 48%,
+                                        #14304F 60%, #2B3A3E 74%, #3C342A 100%);
+    color: #EAF1FF;
+  }
+
+  /* 星空：仅夜间 */
+  .o-stars { position: absolute; inset: 0 0 auto 0; height: 46%; z-index: 0; opacity: 0; transition: opacity .5s; }
+  .ocean-screen.night .o-stars { opacity: 1; }
+  .o-star {
+    position: absolute; background: #fff; border-radius: 50%;
+    box-shadow: 0 0 3px rgba(255,255,255,.8);
+    animation: o-blink 1.2s steps(3) infinite;
+  }
+  @keyframes o-blink { 0%{opacity:.2} 50%{opacity:1} 100%{opacity:.2} }
+
+  /* 日月 */
+  .o-sun {
+    position: absolute; top: 30px; right: 44px; width: 34px; height: 34px;
+    border-radius: 50%; z-index: 0; transition: background .5s, box-shadow .5s;
+  }
+  .ocean-screen.day   .o-sun { background: #FFE489; box-shadow: 0 0 26px 8px rgba(255,217,107,.55); }
+  .ocean-screen.night .o-sun { background: #EAF1FF; box-shadow: 0 0 20px 6px rgba(234,241,255,.4); }
+
+  /* 顶部导航 */
+  .o-nav {
+    position: relative; z-index: 5; display: flex; align-items: center;
+    justify-content: space-between; padding: 12px 14px 4px; font-size: 11px; font-weight: 700;
+  }
+  .o-nav .o-title { font-size: 12px; font-weight: 800; letter-spacing: 1.4px; }
+  .o-nav .o-right { display: flex; align-items: center; gap: 6px; }
+  .o-nav .o-me {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: linear-gradient(140deg, #DCEFF2, #7C9FAC);
+    border: 1.5px solid rgba(255,255,255,.8);
+  }
+
+  /* 情绪钩子 */
+  .o-hook { position: relative; z-index: 5; text-align: center; font-size: 10px; font-weight: 600; margin-top: 2px; }
+  .o-hook b { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .ocean-screen.day   .o-hook b { color: #0E7FA6; }
+  .ocean-screen.night .o-hook b { color: #5BE0F0; }
+  .o-nightbadge {
+    position: relative; z-index: 5; margin: 6px auto 0; width: fit-content;
+    font-size: 8.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+    color: #E5DBFF; background: rgba(103,65,217,.45); border: 1px solid rgba(190,167,255,.5);
+    opacity: 0; transition: opacity .4s;
+  }
+  .ocean-screen.night .o-nightbadge { opacity: 1; }
+
+  /* 右侧悬浮胶囊 */
+  .o-cap {
+    position: absolute; right: 0; z-index: 6; display: flex; align-items: center; gap: 5px;
+    color: #fff; padding: 6px 9px 6px 8px; border-radius: 999px 0 0 999px;
+    font-size: 9px; font-weight: 700; line-height: 1.15;
+  }
+  .o-cap.invite {
+    top: 96px; background: linear-gradient(135deg, #FF8A7A, #FF6B5B);
+    box-shadow: 0 3px 10px rgba(255,107,91,.45);
+  }
+  .o-cap.linkmp {
+    top: 136px; background: linear-gradient(135deg, #5C7CFA, #4263EB);
+    box-shadow: 0 3px 10px rgba(66,99,235,.4);
+  }
+
+  /* 灯塔场景 */
+  .o-scene { position: absolute; top: 88px; left: 0; right: 0; height: 136px; z-index: 1; }
+  .o-island, .o-hill {
+    position: absolute; bottom: 0; border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    transition: background .5s;
+  }
+  .o-island { left: -16px; width: 136px; height: 76px; }
+  .o-hill   { right: -22px; width: 120px; height: 46px; }
+  .ocean-screen.night .o-island { background: radial-gradient(120% 100% at 40% 100%, #16324a 0%, #0e2436 70%); }
+  .ocean-screen.night .o-hill   { background: radial-gradient(120% 100% at 60% 100%, #12283c 0%, #0c1e2e 70%); }
+  .ocean-screen.day   .o-island,
+  .ocean-screen.day   .o-hill   { background: #6FA9B8; }
+
+  .o-lighthouse { position: absolute; left: 27px; bottom: 46px; width: 23px; height: 68px; }
+  .o-tower {
+    position: absolute; left: 5px; bottom: 0; width: 12px; height: 53px;
+    background: repeating-linear-gradient(180deg, #E4534A 0 9px, #F4F0E8 9px 18px);
+    border-radius: 3px 3px 2px 2px; clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%);
+  }
+  .o-base { position: absolute; left: 2px; bottom: -2px; width: 18px; height: 7px; background: #2a2118; border-radius: 2px; }
+  .o-lamp {
+    position: absolute; left: 7px; bottom: 53px; width: 8px; height: 9px;
+    border-radius: 3px 3px 0 0; background: #FFE07A; z-index: 2;
+    box-shadow: 0 0 14px 4px rgba(255,224,122,.65);
+    animation: o-lamp 3.2s ease-in-out infinite;
+  }
+  @keyframes o-lamp {
+    0%,100% { box-shadow: 0 0 10px 3px rgba(255,224,122,.45); }
+    50%     { box-shadow: 0 0 18px 6px rgba(255,224,122,.85); }
+  }
+  .o-beam {
+    position: absolute; left: -34px; bottom: 36px; width: 0; height: 0; z-index: 1;
+    border-top: 26px solid transparent; border-bottom: 26px solid transparent;
+    border-right: 92px solid rgba(255,232,160,.16);
+    transform-origin: right center;
+    animation: o-beam 6s ease-in-out infinite;
+  }
+  .ocean-screen.day .o-beam { border-right-color: rgba(255,255,255,.3); }
+  @keyframes o-beam {
+    0%,100% { transform: rotate(-14deg); opacity: .75; }
+    50%     { transform: rotate(3deg);   opacity: 1; }
+  }
+
+  /* 海面 + 漂浮瓶子 */
+  .o-sea { position: absolute; left: 0; right: 0; top: 216px; height: 150px; z-index: 2; }
+  .o-bottle {
+    position: absolute; width: 30px; animation: o-bob 4.5s ease-in-out infinite;
+  }
+  .o-bottle .o-bimg {
+    width: 30px; height: 40px; border-radius: 5px; display: block;
+    background: linear-gradient(150deg, rgba(255,255,255,.9), #A8D8E4 55%, #6FA9B8);
+    box-shadow: 0 3px 7px rgba(0,0,0,.3);
+    display: flex; align-items: center; justify-content: center; font-size: 17px;
+  }
+  .o-bottle .o-num {
+    position: absolute; top: -5px; right: -4px; font-size: 8px; font-weight: 700;
+    background: #FF6B5B; color: #fff; border-radius: 999px; padding: 0 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.25); font-variant-numeric: tabular-nums;
+  }
+  @keyframes o-bob {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50%     { transform: translateY(-6px) rotate(2deg); }
+  }
+
+  /* 沙滩三件事 */
+  .o-beach {
+    position: absolute; left: 0; right: 0; bottom: 14px; z-index: 4;
+    display: flex; justify-content: space-around; align-items: flex-end; padding: 0 10px;
+  }
+  .o-act { position: relative; text-align: center; }
+  .o-act .o-ic {
+    width: 46px; height: 46px; margin: 0 auto 4px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; font-size: 21px;
+    background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22);
+    backdrop-filter: blur(2px); transition: background .5s, border-color .5s;
+  }
+  .ocean-screen.day .o-act .o-ic { background: rgba(255,255,255,.78); border-color: rgba(255,255,255,.9); }
+  .o-act .o-lb { font-size: 9.5px; font-weight: 700; }
+  .o-act.big .o-ic {
+    width: 56px; height: 56px; font-size: 25px;
+    background: linear-gradient(135deg, #29C7E6, #1F9FD1);
+    border-color: rgba(255,255,255,.5); box-shadow: 0 4px 11px rgba(31,159,209,.5);
+  }
+  .o-qbadge {
+    position: absolute; top: -7px; left: 50%; transform: translateX(-50%); white-space: nowrap;
+    font-size: 8px; font-weight: 800; color: #fff; background: rgba(255,107,91,.92);
+    padding: 0 7px; border-radius: 999px; box-shadow: 0 2px 4px rgba(255,107,91,.4); z-index: 6;
+  }
+
+  /* ---------- 交互状态：打捞 / 写纸条 / 投海 / 信纸 ---------- */
+  .o-overlay {
+    position: absolute; inset: 0; z-index: 20; display: flex;
+    flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(6,16,34,.5);
+  }
+  .sf-stage { position: relative; width: 118px; height: 118px; }
+  .sf-ripple {
+    position: absolute; left: 50%; top: 64%; width: 16px; height: 16px; margin: -8px 0 0 -8px;
+    border: 1.5px solid rgba(120,220,245,.8); border-radius: 50%;
+    animation: o-ripple 1.6s ease-out infinite;
+  }
+  .sf-ripple.r2 { animation-delay: .5s; }
+  .sf-ripple.r3 { animation-delay: 1s; }
+  @keyframes o-ripple { 0%{transform:scale(.3);opacity:.9} 100%{transform:scale(4.2);opacity:0} }
+  .sf-hook {
+    position: absolute; left: 50%; top: 0; margin-left: -11px; font-size: 22px;
+    animation: o-cast 1.6s ease-in-out infinite;
+  }
+  @keyframes o-cast {
+    0%   { transform: translateY(-16px) rotate(-8deg); }
+    45%  { transform: translateY(59px)  rotate(6deg); }
+    100% { transform: translateY(-16px) rotate(-8deg); }
+  }
+  .sf-rise {
+    position: absolute; left: 50%; top: 60%; margin-left: -10px; font-size: 20px; opacity: 0;
+    animation: o-rise 1.6s ease-in-out infinite;
+  }
+  @keyframes o-rise {
+    0%,50% { transform: translateY(24px) rotate(-12deg); opacity: 0; }
+    80%    { transform: translateY(-4px) rotate(8deg);   opacity: 1; }
+    100%   { transform: translateY(-12px) rotate(-6deg); opacity: .9; }
+  }
+  .sf-tip { margin-top: 10px; color: #EAF1FF; font-size: 11px; font-weight: 700; }
+  .sf-tip .dot { animation: o-blink 1.2s steps(3) infinite; }
+
+  /* 写纸条 */
+  .c-paper {
+    position: relative; z-index: 1; width: 232px; background: #FFFDF6; border-radius: 6px;
+    padding: 16px 13px 12px; box-shadow: 0 7px 18px rgba(0,0,0,.32); color: #3A3A3A;
+    background-image: repeating-linear-gradient(180deg, transparent 0 18px, rgba(120,140,160,.16) 18px 19px);
+  }
+  .c-clip { position: absolute; top: -8px; right: 22px; font-size: 19px; transform: rotate(18deg); }
+  .c-hd { font-size: 12px; font-weight: 800; margin-bottom: 5px; }
+  .c-ta { min-height: 62px; font-size: 11px; line-height: 19px; color: #B7B2A2; font-family: var(--note); }
+  .c-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+  .c-tg { font-size: 8.5px; font-weight: 600; color: #9A8E6E; background: #F2ECD9; padding: 2px 7px; border-radius: 999px; }
+  .c-tg.on { background: rgba(255,107,91,.14); color: #E0533F; }
+  .c-opt { display: flex; align-items: center; gap: 6px; margin-top: 7px; font-size: 9px; color: #6A6A5E; font-weight: 600; }
+  .c-sw { width: 22px; height: 13px; border-radius: 999px; background: #FF6B5B; position: relative; }
+  .c-sw::after { content:""; position:absolute; right:1.5px; top:1.5px; width:10px; height:10px; border-radius:50%; background:#fff; }
+  .c-count { margin-left: auto; color: #B7B2A2; font-size: 8.5px; font-variant-numeric: tabular-nums; }
+  .c-send {
+    margin-top: 10px; height: 32px; border-radius: 999px; display: flex;
+    align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #fff;
+    background: linear-gradient(135deg, #FF8A7A, #FF5B4B); box-shadow: 0 4px 11px rgba(255,91,75,.45);
+  }
+
+  /* 投海 */
+  .c-story { position: relative; z-index: 1; width: 190px; height: 190px; }
+  .story-bottle {
+    position: absolute; left: 50%; top: 42%; margin-left: -17px; font-size: 36px;
+    animation: o-toss 2.4s cubic-bezier(.4,0,.7,1) infinite;
+  }
+  @keyframes o-toss {
+    0%   { left: 50%; top: 42%; transform: rotate(0)      scale(1.05); opacity: 1; }
+    45%  { left: 64%; top: 6%;  transform: rotate(220deg) scale(.9);   opacity: 1; }
+    82%  { left: 82%; top: 54%; transform: rotate(400deg) scale(.45);  opacity: 0; }
+    100% { left: 82%; top: 54%; transform: rotate(400deg) scale(.45);  opacity: 0; }
+  }
+  .story-splash {
+    position: absolute; left: 74%; top: 50%; font-size: 20px; opacity: 0;
+    animation: o-splash 2.4s ease-out infinite;
+  }
+  @keyframes o-splash {
+    0%,72%  { transform: translateY(6px) scale(.4); opacity: 0; }
+    84%     { opacity: 1; }
+    96%,100%{ transform: translateY(-5px) scale(1.1); opacity: 0; }
+  }
+  .c-tip { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; color: #EAF1FF; font-size: 10px; font-weight: 700; }
+
+  /* 信纸弹框 */
+  .letter-wrap { position: relative; width: 218px; }
+  .paper-bg {
+    position: absolute; inset: 0; background: #F6EFDD; border-radius: 7px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.26);
+  }
+  .paper-bg.b1 { transform: rotate(-4deg) translateY(4px); }
+  .paper-bg.b2 { transform: rotate(3deg)  translateY(2px); }
+  .letter {
+    position: relative; background: #FFFDF6; border-radius: 7px; padding: 11px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.3); color: #3A3A3A;
+  }
+  .l-head { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
+  .l-name { font-size: 11px; font-weight: 800; }
+  .l-meta { display: flex; gap: 4px; margin-top: 1px; }
+  .l-gp, .l-lv { font-size: 8px; font-weight: 700; padding: 0 5px; border-radius: 999px; }
+  .l-gp { background: #FFE3EC; color: #D6407A; }
+  .l-lv { background: #E8F0FF; color: #3B6FD4; }
+  .l-tools { margin-left: auto; display: flex; gap: 5px; font-size: 13px; }
+  .l-text { font-family: var(--note); font-size: 11px; line-height: 1.65; }
+  .l-foot {
+    display: flex; align-items: center; gap: 6px; margin-top: 9px;
+    padding-top: 7px; border-top: 1px dashed #E0D8C2; font-size: 8.5px; color: #9A8E6E;
+  }
+  .l-tag { background: #F2ECD9; padding: 1px 6px; border-radius: 999px; font-weight: 700; }
+  .m-actions { display: flex; gap: 8px; margin-top: 12px; width: 218px; }
+  .m-btn { flex: 1; text-align: center; padding: 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+  .m-btn.ghost { background: rgba(255,255,255,.18); color: #fff; border: 1px solid rgba(255,255,255,.45); }
+  .m-btn.cta { background: linear-gradient(135deg, #FF8A7A, #FF5B4B); color: #fff; }
+
+  /* 状态机说明条 */
+  .state-strip { display: flex; gap: 20px; overflow-x: auto; padding: 4px 2px 16px; }
+  .state-item { flex: none; width: 300px; }
+  .state-cap { margin-top: 12px; }
+  .state-cap .k {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .state-cap .v { font-size: 13px; margin-top: 2px; }
+
+  /* 主题切换按钮 */
+  .theme-toggle {
+    font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+    background: var(--surface); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 999px; padding: 6px 14px; box-shadow: var(--shadow);
+  }
+  .theme-toggle:hover { border-color: var(--coral); color: var(--coral); }
+
+  :focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div>
+      <h1>Drift — MVP Wireframes</h1>
+      <p>漂流瓶 Flutter App 海外版，迭代 0 的五屏原型与接口标注。UI 文案为英文（spec 定 <code>en</code> 为默认 locale），标注为中文。</p>
+    </div>
+    <div class="meta">
+      <div><b>SPEC</b> 2026-09-14-flutter-app-overseas-design</div>
+      <div><b>ITERATION</b> 0 — MVP</div>
+      <div><b>SCREENS</b> 5 confirmed + 1 proposed</div>
+      <div><b>STATES</b> 4 animated · 12 keyframes</div>
+      <div><b>LOCALE</b> en (default) · zh</div>
+    </div>
+  </header>
+
+  <!-- ================= FLOW ================= -->
+  <section class="sec">
+    <div class="sec-head">
+      <h2>用户主流程</h2>
+      <span class="tag">navigation flow</span>
+      <span class="rule"></span>
+    </div>
+    <div class="flow-scroll">
+      <div class="flow">
+        <div class="flow-node"><div class="flow-card">
+          <div class="ico">✉️</div><div class="nm">Sign in</div><div class="id">S1</div>
+        </div></div>
+        <div class="arrow">→<small>token</small></div>
+        <div class="flow-node"><div class="flow-card">
+          <div class="ico">🌊</div><div class="nm">Home</div><div class="id">S2</div>
+        </div></div>
+        <div class="arrow">→<small>pick up</small></div>
+        <div class="flow-node"><div class="flow-card">
+          <div class="ico">🍾</div><div class="nm">Bottle</div><div class="id">S3</div>
+        </div></div>
+        <div class="arrow">→<small>−5 coins</small></div>
+        <div class="flow-node"><div class="flow-card">
+          <div class="ico">💬</div><div class="nm">Chat</div><div class="id">S4</div>
+        </div></div>
+        <div class="arrow">⇠<small>返回?</small></div>
+        <div class="flow-node"><div class="flow-card gap">
+          <div class="ico">📥</div><div class="nm">Chats</div><div class="id">S6 · 待确认</div>
+        </div></div>
+        <div class="arrow">·</div>
+        <div class="flow-node"><div class="flow-card">
+          <div class="ico">👤</div><div class="nm">Me</div><div class="id">S5</div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <b>⚠️ 画原型时发现的 spec 缺口</b>
+      <p>确认的五屏里没有<strong>会话列表</strong>。用户在 S3 开聊进入 S4，退出后就没有任何入口能回到这个会话——对话只能存在一次。下面 S6 是我补的方案，需要你确认：<strong>收进 MVP</strong>（多一屏），还是<strong>把会话列表并进 S2 首页</strong>（不加屏但首页变重）。</p>
+    </div>
+  </section>
+
+  <!-- ================= S1 ================= -->
+  <section class="sec">
+    <div class="sec-head">
+      <h2>屏幕详情</h2>
+      <span class="tag">screens &amp; annotations</span>
+      <span class="rule"></span>
+      <button class="theme-toggle" id="dayNight" type="button">🌙 切到白天</button>
+    </div>
+
+    <div class="row">
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span>▮▮▮ ▾</span></div>
+        <div class="body-area sea" style="display:flex;flex-direction:column;justify-content:center">
+          <div style="text-align:center;margin-bottom:22px">
+            <div style="font-size:40px">🍾</div>
+            <div style="font-weight:700;font-size:21px;letter-spacing:-.02em;margin-top:8px">Drift</div>
+            <div class="dim" style="margin-top:3px">Send a thought out to sea</div>
+          </div>
+          <div class="seg"><div class="on">Sign in</div><div>Sign up</div></div>
+          <div class="fld">Email</div>
+          <div class="fld">Password</div>
+          <div class="btn">Continue</div>
+          <div class="dim" style="text-align:center;margin-top:14px;line-height:1.5">
+            By continuing you agree to our<br>Terms &amp; Privacy Policy
+          </div>
+        </div>
+      </div></div>
+
+      <div class="notes">
+        <div class="screen-id">S1</div>
+        <h3>Sign in / Sign up</h3>
+        <p>单屏切换登录与注册，注册成功即登录直接进首页。MVP 不发验证邮件、不做找回密码。</p>
+        <dl class="spec">
+          <div class="spec"><dt>接口</dt><dd>
+            <code>POST /api/auth/email/register</code><br>
+            <code>POST /api/auth/email/login</code><br>
+            两者均带打包写死的 <code>appid</code> 用于定租户
+          </dd></div>
+          <div class="spec"><dt>状态</dt><dd>
+            <ul>
+              <li>提交中 — 按钮 loading，字段禁用</li>
+              <li><code>1001</code> 邮箱已注册 / 格式非法 → 字段下方红字</li>
+              <li><code>2002</code> 邮箱或密码错误 → 表单顶部提示</li>
+              <li><code>1004</code> 账号被封禁或已删除 → 提示联系客服</li>
+            </ul>
+          </dd></div>
+          <div class="spec"><dt>启动</dt><dd>
+            有 token → <code>GET /api/user/profile</code> 校验；401 清 token 回本屏
+          </dd></div>
+          <div class="spec"><dt>合规</dt><dd>
+            Terms / Privacy 链接必须可点 <span class="req">上架必需</span><br>
+            MVP 无第三方登录，<strong>不触发</strong> App Store 4.8 的 Apple 登录强制要求
+          </dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- ================= S2 ================= -->
+    <div class="row">
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span>▮▮▮ ▾</span></div>
+        <div class="ocean-screen night" data-ocean>
+          <div class="o-stars">
+            <div class="o-star" style="left:12%;top:14%;width:2px;height:2px;animation-delay:0s"></div>
+            <div class="o-star" style="left:28%;top:8%;width:3px;height:3px;animation-delay:.3s"></div>
+            <div class="o-star" style="left:44%;top:20%;width:2px;height:2px;animation-delay:.7s"></div>
+            <div class="o-star" style="left:63%;top:11%;width:2px;height:2px;animation-delay:.2s"></div>
+            <div class="o-star" style="left:78%;top:26%;width:3px;height:3px;animation-delay:.9s"></div>
+            <div class="o-star" style="left:88%;top:15%;width:2px;height:2px;animation-delay:.5s"></div>
+            <div class="o-star" style="left:18%;top:32%;width:2px;height:2px;animation-delay:1.1s"></div>
+            <div class="o-star" style="left:54%;top:35%;width:2px;height:2px;animation-delay:.6s"></div>
+            <div class="o-star" style="left:36%;top:28%;width:2px;height:2px;animation-delay:1.4s"></div>
+            <div class="o-star" style="left:70%;top:38%;width:2px;height:2px;animation-delay:.1s"></div>
+          </div>
+          <div class="o-sun"></div>
+
+          <div class="o-nav">
+            <span>≡ Filter</span>
+            <span class="o-title">DRIFT</span>
+            <span class="o-right"><span>•••</span><span class="o-me"></span></span>
+          </div>
+          <div class="o-hook">Today at sea · <b>56,208</b> replies</div>
+          <div class="o-nightbadge">🌙 Night session · only night owls will find it</div>
+
+          <div class="o-cap invite">🎁<span>Invite<br>friends</span></div>
+          <div class="o-cap linkmp">🚀<span>More<br>fun</span></div>
+
+          <div class="o-scene">
+            <div class="o-island"></div>
+            <div class="o-hill"></div>
+            <div class="o-lighthouse">
+              <div class="o-beam"></div>
+              <div class="o-lamp"></div>
+              <div class="o-tower"></div>
+              <div class="o-base"></div>
+            </div>
+          </div>
+
+          <div class="o-sea">
+            <div class="o-bottle" style="left:8%;top:14px;animation-delay:0s">
+              <div class="o-bimg">🍾</div><span class="o-num">3</span>
+            </div>
+            <div class="o-bottle" style="left:38%;top:44px;animation-delay:-1.2s">
+              <div class="o-bimg">🍾</div>
+            </div>
+            <div class="o-bottle" style="left:66%;top:8px;animation-delay:-2.4s">
+              <div class="o-bimg">🍾</div><span class="o-num">7</span>
+            </div>
+            <div class="o-bottle" style="left:22%;top:76px;animation-delay:-3.1s">
+              <div class="o-bimg">🍾</div>
+            </div>
+            <div class="o-bottle" style="left:78%;top:64px;animation-delay:-1.8s">
+              <div class="o-bimg">🍾</div><span class="o-num">1</span>
+            </div>
+          </div>
+
+          <div class="o-beach">
+            <div class="o-act">
+              <span class="o-qbadge">7 left</span>
+              <div class="o-ic">🍾</div><div class="o-lb">Throw</div>
+            </div>
+            <div class="o-act big">
+              <span class="o-qbadge">12 left</span>
+              <div class="o-ic">🎣</div><div class="o-lb">Pick up</div>
+            </div>
+            <div class="o-act">
+              <div class="o-ic">🪣</div><div class="o-lb">My bottles</div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="on"><span class="g">🌊</span>Home</div>
+          <div><span class="g">💬</span>Chats</div>
+          <div><span class="g">👤</span>Me</div>
+        </div>
+      </div></div>
+
+      <div class="notes">
+        <div class="screen-id">S2</div>
+        <h3>Home <span class="req">照搬小程序</span></h3>
+        <p>1:1 复刻 <code>client/src/pages/ocean/ocean.vue</code> 的场景与动画：昼夜渐变天空、星空闪烁、灯塔光束、漂浮瓶子、沙滩三件事。上方原型的动画<strong>正在实时运行</strong>，点右上角按钮可切换昼夜。</p>
+        <dl class="spec">
+          <div class="spec"><dt>层级</dt><dd>
+            天空渐变 → 星空/日月 <code>z0</code> → 灯塔场景 <code>z1</code> → 海面瓶子 <code>z2</code> → 沙滩三件事 <code>z4</code> → 导航/钩子 <code>z5</code> → 悬浮胶囊 <code>z6</code> → 弹层 <code>z20</code>
+          </dd></div>
+          <div class="spec"><dt>接口</dt><dd>
+            <code>POST /api/bottle/throw</code> 扔瓶<br>
+            <code>GET /api/bottle/scoop</code> 捞瓶（Redis feed，后端零改动）<br>
+            <code>GET /api/hook-count</code> 情绪钩子计数<br>
+            <code>GET /api/features</code> 深夜场时段 <code>night_start/night_end</code>
+          </dd></div>
+          <div class="spec"><dt>昼夜</dt><dd>
+            小程序按 <code>theme</code> 切换，手动 <code>•••</code> 可切。天空、星空、日月、灯塔光束、岛屿配色、三件事按钮底色全部联动
+          </dd></div>
+          <div class="spec"><dt>状态</dt><dd>
+            <ul>
+              <li>捞瓶中 → 全屏打捞动画（见下方状态 A）</li>
+              <li>空捞 → 文案提示，次数自动退回</li>
+              <li><code>3003</code> 次数用完 → 弹框，MVP 无次数包可买</li>
+              <li>深夜场时段内显示 🌙 徽标，仅夜间可见</li>
+            </ul>
+          </dd></div>
+          <div class="spec"><dt>MVP 取舍</dt><dd>
+            <strong>保留</strong>：场景全动画、筛选、深夜瓶、我的瓶子<br>
+            <strong>去掉</strong>：邀请胶囊（分享奖励 MVP 不做）、关联小程序胶囊（App 端无意义）—— 原型中保留是为了展示原版布局
+          </dd></div>
+          <div class="spec"><dt>i18n</dt><dd>
+            导航标题 <code>ui_text_nav_title.en</code>，未配置时回退中文键
+          </dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- ================= S3 ================= -->
+    <div class="row">
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span>▮▮▮ ▾</span></div>
+        <div class="navbar">
+          <div style="color:var(--muted)">‹</div>
+          <div class="t">Bottle</div><div class="sp"></div>
+          <div style="color:var(--muted)">⋯</div>
+        </div>
+        <div class="body-area">
+          <div class="card">
+            <div><span class="chip">♀ 24</span><span class="chip">Anonymous</span></div>
+            <div class="note-body">Been staring at the ceiling for an hour. Anyone else awake out there?</div>
+            <div class="dim">2h ago · picked up 14 times</div>
+          </div>
+          <div class="dim" style="margin:12px 0 7px">Replies · 3</div>
+          <div class="locked">
+            <div style="color:var(--muted)">Mmm I kno***********</div>
+            <div style="display:flex;align-items:center;margin-top:7px">
+              <span class="dim grow">Unlock to read</span>
+              <span class="chip coin">Unlock ◎ 2</span>
+            </div>
+          </div>
+          <div class="locked">
+            <div style="color:var(--muted)">Same here, it***********</div>
+            <div style="display:flex;align-items:center;margin-top:7px">
+              <span class="dim grow">Unlock to read</span>
+              <span class="chip coin">Unlock ◎ 2</span>
+            </div>
+          </div>
+        </div>
+        <div class="inputbar">
+          <div class="fld">Write a reply…</div>
+          <div class="send">Send</div>
+        </div>
+      </div></div>
+
+      <div class="notes">
+        <div class="screen-id">S3</div>
+        <h3>Bottle detail</h3>
+        <p>读瓶、回信、解锁他人回信、发起聊天。<strong>举报与拉黑入口在此屏，是上架硬性要求</strong>，放在右上 ⋯ 菜单。</p>
+        <dl class="spec">
+          <div class="spec"><dt>接口</dt><dd>
+            <code>GET /api/bottle/:id</code> 详情<br>
+            <code>POST /api/bottle/reply</code> 回信<br>
+            <code>POST /api/bottle/unlock</code> 解锁 <span class="chip coin">−2</span><br>
+            <code>POST /api/chat/start</code> 开聊 <span class="chip coin">−5</span><br>
+            <code>POST /api/report</code> · <code>POST /api/block</code>
+          </dd></div>
+          <div class="spec"><dt>脱敏</dt><dd>
+            未解锁回信按 <code>reply_mask_len</code>（默认 3）显示前 N 字，其余打码——沿用现有后端逻辑
+          </dd></div>
+          <div class="spec"><dt>状态</dt><dd>
+            <ul>
+              <li><code>5001</code> 金币不足 → MVP <strong>无充值入口</strong>，只提示余额不足</li>
+              <li><code>3001</code> 瓶子已过期 → 返回首页</li>
+              <li><code>3002</code> 回信命中敏感词 → 红字提示改后再发</li>
+            </ul>
+          </dd></div>
+          <div class="spec"><dt>合规</dt><dd>
+            ⋯ 菜单含 Report / Block <span class="req">上架必需</span><br>
+            对应 App Store 审核指南 1.2 UGC 要求
+          </dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- ================= S4 ================= -->
+    <div class="row">
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span>▮▮▮ ▾</span></div>
+        <div class="navbar">
+          <div style="color:var(--muted)">‹</div>
+          <div class="av sm"></div>
+          <div>
+            <div class="t" style="font-size:13px">Quiet Harbor</div>
+            <div class="dim" style="font-size:9.5px;color:var(--ok)">● online</div>
+          </div>
+          <div class="sp"></div>
+          <div style="color:var(--muted)">⋯</div>
+        </div>
+        <div class="body-area" style="display:flex;flex-direction:column">
+          <div class="sysline">Started from a drifting bottle · be kind</div>
+          <div class="bub them">I'm awake. The ceiling is undefeated tonight.</div>
+          <div class="bub me">Ha. Mine has a crack shaped like Italy.</div>
+          <div class="bub them">Send a photo, I need to see this.</div>
+          <div style="margin-top:auto;display:flex;gap:5px;flex-wrap:wrap">
+            <span class="chip">I get you</span>
+            <span class="chip">Tell me more</span>
+            <span class="chip">Same here</span>
+          </div>
+        </div>
+        <div class="inputbar">
+          <div style="color:var(--muted);font-size:16px">＋</div>
+          <div class="fld">Message</div>
+          <div class="send">Send</div>
+        </div>
+      </div></div>
+
+      <div class="notes">
+        <div class="screen-id">S4</div>
+        <h3>Chat</h3>
+        <p>一对一会话。WebSocket 实时收消息，<strong>复用现有 <code>/ws</code>，后端零改动</strong>。</p>
+        <dl class="spec">
+          <div class="spec"><dt>接口</dt><dd>
+            <code>GET /api/chat/:id/messages</code> 历史<br>
+            <code>POST /api/chat/send</code> 发送<br>
+            <code>WSS /message/ws?token=&lt;JWT&gt;</code> 实时
+          </dd></div>
+          <div class="spec"><dt>连接</dt><dd>
+            <ul>
+              <li>前后台切换：进后台断开，回前台重连</li>
+              <li>重连用指数退避，成功后拉增量补齐断线期消息</li>
+              <li>顶部横幅文案取 <code>ui_text_chat_banner.en</code></li>
+              <li>快捷回复取 <code>chat_quicks.en</code>（逗号分隔）</li>
+            </ul>
+          </dd></div>
+          <div class="spec"><dt>状态</dt><dd>
+            <code>4001</code> 被拉黑 → 输入框禁用并提示<br>
+            <code>price_msg</code> 默认 0，MVP <strong>每条消息不扣费</strong>
+          </dd></div>
+          <div class="spec"><dt>合规</dt><dd>
+            ⋯ 菜单含 Report / Block <span class="req">上架必需</span>
+          </dd></div>
+          <div class="spec"><dt>风险</dt><dd>
+            <strong>R1</strong> — 后端在国内节点，海外 WSS 长连接稳定性未验证，需真实海外网络实测
+          </dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- ================= S5 ================= -->
+    <div class="row">
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span>▮▮▮ ▾</span></div>
+        <div class="navbar"><div class="t">Me</div></div>
+        <div class="body-area">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px">
+            <div class="av" style="width:48px;height:48px"></div>
+            <div class="grow">
+              <div style="font-weight:650;font-size:15px">Quiet Harbor</div>
+              <div class="dim" style="font-family:var(--mono)">ID 100249173</div>
+            </div>
+            <div style="color:var(--muted)">›</div>
+          </div>
+          <div class="card" style="display:flex;align-items:center">
+            <div class="grow"><div class="dim">Balance</div>
+              <div style="font-weight:650;font-size:17px;font-family:var(--mono)">◎ 43</div></div>
+            <span class="chip">Daily check-in</span>
+          </div>
+          <div class="card" style="padding:0 12px">
+            <div class="rowline"><div class="grow">Edit profile</div><div class="dim">›</div></div>
+            <div class="rowline"><div class="grow">Language</div><div class="dim">English ›</div></div>
+            <div class="rowline"><div class="grow">Contact us</div><div class="dim">›</div></div>
+            <div class="rowline"><div class="grow">Terms &amp; Privacy</div><div class="dim">›</div></div>
+          </div>
+          <div class="card" style="padding:0 12px">
+            <div class="rowline"><div class="grow">Sign out</div><div class="dim">›</div></div>
+            <div class="rowline"><div class="btn danger grow">Delete account</div></div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div><span class="g">🌊</span>Home</div>
+          <div><span class="g">💬</span>Chats</div>
+          <div class="on"><span class="g">👤</span>Me</div>
+        </div>
+      </div></div>
+
+      <div class="notes">
+        <div class="screen-id">S5</div>
+        <h3>Me</h3>
+        <p>资料、余额、设置。<strong>Delete account 是 Apple 强制要求</strong>，必须在 App 内可完成，不能只留邮箱联系方式。</p>
+        <dl class="spec">
+          <div class="spec"><dt>接口</dt><dd>
+            <code>GET /api/user/profile</code><br>
+            <code>POST /api/user/update</code> 改资料<br>
+            <code>GET /api/wallet/balance</code><br>
+            <code>DELETE /api/user/account</code> <span class="req">新增</span>
+          </dd></div>
+          <div class="spec"><dt>删除流程</dt><dd>
+            <ul>
+              <li>二次确认弹框，说明后果不可逆</li>
+              <li>后端匿名化：清 PII、<code>Status=deleted</code>、释放邮箱可重注册</li>
+              <li>保留钱包流水与订单（审计需要，已与自然人解绑）</li>
+              <li>客户端清 token 回 S1</li>
+            </ul>
+          </dd></div>
+          <div class="spec"><dt>合规</dt><dd>
+            Delete account <span class="req">上架必需</span> App Store 5.1.1(v)<br>
+            Contact us <span class="req">上架必需</span> 1.2 要求提供开发者联系方式
+          </dd></div>
+          <div class="spec"><dt>说明</dt><dd>
+            Daily check-in 是否放入 MVP 待定（spec §十一 第 3 项）——不放则用户金币耗尽后无法再开聊
+          </dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- ================= S6 ================= -->
+    <div class="row">
+      <div class="phone" style="outline:2px dashed var(--warn);outline-offset:6px"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span>▮▮▮ ▾</span></div>
+        <div class="navbar"><div class="t">Chats</div></div>
+        <div class="body-area" style="padding:6px 14px">
+          <div class="rowline">
+            <div class="av"></div>
+            <div class="grow">
+              <div style="display:flex"><div class="grow" style="font-weight:600">Quiet Harbor</div>
+                <div class="dim">09:12</div></div>
+              <div class="dim ell">Send a photo, I need to see this.</div>
+            </div>
+            <span class="badge">2</span>
+          </div>
+          <div class="rowline">
+            <div class="av"></div>
+            <div class="grow">
+              <div style="display:flex"><div class="grow" style="font-weight:600">Paper Lantern</div>
+                <div class="dim">Yesterday</div></div>
+              <div class="dim ell">thanks for listening earlier 🫧</div>
+            </div>
+          </div>
+          <div class="rowline">
+            <div class="av"></div>
+            <div class="grow">
+              <div style="display:flex"><div class="grow" style="font-weight:600">低音潮汐</div>
+                <div class="dim">Mon</div></div>
+              <div class="dim ell">You: I'll write back tomorrow</div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div><span class="g">🌊</span>Home</div>
+          <div class="on"><span class="g">💬</span>Chats</div>
+          <div><span class="g">👤</span>Me</div>
+        </div>
+      </div></div>
+
+      <div class="notes">
+        <div class="screen-id">S6 · 待确认</div>
+        <h3>Chats <span class="req">spec 缺口</span></h3>
+        <p>会话列表。<strong>不在已确认的五屏内</strong>，是我画原型时发现的缺口——没有它，用户退出聊天后永远回不到该会话。</p>
+        <dl class="spec">
+          <div class="spec"><dt>接口</dt><dd>
+            <code>GET /api/chat/list</code> —— 后端已有 <code>ListChatsWithPartner</code>，<strong>无需新增</strong>
+          </dd></div>
+          <div class="spec"><dt>成本</dt><dd>
+            前端一屏（列表 + 未读角标）；后端零改动。约占 MVP 前端工作量 8–10%
+          </dd></div>
+          <div class="spec"><dt>替代方案</dt><dd>
+            把会话列表并入 S2 首页下半部分，Tab 减为 Home / Me 两项。不加屏，但首页职责变重
+          </dd></div>
+          <div class="spec"><dt>需决策</dt><dd>
+            <strong>收进 MVP</strong> / <strong>并入首页</strong> / <strong>不做</strong>（接受会话不可回访）
+          </dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HOME STATES ================= -->
+  <section class="sec">
+    <div class="sec-head">
+      <h2>首页交互状态</h2>
+      <span class="tag">S2 · interaction states</span>
+      <span class="rule"></span>
+    </div>
+    <p style="margin:-8px 0 20px;color:var(--ink-2);max-width:68ch">
+      首页不是静态页，四个状态各带一段完整动画。以下四屏的动画同样在实时运行，可直接对照实现。
+    </p>
+
+    <div class="state-strip">
+
+      <!-- A 打捞 -->
+      <div class="state-item">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>9:41</span><span>▮▮▮ ▾</span></div>
+          <div class="ocean-screen night">
+            <div class="o-scene"><div class="o-island"></div><div class="o-hill"></div>
+              <div class="o-lighthouse"><div class="o-beam"></div><div class="o-lamp"></div>
+                <div class="o-tower"></div><div class="o-base"></div></div></div>
+            <div class="o-overlay">
+              <div class="sf-stage">
+                <span class="sf-ripple r1"></span>
+                <span class="sf-ripple r2"></span>
+                <span class="sf-ripple r3"></span>
+                <span class="sf-hook">🎣</span>
+                <span class="sf-rise">🍾</span>
+              </div>
+              <div class="sf-tip">Reeling in a bottle<span class="dot">…</span></div>
+            </div>
+          </div>
+          <div class="tabbar"><div class="on"><span class="g">🌊</span>Home</div>
+            <div><span class="g">💬</span>Chats</div><div><span class="g">👤</span>Me</div></div>
+        </div></div>
+        <div class="state-cap">
+          <div class="k">State A · scooping</div>
+          <div class="v">三层涟漪错峰扩散 + 钩子抛投 + 瓶子上浮，循环至接口返回</div>
+        </div>
+      </div>
+
+      <!-- B 写纸条 -->
+      <div class="state-item">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>9:41</span><span>▮▮▮ ▾</span></div>
+          <div class="ocean-screen night">
+            <div class="o-overlay">
+              <div class="c-paper">
+                <div class="c-clip">📎</div>
+                <div class="c-hd">Write a drifting note</div>
+                <div class="c-ta">What's on your mind tonight? Nobody here knows you — but someone will understand.</div>
+                <div class="c-tags">
+                  <span class="c-tg on">#latenight</span><span class="c-tg">#lonely</span>
+                  <span class="c-tg">#music</span><span class="c-tg">#work</span>
+                </div>
+                <div class="c-opt"><span>🌙 Night bottle</span><span class="c-sw"></span></div>
+                <div class="c-opt"><span>Anonymous</span><span class="c-sw"></span>
+                  <span class="c-count">0/500</span></div>
+                <div class="c-send">📜 Seal &amp; cast away</div>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar"><div class="on"><span class="g">🌊</span>Home</div>
+            <div><span class="g">💬</span>Chats</div><div><span class="g">👤</span>Me</div></div>
+        </div></div>
+        <div class="state-cap">
+          <div class="k">State B · compose</div>
+          <div class="v">横线信纸质感、标签多选、深夜瓶与匿名开关、500 字计数</div>
+        </div>
+      </div>
+
+      <!-- C 投海 -->
+      <div class="state-item">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>9:41</span><span>▮▮▮ ▾</span></div>
+          <div class="ocean-screen night">
+            <div class="o-overlay">
+              <div class="c-story">
+                <span class="story-bottle">🍾</span>
+                <span class="story-splash">💦</span>
+                <div class="c-tip">Throwing it out to sea…</div>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar"><div class="on"><span class="g">🌊</span>Home</div>
+            <div><span class="g">💬</span>Chats</div><div><span class="g">👤</span>Me</div></div>
+        </div></div>
+        <div class="state-cap">
+          <div class="k">State C · seal &amp; toss</div>
+          <div class="v">三段式：纸条卷起 → 塞进瓶子摇晃 → 抛物线投海溅起水花</div>
+        </div>
+      </div>
+
+      <!-- D 信纸 -->
+      <div class="state-item">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>9:41</span><span>▮▮▮ ▾</span></div>
+          <div class="ocean-screen night">
+            <div class="o-overlay">
+              <div class="letter-wrap">
+                <div class="paper-bg b1"></div>
+                <div class="paper-bg b2"></div>
+                <div class="letter">
+                  <div class="l-head">
+                    <span class="av sm"></span>
+                    <div>
+                      <div class="l-name">Someone out there</div>
+                      <div class="l-meta"><span class="l-gp">♀ 24</span><span class="l-lv">Lv 3</span></div>
+                    </div>
+                    <div class="l-tools">⭐ ↗</div>
+                  </div>
+                  <div class="l-text">Been staring at the ceiling for an hour. Anyone else awake out there?</div>
+                  <div class="l-foot">
+                    <span>2h ago · Faraway</span>
+                    <span class="l-tag">🌙 Night</span>
+                  </div>
+                </div>
+              </div>
+              <div class="m-actions">
+                <div class="m-btn ghost">Another one</div>
+                <div class="m-btn cta">Open</div>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar"><div class="on"><span class="g">🌊</span>Home</div>
+            <div><span class="g">💬</span>Chats</div><div><span class="g">👤</span>Me</div></div>
+        </div></div>
+        <div class="state-cap">
+          <div class="k">State D · bottle opened</div>
+          <div class="v">三层错位纸张 + 衬线正文 + 收藏/转发；「Open」跳 S3 详情</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= ANIMATION INVENTORY ================= -->
+  <section class="sec">
+    <div class="sec-head">
+      <h2>动画清单与 Flutter 实现对照</h2>
+      <span class="tag">animation spec</span>
+      <span class="rule"></span>
+    </div>
+    <p style="margin:-8px 0 20px;color:var(--ink-2);max-width:68ch">
+      左侧参数直接取自 <code>ocean.vue</code> 的 <code>@keyframes</code>，实现时照抄时长与缓动即可保证与小程序观感一致。
+    </p>
+    <div class="tbl-scroll">
+      <table>
+        <thead>
+          <tr><th>动画</th><th>时长 / 缓动</th><th>作用对象</th><th>Flutter 实现</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>bob</code></td><td>4.5s ease-in-out ∞</td><td>海面漂浮瓶子</td>
+            <td><code>AnimationController(repeat: reverse)</code> + translateY(−6px) / rotate(±2°)，每个瓶子错开 delay</td></tr>
+          <tr><td><code>blink</code></td><td>1.2s steps(3) ∞</td><td>星星、加载省略号</td>
+            <td>共用一个 controller，各元素用不同 <code>Interval</code> 相位</td></tr>
+          <tr><td><code>beam</code> <span class="req">增强</span></td><td>6s ease-in-out ∞</td><td>灯塔光束</td>
+            <td><code>Transform.rotate</code>。原版是静态 −6°，此处改为扫动——<strong>属超出小程序的增强</strong></td></tr>
+          <tr><td><code>lamp</code> <span class="req">增强</span></td><td>3.2s ease-in-out ∞</td><td>灯塔灯</td>
+            <td><code>BoxShadow</code> 模糊半径插值，做呼吸感。同为增强项</td></tr>
+          <tr><td><code>ripple</code></td><td>1.6s ease-out ∞ ×3<br>delay 0 / .5s / 1s</td><td>打捞涟漪</td>
+            <td><code>CustomPainter</code> 画三个圆，或三个 <code>ScaleTransition</code> 配 <code>Interval</code></td></tr>
+          <tr><td><code>cast</code></td><td>1.6s ease-in-out ∞</td><td>打捞钩子</td>
+            <td><code>TweenSequence</code>：translateY −16→59→−16，同步 rotate −8°→6°</td></tr>
+          <tr><td><code>rise</code></td><td>1.6s ease-in-out ∞</td><td>打捞上浮的瓶子</td>
+            <td>与 <code>cast</code> <strong>共用同一 controller</strong>，用 <code>Interval(0.5, 1.0)</code> 延后入场</td></tr>
+          <tr><td><code>curl</code></td><td>0.75s ease-in</td><td>纸条卷起</td>
+            <td><code>AnimatedContainer</code> 插值宽 300→52、高 200→120、圆角 10→999</td></tr>
+          <tr><td><code>intoBottle</code></td><td>0.6s ease-in forwards</td><td>纸条塞进瓶子</td>
+            <td><code>Matrix4</code> 复合 translate(116,40) + rotate(40°) + scale(0.25) + 淡出</td></tr>
+          <tr><td><code>wiggle</code></td><td>0.6s ease</td><td>瓶子摇晃</td>
+            <td><code>RotationTransition</code> ±6°，中点 scale 1.05</td></tr>
+          <tr><td><code>toss</code></td><td>1s cubic-bezier(.4,0,.7,1)</td><td>投海抛物线</td>
+            <td><code>Path</code> + <code>PathMetric</code> 沿轨迹取点，或 <code>TweenSequence</code> 分三段；含 400° 旋转与 scale 1.05→0.45</td></tr>
+          <tr><td><code>splash</code></td><td>0.7s ease-out<br>delay 0.85s</td><td>入水水花</td>
+            <td>接在 <code>toss</code> 之后，用同一 controller 的 <code>Interval(0.85, 1.0)</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <b>需要修订 spec 的依赖清单</b>
+      <p>设计文档 §4.3 的依赖表里没有动画库。以上 12 段动画中，<code>toss</code> 的贝塞尔路径与 <code>curl</code> 的多属性插值用纯 <code>AnimationController</code> 写会相当啰嗦。建议补一个 <code>flutter_animate</code>——声明式链式写法，能把这批动画的代码量压下来一大截。要不要加进依赖表，你定。</p>
+    </div>
+  </section>
+
+  <!-- ================= COMPLIANCE ================= -->
+  <section class="sec">
+    <div class="sec-head">
+      <h2>上架要求在原型中的落点</h2>
+      <span class="tag">compliance mapping</span>
+      <span class="rule"></span>
+    </div>
+    <div class="tbl-scroll">
+      <table>
+        <thead>
+          <tr><th>要求</th><th>来源</th><th>落在哪一屏</th><th>状态</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>App 内账号删除</td><td>App Store 5.1.1(v)</td><td>S5 Delete account</td><td>✅ 已设计</td></tr>
+          <tr><td>举报 UGC</td><td>App Store 1.2</td><td>S3 / S4 的 ⋯ 菜单</td><td>✅ 已设计</td></tr>
+          <tr><td>拉黑用户</td><td>App Store 1.2</td><td>S3 / S4 的 ⋯ 菜单</td><td>✅ 已设计</td></tr>
+          <tr><td>开发者联系方式</td><td>App Store 1.2</td><td>S5 Contact us</td><td>✅ 已设计</td></tr>
+          <tr><td>内容过滤</td><td>App Store 1.2</td><td>后端本地词库（无 UI）</td><td>✅ 已有</td></tr>
+          <tr><td>隐私政策链接</td><td>双平台</td><td>S1 底部 · S5 菜单</td><td>⚠️ 文档待产出</td></tr>
+          <tr><td>Sign in with Apple</td><td>App Store 4.8</td><td>—</td><td>✅ MVP 无三方登录，不触发</td></tr>
+          <tr><td>年龄分级 17+</td><td>App Store</td><td>—</td><td>⚠️ 提审时填写</td></tr>
+          <tr><td>Data Safety 表单</td><td>Google Play</td><td>—</td><td>⚠️ 待填写</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= OPEN ================= -->
+  <section class="sec">
+    <div class="sec-head">
+      <h2>待你决策</h2>
+      <span class="tag">open questions</span>
+      <span class="rule"></span>
+    </div>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>#</th><th>问题</th><th>不决策的后果</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>S6 会话列表：收进 MVP / 并入首页 / 不做</td><td>用户退出聊天后无法回到会话，体验断裂</td></tr>
+          <tr><td>2</td><td>App 与小程序是否共用同一 <code>tenant_id</code></td><td>决定 App 冷启动时海里有没有瓶子（spec §十一 第 5 项，优先级最高）</td></tr>
+          <tr><td>3</td><td>签到入口是否放入 MVP</td><td>金币耗尽后用户无法再开聊（风险 R4）</td></tr>
+          <tr><td>4</td><td>App 显示名定什么</td><td>原型暂用 “Drift”，涉及商标与应用市场名称占用</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="foot">
+    配色沿用小程序现有品牌色（<code>#DCEFF2</code> 海面 / <code>#FF6B5B</code> 珊瑚强调 / <code>#9DBDC8</code> 雾蓝），保证 App 与小程序观感连续。<br>
+    S2 首页场景与全部动画参数 1:1 取自 <code>client/src/pages/ocean/ocean.vue</code>；其余屏为布局与信息层级示意，非像素级视觉稿。<br>
+    源文件 <code>docs/prototype/mvp-screens.html</code> · 设计文档 <code>docs/superpowers/specs/2026-09-14-flutter-app-overseas-design.md</code>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('dayNight');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var toDay = document.querySelector('.ocean-screen.night') !== null;
+      document.querySelectorAll('.ocean-screen').forEach(function (el) {
+        el.classList.toggle('night', !toDay);
+        el.classList.toggle('day', toDay);
+      });
+      btn.textContent = toDay ? '☀️ 切到夜晚' : '🌙 切到白天';
+    });
+  })();
+</script>

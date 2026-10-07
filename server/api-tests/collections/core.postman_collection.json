@@ -1,0 +1,1704 @@
+{
+  "info": {
+    "name": "core",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "漂流瓶核心链路接口回归(登录→扔/捞瓶→回信/解锁→开聊→充值→风控)。成功判定 code===0;鉴权失败 HTTP401+code2001。"
+  },
+  "item": [
+    {
+      "name": "00 准备(登录双用户)",
+      "description": "核心链路前置:登录瓶主 A 与回信方 B,捕获 token/uid。code 带 runId 每次跑测生成全新用户(注册各送 50 金币),保证余额断言确定。",
+      "item": [
+        {
+          "name": "登录用户A(瓶主)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"platform\": \"wx\",\n  \"code\": \"apiA_{{runId}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "const d = pm.response.json().data;",
+                  "pm.test('返回 token', () => pm.expect(d.token).to.be.a('string').and.not.empty);",
+                  "pm.test('user_id 为字符串(无精度丢失)', () => pm.expect(d.user.user_id).to.be.a('string'));",
+                  "pm.collectionVariables.set('tokenA', d.token);",
+                  "pm.collectionVariables.set('uidA', d.user.user_id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "登录用户B(回信方)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"platform\": \"wx\",\n  \"code\": \"apiB_{{runId}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "const d = pm.response.json().data;",
+                  "pm.collectionVariables.set('tokenB', d.token);",
+                  "pm.collectionVariables.set('uidB', d.user.user_id);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 用户 / 鉴权",
+      "description": "\n| 类别 | 用例 | 预期 |\n|------|------|------|\n| 1 正常 | 取我的资料 | code=0, user_id=uidA |\n| 2 鉴权 | 无 token 取资料 | HTTP401, code=2001 |\n| 3 参数非法 | 登录缺 code | code=1001 |\n| 4 业务规则 | N/A: 登录无显式业务规则失败分支 | — |\n| 5 边界 | N/A: 登录无数值/长度边界 | — |\n| 6 幂等 | 同 code 重复登录返回同用户 | code=0, is_new=false, user_id=uidA |\n",
+      "item": [
+        {
+          "name": "[正常] 取我的资料",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "profile"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "pm.test('user_id 与登录一致', () => pm.expect(pm.response.json().data.user_id).to.eql(pm.collectionVariables.get('uidA')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[鉴权] 无 token 取资料",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "profile"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401', () => pm.response.to.have.status(401));",
+                  "pm.test('业务码 2001 未登录', () => { pm.expect(pm.response.json().code).to.eql(2001); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[参数非法] 登录缺 code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"platform\": \"wx\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('业务错误码 = 1001', () => { pm.expect(pm.response.json().code).to.eql(1001); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[幂等] 同 code 重复登录",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"platform\": \"wx\",\n  \"code\": \"apiA_{{runId}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "const d = pm.response.json().data;",
+                  "pm.test('返回同一用户', () => pm.expect(d.user.user_id).to.eql(pm.collectionVariables.get('uidA')));",
+                  "pm.test('is_new=false', () => pm.expect(d.is_new).to.eql(false));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 漂流瓶",
+      "description": "\n| 类别 | 用例 | 预期 |\n|------|------|------|\n| 1 正常 | A 扔瓶 | code=0, 返回 bottle_id |\n| 2 鉴权 | 无 token 扔瓶 | HTTP401 |\n| 3 参数非法 | 扔空内容 | code=1001, msg 含「空」 |\n| 4 业务规则 | 详情查不存在的瓶子 | code=1005 |\n| 5 边界 | 超长内容(2000字)仍成功 | code=0 |\n| 6 幂等 | N/A: 扔瓶为创建操作,每次新建非幂等 | — |\n",
+      "item": [
+        {
+          "name": "[正常] 扔瓶(A)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bottle/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bottle",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"凌晨三点又醒了,有人也睡不着吗\",\n  \"tags\": [\n    \"失眠\",\n    \"情感\"\n  ],\n  \"is_anonymous\": true,\n  \"scope\": \"national\",\n  \"visibility\": \"7d\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "const d = pm.response.json().data;",
+                  "pm.test('bottle_id 为字符串', () => pm.expect(d.bottle_id).to.be.a('string'));",
+                  "pm.collectionVariables.set('bottleId', d.bottle_id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[鉴权] 无 token 扔瓶",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bottle/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bottle",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"x\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401', () => pm.response.to.have.status(401));",
+                  "pm.test('业务码 2001 未登录', () => { pm.expect(pm.response.json().code).to.eql(2001); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[参数非法] 扔空内容",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bottle/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bottle",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"\",\n  \"tags\": []\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('业务错误码 = 1001', () => { pm.expect(pm.response.json().code).to.eql(1001); });",
+                  "pm.test('msg 含「空」', () => { pm.expect(pm.response.json().msg || '').to.include('空'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[边界] 超长内容仍成功",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bottle/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bottle",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长\",\n  \"tags\": [\n    \"吐槽\"\n  ],\n  \"is_anonymous\": true,\n  \"scope\": \"national\",\n  \"visibility\": \"24h\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[正常] 捞瓶(B)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenB}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bottle/scoop",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bottle",
+                "scoop"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "pm.test('data 是数组', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[正常] 瓶子详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenB}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bottle/{{bottleId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bottle",
+                "{{bottleId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "pm.test('bottle_id 匹配', () => pm.expect(pm.response.json().data.bottle_id).to.eql(pm.collectionVariables.get('bottleId')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[业务] 详情不存在",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenB}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bottle/999999999999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bottle",
+                "999999999999999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('业务错误码 = 1005', () => { pm.expect(pm.response.json().code).to.eql(1005); });",
+                  "pm.test('msg 含「不存在」', () => { pm.expect(pm.response.json().msg || '').to.include('不存在'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 回信 / 解锁(付费点)",
+      "description": "\n| 类别 | 用例 | 预期 |\n|------|------|------|\n| 1 正常 | B 回信 A 的瓶子 | code=0, 返回 reply_id |\n| 2 鉴权 | 非瓶主(B)解锁 A 的回信 | code=1004 越权 |\n| 3 参数非法 | 回信空内容 | code=1001 |\n| 4 业务规则 | A 查回信应 locked、内容隐藏 | locked=true, content='' |\n| 5 边界 | N/A: 解锁价格固定,无边界 | — |\n| 6 幂等 | A 重复解锁同回信不再扣费 | code=0, 返回相同 content |\n",
+      "item": [
+        {
+          "name": "[正常] B 回信 A 的瓶子",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenB}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bottle/{{bottleId}}/reply",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bottle",
+                "{{bottleId}}",
+                "reply"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"抱抱,我也常常这样\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "pm.collectionVariables.set('replyId', pm.response.json().data.reply_id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[参数非法] 回信空内容",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenB}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bottle/{{bottleId}}/reply",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bottle",
+                "{{bottleId}}",
+                "reply"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('业务错误码 = 1001', () => { pm.expect(pm.response.json().code).to.eql(1001); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[业务] A 查回信应 locked",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bottle/{{bottleId}}/replies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bottle",
+                "{{bottleId}}",
+                "replies"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "const arr = pm.response.json().data;",
+                  "pm.test('至少一条回信', () => pm.expect(arr.length).to.be.above(0));",
+                  "pm.test('未解锁则 locked 且内容隐藏', () => { pm.expect(arr[0].locked).to.eql(true); pm.expect(arr[0].content).to.eql(''); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[鉴权] 非瓶主解锁(B)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenB}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bottle/reply/{{replyId}}/unlock",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bottle",
+                "reply",
+                "{{replyId}}",
+                "unlock"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('业务错误码 = 1004', () => { pm.expect(pm.response.json().code).to.eql(1004); });",
+                  "pm.test('msg 含「自己」', () => { pm.expect(pm.response.json().msg || '').to.include('自己'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[正常] A 解锁回信(扣2金币)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bottle/reply/{{replyId}}/unlock",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bottle",
+                "reply",
+                "{{replyId}}",
+                "unlock"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "pm.test('返回回信内容', () => pm.expect(pm.response.json().data.content).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[幂等] A 重复解锁不再扣费",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bottle/reply/{{replyId}}/unlock",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bottle",
+                "reply",
+                "{{replyId}}",
+                "unlock"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "pm.test('仍返回内容', () => pm.expect(pm.response.json().data.content).to.not.be.empty);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 聊天(开聊扣币)",
+      "description": "\n| 类别 | 用例 | 预期 |\n|------|------|------|\n| 1 正常 | A 开聊 B | code=0, 返回 chat_id |\n| 2 鉴权 | 无 token 开聊 | HTTP401 |\n| 3 参数非法 | 发空消息 | code=1001 |\n| 4 业务规则 | 和自己开聊 | code=1001 不能和自己开聊 |\n| 5 边界 | N/A: 无数值边界 | — |\n| 6 幂等 | A 重复开聊 B 返回同会话不重复扣 | code=0, chat_id 不变 |\n",
+      "item": [
+        {
+          "name": "[正常] A 开聊 B(扣5金币)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chat/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat",
+                "start"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_id\": \"{{uidB}}\",\n  \"source_bottle_id\": \"{{bottleId}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "pm.collectionVariables.set('chatId', pm.response.json().data.chat_id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[幂等] A 重复开聊 B",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chat/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat",
+                "start"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_id\": \"{{uidB}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "pm.test('返回同一会话', () => pm.expect(pm.response.json().data.chat_id).to.eql(pm.collectionVariables.get('chatId')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[业务] 和自己开聊",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chat/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat",
+                "start"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_id\": \"{{uidA}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('业务错误码 = 1001', () => { pm.expect(pm.response.json().code).to.eql(1001); });",
+                  "pm.test('msg 含「自己」', () => { pm.expect(pm.response.json().msg || '').to.include('自己'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[鉴权] 无 token 开聊",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chat/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat",
+                "start"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_id\": \"{{uidB}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401', () => pm.response.to.have.status(401));",
+                  "pm.test('业务码 2001 未登录', () => { pm.expect(pm.response.json().code).to.eql(2001); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[正常] A 发消息",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chat/{{chatId}}/send",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat",
+                "{{chatId}}",
+                "send"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"谢谢你的回信\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "pm.test('返回 message_id', () => pm.expect(pm.response.json().data.message_id).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[参数非法] 发空消息",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chat/{{chatId}}/send",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat",
+                "{{chatId}}",
+                "send"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('业务错误码 = 1001', () => { pm.expect(pm.response.json().code).to.eql(1001); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[正常] B 读历史",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenB}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chat/{{chatId}}/messages?page=1&size=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat",
+                "{{chatId}}",
+                "messages"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "pm.test('历史含至少一条', () => pm.expect(pm.response.json().data.length).to.be.above(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[鉴权] 无 token 读历史",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/chat/{{chatId}}/messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat",
+                "{{chatId}}",
+                "messages"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401', () => pm.response.to.have.status(401));",
+                  "pm.test('业务码 2001 未登录', () => { pm.expect(pm.response.json().code).to.eql(2001); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 钱包 / 充值(钱·幂等核心)",
+      "description": "\n| 类别 | 用例 | 预期 |\n|------|------|------|\n| 1 正常 | 查余额 / 档位 / 下单 / 回调入账 | code=0 |\n| 2 鉴权 | 无 token 查余额 | HTTP401 |\n| 3 参数非法 | 下单不存在档位 | code=1001 |\n| 4 业务规则 | 余额=50-2(解锁)-5(开聊)=43 | balance=43 |\n| 5 边界 | N/A: 档位固定 | — |\n| 6 幂等 | 重复回调不重复加币 | 余额=43+60=103 |\n",
+      "item": [
+        {
+          "name": "[鉴权] 无 token 查余额",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wallet/balance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wallet",
+                "balance"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401', () => pm.response.to.have.status(401));",
+                  "pm.test('业务码 2001 未登录', () => { pm.expect(pm.response.json().code).to.eql(2001); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[业务] A 余额=43(消费后)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/wallet/balance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wallet",
+                "balance"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "const bal = pm.response.json().data.balance;",
+                  "pm.test('余额 = 50-2-5 = 43', () => pm.expect(bal).to.eql(43));",
+                  "pm.collectionVariables.set('balBefore', bal);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[正常] 充值档位",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pay/packages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pay",
+                "packages"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "pm.test('档位非空', () => pm.expect(pm.response.json().data.length).to.be.above(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[正常] A 下单(pkg1=60币/¥6)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pay/order",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pay",
+                "order"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"package_id\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "const d = pm.response.json().data;",
+                  "pm.test('返回 order_no', () => pm.expect(d.order_no).to.be.a('string').and.not.empty);",
+                  "pm.test('返回 pay_params', () => pm.expect(d.pay_params).to.be.an('object'));",
+                  "pm.collectionVariables.set('orderNo', d.order_no);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[参数非法] 下单不存在档位",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pay/order",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pay",
+                "order"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"package_id\": 99999\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('业务错误码 = 1001', () => { pm.expect(pm.response.json().code).to.eql(1001); });",
+                  "pm.test('msg 含「档位」', () => { pm.expect(pm.response.json().msg || '').to.include('档位'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[正常] 充值回调成功",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pay/callback/wx/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pay",
+                "callback",
+                "wx",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"out_trade_no\": \"{{orderNo}}\",\n  \"transaction_id\": \"WXAPITEST001\",\n  \"trade_state\": \"SUCCESS\",\n  \"amount\": {\n    \"total\": 600\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('回调应答 SUCCESS', () => pm.expect(pm.response.json().code).to.eql('SUCCESS'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[幂等] 重复回调",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pay/callback/wx/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pay",
+                "callback",
+                "wx",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"out_trade_no\": \"{{orderNo}}\",\n  \"transaction_id\": \"WXAPITEST001\",\n  \"trade_state\": \"SUCCESS\",\n  \"amount\": {\n    \"total\": 600\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('幂等应答 SUCCESS', () => pm.expect(pm.response.json().code).to.eql('SUCCESS'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[业务] 余额到账且只加一次",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/wallet/balance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wallet",
+                "balance"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });",
+                  "const bal = pm.response.json().data.balance;",
+                  "const before = Number(pm.collectionVariables.get('balBefore'));",
+                  "pm.test('余额 = 充值前 + 60(幂等不重复加)', () => pm.expect(bal).to.eql(before + 60));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 风控",
+      "description": "\n| 类别 | 用例 | 预期 |\n|------|------|------|\n| 1 正常 | 举报 / 拉黑 | code=0 |\n| 2 鉴权 | 无 token 举报 | HTTP401 |\n| 3 参数非法 | 举报缺 target_type | code=1001 |\n| 4 业务规则 | N/A: 举报/拉黑无业务校验分支 | — |\n| 5 边界 | N/A | — |\n| 6 幂等 | 重复拉黑同人仍 code=0 | code=0 |\n",
+      "item": [
+        {
+          "name": "[鉴权] 无 token 举报",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/report",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "report"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_id\": \"{{uidB}}\",\n  \"target_type\": \"user\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401', () => pm.response.to.have.status(401));",
+                  "pm.test('业务码 2001 未登录', () => { pm.expect(pm.response.json().code).to.eql(2001); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[参数非法] 举报缺 target_type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/report",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "report"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_id\": \"{{uidB}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('业务错误码 = 1001', () => { pm.expect(pm.response.json().code).to.eql(1001); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[正常] 举报 B",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/report",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "report"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_id\": \"{{uidB}}\",\n  \"target_type\": \"user\",\n  \"reason\": \"API 测试\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[正常] 拉黑 B",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/block",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "block"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_id\": \"{{uidB}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[幂等] 重复拉黑 B",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/block",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "block"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target_id\": \"{{uidB}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('响应时间 < 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+                  "pm.test('协议成功 code===0', () => { pm.expect(pm.response.json().code).to.eql(0); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// 每次跑测生成一次性 runId,保证用户/数据隔离与余额断言确定",
+          "if (!pm.collectionVariables.get('runId')) {",
+          "  pm.collectionVariables.set('runId', '' + (new Date().getTime()) + Math.floor(Math.random() * 1e6));",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "runId",
+      "value": ""
+    },
+    {
+      "key": "tokenA",
+      "value": ""
+    },
+    {
+      "key": "tokenB",
+      "value": ""
+    },
+    {
+      "key": "uidA",
+      "value": ""
+    },
+    {
+      "key": "uidB",
+      "value": ""
+    },
+    {
+      "key": "bottleId",
+      "value": ""
+    },
+    {
+      "key": "replyId",
+      "value": ""
+    },
+    {
+      "key": "chatId",
+      "value": ""
+    },
+    {
+      "key": "orderNo",
+      "value": ""
+    },
+    {
+      "key": "balBefore",
+      "value": ""
+    }
+  ]
+}

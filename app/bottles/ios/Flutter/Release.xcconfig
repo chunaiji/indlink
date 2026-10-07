@@ -1,0 +1,4 @@
+#include "Generated.xcconfig"
+// Maps API Key。Maps.xcconfig 在 .gitignore 里,不入库。
+// optional include:缺这个文件也能构建,地图会空白但 App 其余部分正常。
+#include? "Maps.xcconfig"

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 日志不进云备份：它只服务于本机排查，跟着用户上 Google Drive
+     或在换机时被带走，既无意义又扩大了暴露面。 -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" path="logs/" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" path="logs/" />
+    </device-transfer>
+</data-extraction-rules>

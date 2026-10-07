@@ -1,0 +1,6 @@
+// 复制成 Maps.xcconfig 并填入 iOS 的 Maps API Key。
+// 那把 Key 必须绑 Bundle ID 限制(com.ambertu.bottles),与 Android 那把、
+// 服务端那把是**三把不同的 Key**,不要共用。
+//
+// Maps.xcconfig 已在 .gitignore 里,不会入库。
+MAPS_API_KEY = REPLACE_WITH_IOS_MAPS_API_KEY

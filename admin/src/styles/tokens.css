@@ -1,0 +1,205 @@
+/* 设计系统 token —— 对齐 L1-v2.0（public_app/.kfo/l1/design-system.md）
+ *
+ * 🔴 纪律（规范 §2 与 §7.11，本项目最容易犯的错）：
+ *    任何变量都必须在裸 :root 里有定义。
+ *    只写在 @media / [data-theme] / [data-density] 里的值，在属性缺席时整条声明被丢弃——
+ *    而「属性缺席」是默认状态，不是异常状态。
+ *    密度变量漏写的后果不是「密度不对」，是 padding 归零、表格挤成一片。
+ */
+
+:root,
+[data-density='loose'] {
+  color-scheme: light;
+
+  /* ── 底与面：四档，用于表达层次 ───────────────────────── */
+  --bg:      #f4f6f8;
+  --panel:   #ffffff;
+  --panel-2: #f7f9fb;
+  --panel-3: #eef2f6;
+
+  /* ── 线：三档 ─────────────────────────────────────────── */
+  --line:        #e2e8ee;
+  --line-2:      #edf1f5;
+  --line-strong: #cfd8e2;
+
+  /* ── 墨：四档。--ink-4 是 disabled 文字，不用 opacity 实现 ── */
+  --ink:   #10161c;
+  --ink-2: #55626e;
+  --ink-3: #8a96a2;
+  --ink-4: #aeb8c2;
+
+  /* ── 品牌：石墅蓝，交互的唯一色相。只用于「可以点」 ────── */
+  --brand:       #1e4e8c;
+  --brand-hover: #1a4479;
+  --brand-press: #163c6d;
+  --brand-text:  #1e4e8c;
+  --brand-weak:  #e8eff7;
+  --brand-line:  #bcd0e6;
+  --brand-on:    #ffffff;
+
+  /* ── 金额：不是色相，是一组用于锚定的中性值（S-7 金额不着色）── */
+  --money:      var(--ink);
+  --money-bg:   #f0f4f8;
+  --money-line: #dfe7ef;
+
+  /* ── 语义：只有三个，都表示「需要注意」。
+   *    信息态不占色相（S-10），用 --ink-2 / --panel-3 / --line 表达。 */
+  --ok:     #0f7b4f;  --ok-bg:     #e6f4ec;  --ok-line:     #b7dfc9;
+  --warn:   #c2410c;  --warn-bg:   #fdf0e8;  --warn-line:   #f3cfb8;
+  --danger: #c0332f;  --danger-bg: #fcecec;  --danger-line: #f0c2bf;
+
+  /* ── 管理端布局尺寸 ───────────────────────────────────── */
+  --sidebar-w: 228px;
+  --topbar-h:   60px;
+  /* 极轻的顶部光晕：让大面积白底不显得死板，不是要被看见。
+     不是 §9 禁止的「渐变背景」——那条禁的是把渐变当视觉主张。 */
+  --bg-grad: radial-gradient(1100px 420px at 12% -12%,
+             rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 62%);
+
+  /* ── 圆角：四档 + 胶囊。嵌套时内圆角 = 外圆角 − 内边距，最小 4px ── */
+  --radius-xs:   4px;
+  --radius-sm:   8px;
+  --radius:     12px;
+  --radius-lg:  16px;
+  --radius-pill: 999px;
+
+  /* ── 阴影：两档 + 焦点环。默认是无阴影，不做三档以上 ───── */
+  --shadow-1: 0 1px 2px rgba(16, 22, 28, 0.04), 0 8px 24px -12px rgba(16, 22, 28, 0.14);
+  --shadow-2: 0 2px 6px rgba(16, 22, 28, 0.06), 0 16px 40px -16px rgba(16, 22, 28, 0.22);
+  --shadow-focus: 0 0 0 3px var(--brand-weak);
+  --scrim: rgba(16, 22, 28, 0.45);
+
+  /* ── 间距阶梯（4px 基准）。任何间距只能取阶梯上的值 ────── */
+  --s-1: 4px;   --s-2: 8px;   --s-3: 12px;  --s-4: 16px;
+  --s-5: 20px;  --s-6: 24px;  --s-7: 32px;  --s-8: 40px;
+
+  /* ── 字体栈：只用系统字体，不引自定义字体（S-4）────────── */
+  --f-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+            'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+            'Noto Sans SC', sans-serif;
+  --f-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'JetBrains Mono',
+            Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* ── 字号阶梯。金额是全站唯一比标题更大的文字 ──────────── */
+  --t-money-hero: 28px;
+  --t-display:    22px;
+  --t-h1:         18px;
+  --t-money:      17px;
+  --t-h2:         15px;
+  --t-body:       14px;
+  --t-value:      13px;
+  --t-label:      12.5px;
+  --t-tag:        11px;
+
+  /* ── 动效。只对可过渡的表现属性做过渡，绝不 transition: all ── */
+  --ease:  cubic-bezier(0.2, 0.6, 0.2, 1);
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 280ms;
+
+  /* ── 密度「松」档（裸 :root 的安全默认值：
+   *    漏写 data-density 时得到偏舒展的版面，而不是塌掉的版面）── */
+  --d-row-y: 12px;  --d-pad-y: 16px;  --d-pad-x: 18px;
+  --d-gap:   16px;  --d-base:  14px;  --d-btn-y: 9px;
+  --d-ctl-h: 36px;
+}
+
+/* 管理后台整体走「紧」档（S-2）：在外壳上写一次，不让 23 个视图各自记得写 */
+[data-density='tight'] {
+  --d-row-y: 8px;   --d-pad-y: 12px;  --d-pad-x: 14px;
+  --d-gap:   12px;  --d-base:  13px;  --d-btn-y: 6px;
+  --d-ctl-h: 32px;
+}
+
+/* ── 深色：完整的第二套调色板，不是反相 ─────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --bg:      #0f141a;
+    --panel:   #161d26;
+    --panel-2: #1c242e;
+    --panel-3: #232c38;
+
+    --line:        #28323e;
+    --line-2:      #1f2731;
+    --line-strong: #3a4654;
+
+    --ink:   #e6edf5;
+    --ink-2: #9aa7b5;
+    --ink-3: #6e7c8b;
+    --ink-4: #55616e;
+
+    /* ⚠️ 深色下品牌色必须是两个值：能压住白字的蓝，放到深底上就太暗。
+     *    --brand 给面，--brand-text 给文字（提亮到 ≈5.9:1）。 */
+    --brand:       #2e6fc4;
+    --brand-hover: #3a7ed4;
+    --brand-press: #4a8ce0;
+    --brand-text:  #6fa8ee;
+    --brand-weak:  #15263a;
+    --brand-line:  #2c4a6b;
+    --brand-on:    #ffffff;
+
+    --money:      var(--ink);
+    --money-bg:   #1a222c;
+    --money-line: #2a343f;
+
+    --ok:     #3fa37a;  --ok-bg:     #10241b;  --ok-line:     #1d3b2c;
+    --warn:   #d98a4a;  --warn-bg:   #2a1e11;  --warn-line:   #45301b;
+    --danger: #e5706c;  --danger-bg: #2b1617;  --danger-line: #4a2426;
+
+    /* 深色下阴影几乎不可见，层次改由四档面色承载 */
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-2: 0 8px 28px -10px rgba(0, 0, 0, 0.55);
+    --scrim: rgba(0, 0, 0, 0.6);
+    /* 深色下不要光晕：深底上的白色径向渐变会糊成一块灰 */
+    --bg-grad: none;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg:      #0f141a;
+  --panel:   #161d26;
+  --panel-2: #1c242e;
+  --panel-3: #232c38;
+
+  --line:        #28323e;
+  --line-2:      #1f2731;
+  --line-strong: #3a4654;
+
+  --ink:   #e6edf5;
+  --ink-2: #9aa7b5;
+  --ink-3: #6e7c8b;
+  --ink-4: #55616e;
+
+  --brand:       #2e6fc4;
+  --brand-hover: #3a7ed4;
+  --brand-press: #4a8ce0;
+  --brand-text:  #6fa8ee;
+  --brand-weak:  #15263a;
+  --brand-line:  #2c4a6b;
+  --brand-on:    #ffffff;
+
+  --money:      var(--ink);
+  --money-bg:   #1a222c;
+  --money-line: #2a343f;
+
+  --ok:     #3fa37a;  --ok-bg:     #10241b;  --ok-line:     #1d3b2c;
+  --warn:   #d98a4a;  --warn-bg:   #2a1e11;  --warn-line:   #45301b;
+  --danger: #e5706c;  --danger-bg: #2b1617;  --danger-line: #4a2426;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-2: 0 8px 28px -10px rgba(0, 0, 0, 0.55);
+  --scrim: rgba(0, 0, 0, 0.6);
+  --bg-grad: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0.01ms;
+    --dur-2: 0.01ms;
+    --dur-3: 0.01ms;
+  }
+}

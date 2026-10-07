@@ -1,0 +1,22 @@
+{
+  "name": "driftbottle-admin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "漂流瓶管理后台(Vue3 + Vite)",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/check-locales.mjs && vite build",
+    "check:locales": "node scripts/check-locales.mjs",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "echarts": "^5.5.0",
+    "vue": "^3.4.0",
+    "vue-i18n": "^9.14.5",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.0",
+    "vite": "^5.2.0"
+  }
+}

@@ -1,0 +1,3133 @@
+<title>Drift V1 Blueprint (EN)</title>
+
+<style>
+:root{
+  --sea:#DCEFF2; --mist:#9DBDC8; --coral:#FF4D6D; --surface:#FBFEFF;
+  --ink:#16323C; --ink2:#56727D; --ink3:#8AA3AC;
+  --page:#F2F8FA; --line:rgba(22,50,60,.13); --line2:rgba(22,50,60,.07);
+  --gold:#C8912F; --new:#3E7F99; --warn:#C2562F;
+  --brand:#FF4D6D; --brand2:#7B5CFF; --aqua:#12B5CE; --coin:#FFC53D;
+  --grad:linear-gradient(118deg,#FF4D6D 0%,#FF7EA8 52%,#9B6BE0 100%);
+
+  /* Geometry scale: prototype px (device pt). 252px wide = a 375pt device, ratio 0.672 */
+  --t0:7.5px;   /* 11pt badge   */  --t1:8px;     /* 12pt caption   */
+  --t2:9px;     /* 13pt second   */  --t3:10px;    /* 15pt body   */
+  --t4:11.5px;  /* 17pt accent   */  --t5:13.5px;  /* 20pt subhead */
+  --t6:16px;    /* 24pt title   */  --t7:19px;    /* 28pt number   */
+  --r1:5px;     /* 8pt  chip   */  --r2:8px;     /* 12pt button   */
+  --r3:11px;    /* 16pt card   */  --r4:13.5px;  /* 20pt panel   */
+  --r5:19px;    /* 28pt modal   */
+  --s1:2.5px;   /* 4pt  */  --s2:5.5px;  /* 8pt  */  --s3:8px;   /* 12pt */
+  --s4:11px;    /* 16pt */  --s5:13.5px; /* 20pt */  --s6:16px;  /* 24pt */
+  --shadow:0 1px 2px rgba(22,50,60,.05), 0 8px 24px rgba(22,50,60,.07);
+  --mono:ui-monospace,"Cascadia Code","SF Mono",Consolas,"Liberation Mono",monospace;
+  --sans:"Segoe UI",ui-sans-serif,system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --sea:#12252D; --mist:#5A7C88; --coral:#FF6B85; --surface:#16292F;
+    --ink:#E3F0F3; --ink2:#9BB5BD; --ink3:#6E8992;
+    --page:#0D1B21; --line:rgba(227,240,243,.15); --line2:rgba(227,240,243,.07);
+    --gold:#E0AE55; --new:#6FB3CC; --warn:#F09070;
+    --brand:#FF6B85; --brand2:#9B82FF; --aqua:#3FC6DC; --coin:#FFD166;
+    --grad:linear-gradient(118deg,#E8365A 0%,#E8619A 52%,#7B4FD6 100%);
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --sea:#12252D; --mist:#5A7C88; --coral:#FF6B85; --surface:#16292F;
+  --ink:#E3F0F3; --ink2:#9BB5BD; --ink3:#6E8992;
+  --page:#0D1B21; --line:rgba(227,240,243,.15); --line2:rgba(227,240,243,.07);
+  --gold:#E0AE55; --new:#6FB3CC; --warn:#F09070;
+  --brand:#FF6B85; --brand2:#9B82FF; --aqua:#3FC6DC; --coin:#FFD166;
+  --grad:linear-gradient(118deg,#E8365A 0%,#E8619A 52%,#7B4FD6 100%);
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--page); color:var(--ink);
+  font-family:var(--sans); font-size:15px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:0 24px 96px}
+h1,h2,h3,h4{margin:0; text-wrap:balance; letter-spacing:-.02em; font-weight:700}
+
+/* ---------- masthead ---------- */
+.mast{padding:64px 0 40px; border-bottom:1px solid var(--line)}
+.mast .kick{
+  font-family:var(--mono); font-size:11px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--ink3); margin-bottom:18px;
+}
+.mast h1{font-size:clamp(34px,5.2vw,52px); line-height:1.08; max-width:16ch}
+.mast p{color:var(--ink2); max-width:62ch; margin:18px 0 0; font-size:16px}
+.mast .meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:26px}
+.mast .meta span{
+  font-family:var(--mono); font-size:11.5px; padding:5px 11px; border-radius:99px;
+  border:1px solid var(--line); color:var(--ink2); background:var(--surface);
+}
+#tg,#ng{
+  cursor:pointer; font-family:var(--mono); font-size:11.5px;
+  padding:5px 13px; border-radius:99px; border:1px solid var(--line);
+  color:var(--ink2); background:var(--surface);
+}
+#tg{margin-left:auto}
+#ng{margin-left:8px}
+#tg:hover,#ng:hover{border-color:var(--mist); color:var(--ink)}
+#tg:focus-visible,#ng:focus-visible{outline:2px solid var(--coral); outline-offset:2px}
+#ng[aria-pressed="true"]{border-color:var(--brand2); color:var(--brand2)}
+
+/* ---------- section ---------- */
+section{padding-top:64px}
+.sh{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:8px}
+.sh .no{
+  font-family:var(--mono); font-size:13px; color:var(--coral);
+  font-weight:700; letter-spacing:.04em;
+}
+.sh h2{font-size:26px}
+.sh .en{font-family:var(--mono); font-size:12.5px; color:var(--ink3)}
+.sub{color:var(--ink2); max-width:74ch; margin:0 0 26px; font-size:14.5px}
+.sub code{font-family:var(--mono); font-size:12.5px; background:var(--sea); padding:1px 5px; border-radius:4px; color:var(--ink)}
+
+.vd{
+  font-family:var(--mono); font-size:11px; padding:3px 9px; border-radius:5px;
+  border:1px solid var(--line); background:var(--surface); color:var(--ink2); white-space:nowrap;
+}
+.vd.keep{color:#2E7D5B; border-color:rgba(46,125,91,.35)}
+.vd.mod{color:var(--warn); border-color:rgba(194,86,47,.35)}
+.vd.add{color:var(--new); border-color:rgba(62,127,153,.4)}
+.vd.money{color:var(--gold); border-color:rgba(200,145,47,.4)}
+
+/* ---------- screen grid ---------- */
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(258px,1fr)); gap:30px}
+.scr{display:flex; flex-direction:column; gap:12px}
+.scr>.cap{display:flex; align-items:baseline; gap:8px}
+.scr>.cap b{font-size:14.5px; font-weight:700}
+.scr>.cap i{font-family:var(--mono); font-style:normal; font-size:11px; color:var(--ink3)}
+
+/* ---------- phone ---------- */
+.ph{
+  width:100%; max-width:252px; aspect-ratio:252/512; border-radius:26px;
+  border:1px solid var(--line); background:var(--surface); box-shadow:var(--shadow);
+  overflow:hidden; display:flex; flex-direction:column; position:relative;
+  font-size:11px; line-height:1.5;
+}
+.st{
+  display:flex; justify-content:space-between; align-items:center; flex:0 0 auto;
+  padding:7px var(--s4) 4px; font-family:var(--mono); font-size:9px; color:var(--ink3);
+}
+.bd{flex:1 1 auto; overflow:hidden; padding:var(--s4); display:flex; flex-direction:column; gap:var(--s3)}
+.tb{flex:0 0 auto; display:flex; border-top:1px solid var(--line2); background:var(--surface)}
+
+/* ---------- ocean at dusk ---------- */
+.scene{
+  position:relative; z-index:1; flex:1 1 auto; overflow:hidden;
+  background:linear-gradient(180deg,
+    #8E6FE0 0%, #B06CC8 13%, #E07AA0 25%, #F2A47E 32%,
+    #6389B6 40%, #43729F 56%, #33608A 70%, #C9B48C 82%, #E8DAB9 100%);
+}
+.sun{
+  position:absolute; top:27%; right:26px; width:24px; height:24px; border-radius:50%;
+  background:#FFEBB0; box-shadow:0 0 22px 9px rgba(255,214,150,.6); z-index:1;
+}
+.lh{position:absolute; left:13px; bottom:104px; z-index:2}
+.lh .tw{width:12px; height:42px; background:#F4EDE0; border-radius:3px 3px 0 0; position:relative}
+.lh .tw::after{content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,transparent 0 8px,#E0705F 8px 15px); border-radius:3px 3px 0 0; opacity:.85}
+.lh .lp{width:8px; height:7px; background:#FFE9A8; border-radius:2px; margin:0 auto -1px; box-shadow:0 0 11px 4px rgba(255,233,168,.9); animation:glow 3s ease-in-out infinite}
+.lh .isl{width:38px; height:11px; background:#6E7F58; border-radius:50% 50% 0 0; margin:-1px -13px 0}
+@keyframes glow{0%,100%{opacity:.72}50%{opacity:1}}
+.sea{position:absolute; left:0; right:0; top:42%; bottom:76px; z-index:2}
+.btl{position:absolute; width:17px; height:24px; z-index:3}
+.btl i{
+  display:block; width:100%; height:100%; border-radius:5px 5px 7px 7px;
+  background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(255,190,205,.85));
+  border:1px solid rgba(255,255,255,.8); animation:bob 4.5s ease-in-out infinite;
+  box-shadow:0 2px 6px rgba(20,35,70,.25);
+}
+.btl em{
+  position:absolute; top:-7px; right:-6px; background:var(--brand); color:#fff;
+  font-size:7.5px; font-style:normal; font-weight:800; border-radius:99px; padding:0 4px;
+  box-shadow:0 1px 4px rgba(0,0,0,.25);
+}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+
+/* ---------- Night session (21:00–01:00). A product state, independent of system dark mode ----------
+   Global switch :root[data-night]; .ph.night demos a single screen. --brand never changes:
+   pink only ever means "costs coins" and takes no part in the day/night story.          */
+:root[data-night]{--grad:linear-gradient(118deg,#2E2A7A 0%,#5B3E9E 52%,#8C3D80 100%)}
+.ph.night{--grad:linear-gradient(118deg,#2E2A7A 0%,#5B3E9E 52%,#8C3D80 100%)}
+.ph.night .hdr{background:var(--grad)}
+
+:root[data-night] .scene, .ph.night .scene{
+  background:linear-gradient(180deg,
+    #0A0E2E 0%, #161C48 13%, #2A2160 26%, #3B2A63 33%,
+    #16244A 40%, #101C3A 58%, #0B1730 72%, #2E2A3C 84%, #423C4E 100%);
+}
+:root[data-night] .scene::before, .ph.night .scene::before{
+  content:""; position:absolute; inset:0 0 58% 0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(1.6px 1.6px at 18% 20%, rgba(255,255,255,.95), transparent),
+    radial-gradient(1.4px 1.4px at 63% 12%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1.1px 1.1px at 38% 31%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1.6px 1.6px at 85% 26%, rgba(255,255,255,.85), transparent),
+    radial-gradient(1.1px 1.1px at 73% 41%, rgba(255,255,255,.5), transparent),
+    radial-gradient(1.1px 1.1px at 27% 45%, rgba(255,255,255,.45), transparent),
+    radial-gradient(1.3px 1.3px at 50% 8%, rgba(255,255,255,.7), transparent);
+}
+:root[data-night] .sun, .ph.night .sun{
+  width:20px; height:20px; background:#EDF1FF;
+  box-shadow:0 0 20px 8px rgba(196,212,255,.4), inset -6px -2px 0 0 rgba(14,20,58,.6);
+}
+:root[data-night] .btl i, .ph.night .btl i{
+  background:linear-gradient(160deg,rgba(255,255,255,.96),rgba(176,206,255,.9));
+  box-shadow:0 0 15px 4px rgba(150,190,255,.38), 0 2px 6px rgba(0,0,0,.45);
+}
+:root[data-night] .lh .lp, .ph.night .lh .lp{box-shadow:0 0 16px 6px rgba(255,233,168,1)}
+:root[data-night] .lh .isl, .ph.night .lh .isl{background:#3A4438}
+:root[data-night] .pbn, .ph.night .pbn{background:#3E7FA8; box-shadow:0 6px 18px rgba(20,60,110,.55)}
+
+/* ---------- ocean interactions (tappable sea + the pull ritual) ---------- */
+.tide{
+  position:absolute; left:50%; top:30px; transform:translateX(-50%); z-index:4;
+  padding:2.5px var(--s3); border-radius:99px; white-space:nowrap;
+  background:rgba(255,255,255,.26); border:1px solid rgba(255,255,255,.42);
+  color:#fff; font-size:var(--t1); font-weight:700;
+}
+.peek{
+  position:absolute; z-index:5; padding:var(--s2) var(--s3); border-radius:var(--r3);
+  background:rgba(255,255,255,.95); color:var(--ink); font-size:var(--t1); font-weight:700;
+  box-shadow:0 6px 18px rgba(10,25,40,.3); white-space:nowrap;
+}
+.peek::after{
+  content:""; position:absolute; left:50%; bottom:-5px; margin-left:-5px;
+  border:5px solid transparent; border-bottom:0; border-top-color:rgba(255,255,255,.95);
+}
+.lhtag{
+  position:absolute; z-index:4; padding:2px var(--s2); border-radius:99px; white-space:nowrap;
+  background:rgba(255,255,255,.9); color:#0E3846; font-size:var(--t0); font-weight:700;
+}
+.ripple::before{
+  content:""; position:absolute; left:50%; top:46%; transform:translate(-50%,-50%);
+  width:190px; height:190px; border-radius:50%; z-index:2;
+  background:radial-gradient(circle,rgba(255,232,242,.34) 0%,rgba(255,232,242,0) 62%);
+}
+.ripple i{
+  position:absolute; left:50%; top:44%; transform:translate(-50%,-50%); z-index:3;
+  border:2px solid rgba(255,255,255,.9); border-radius:50%;
+  animation:rip 2.6s ease-out infinite;
+}
+@keyframes rip{0%{width:22px;height:22px;opacity:1}100%{width:158px;height:158px;opacity:0}}
+.rising{
+  position:absolute; left:50%; top:46%; z-index:4;
+  width:36px; height:51px; border-radius:9px 9px 13px 13px;
+  background:linear-gradient(160deg,rgba(255,255,255,.98),rgba(255,196,214,.94));
+  border:1.5px solid rgba(255,255,255,.9);
+  box-shadow:0 0 34px 12px rgba(255,222,238,.4), 0 12px 26px rgba(8,20,36,.5);
+  animation:rise 2.6s ease-in-out infinite;
+}
+.rising::after{
+  content:""; position:absolute; left:50%; top:-14px; margin-left:-3px;
+  width:6px; height:14px; border-radius:2px 2px 0 0;
+  background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,.85));
+}
+@keyframes rise{
+  0%,100%{transform:translateX(-50%) translateY(8px) rotate(-3deg)}
+  50%{transform:translateX(-50%) translateY(-10px) rotate(3deg)}
+}
+.hint{position:absolute; left:0; right:0; bottom:var(--s6); z-index:5; text-align:center; color:#fff}
+.hint b{display:block; font-size:var(--t5); font-weight:800; letter-spacing:-.01em}
+.hint s{display:block; text-decoration:none; font-size:var(--t2); opacity:.85; margin-top:var(--s1)}
+.letter{
+  position:absolute; left:var(--s4); right:var(--s4); top:50%; transform:translateY(-50%); z-index:6;
+  padding:var(--s5) var(--s4) var(--s4); border-radius:var(--r4); overflow:hidden;
+  background:linear-gradient(170deg,#FFFDF6,#FFF3DF);
+  box-shadow:0 20px 48px rgba(8,20,36,.45);
+}
+.letter::before{content:""; position:absolute; left:0; right:0; top:0; height:4px; background:var(--grad)}
+.letter .body3{font-size:var(--t4); line-height:1.95; color:#3A2E22}
+.letter .meta2{
+  display:flex; align-items:center; gap:var(--s2); margin-top:var(--s4);
+  padding-top:var(--s3); border-top:1px dashed rgba(58,46,34,.28);
+  font-size:var(--t1); color:#7A6852;
+}
+
+/* ---------- hi-fi screen kit ---------- */
+.cn{
+  display:inline-block; width:11px; height:11px; border-radius:50%; vertical-align:-1px;
+  background:radial-gradient(circle at 34% 30%,#FFF2C6,var(--coin) 58%,#D4930F);
+  box-shadow:inset 0 -1px 2px rgba(120,70,0,.28);
+}
+.hdr{
+  flex:0 0 auto; position:relative; overflow:hidden; isolation:isolate;
+  background:var(--grad); color:#fff; padding:7px var(--s4) var(--s5);
+}
+.hdr::before{
+  content:""; position:absolute; inset:-50% -20%; z-index:-1;
+  background:
+    radial-gradient(circle at 16% 26%, rgba(255,255,255,.20) 0 19px, transparent 20px),
+    radial-gradient(circle at 81% 13%, rgba(255,255,255,.15) 0 29px, transparent 30px),
+    radial-gradient(circle at 57% 78%, rgba(255,255,255,.12) 0 42px, transparent 43px),
+    radial-gradient(circle at 33% 62%, rgba(255,255,255,.14) 0 11px, transparent 12px);
+}
+.hdr .st{padding:0 0 var(--s2); color:rgba(255,255,255,.9)}
+.hdr .top{display:flex; align-items:center; gap:var(--s2)}
+.hdr.slim{padding-bottom:var(--s3)}
+.hdr .ttl{font-size:var(--t5); font-weight:800; letter-spacing:-.01em}
+.hdr h3{font-size:var(--t6); font-weight:800; letter-spacing:-.01em; line-height:1.25; margin:var(--s4) 0 0}
+.hdr .sc{font-size:var(--t2); line-height:1.5; color:rgba(255,255,255,.85); margin-top:var(--s1)}
+.hdr .ic{
+  margin-left:auto; width:23px; height:23px; border-radius:50%; font-size:var(--t4);
+  background:rgba(255,255,255,.94); color:#C43158;
+  display:flex; align-items:center; justify-content:center;
+}
+.coin{
+  display:inline-flex; align-items:center; gap:4px; padding:2.5px var(--s2) 2.5px 3px;
+  border-radius:99px; background:rgba(255,255,255,.94); color:#4A3200;
+  font-size:var(--t3); font-weight:800; font-variant-numeric:tabular-nums;
+  box-shadow:0 1px 4px rgba(0,0,0,.16);
+}
+.ring{position:relative; width:44px; height:44px; flex:0 0 auto}
+.ring::before{
+  content:""; position:absolute; inset:0; border-radius:50%;
+  background:conic-gradient(from 200deg,#FFDD93,#FF9A62,#FFDD93,#E3A94F);
+}
+.ring u{
+  position:absolute; inset:2.5px; border-radius:50%; text-decoration:none;
+  background:var(--sea); border:1.5px solid var(--surface); font-size:17px;
+  display:flex; align-items:center; justify-content:center;
+}
+.ring .dot{
+  position:absolute; right:0; bottom:0; z-index:2; width:10px; height:10px;
+  border-radius:50%; background:#35C77E; border:2px solid var(--surface);
+}
+.ring.sm{width:30px; height:30px}
+.ring.sm u{font-size:12px; inset:2px}
+.ring.sm .dot{width:8px; height:8px; border-width:1.5px}
+.chs{display:flex; gap:var(--s2); flex:0 0 auto; padding:0 var(--s4)}
+.chs .ch{
+  flex:0 0 auto; min-width:44px; white-space:nowrap; text-align:center;
+  padding:4px var(--s4); border-radius:99px;
+  font-size:var(--t3); font-weight:700; background:var(--surface);
+  border:1.5px solid var(--line); color:var(--ink2);
+}
+.chs .ch.on{
+  background:var(--brand2); border-color:var(--brand2); color:#fff;
+  box-shadow:0 3px 9px rgba(123,92,255,.36);
+}
+.chs .ch.pk{color:var(--brand); border-color:rgba(255,77,109,.45)}
+.chs .ch.aq{color:var(--aqua); border-color:rgba(18,181,206,.45)}
+.chs.raise{position:relative; z-index:5; margin:-13px 0}
+.tg{
+  display:inline-flex; align-items:center; gap:3px; padding:var(--s1) var(--s2);
+  border-radius:var(--r1); font-size:var(--t1); font-weight:700;
+  background:var(--sea); color:var(--ink2);
+}
+.tg.pk{background:rgba(255,77,109,.14); color:var(--brand)}
+.tg.pu{background:rgba(123,92,255,.15); color:var(--brand2)}
+.jn{
+  display:flex; align-items:center; justify-content:center; gap:5px;
+  height:30px; padding:0 var(--s3); border-radius:99px;
+  background:var(--aqua); color:#fff; font-size:var(--t4); font-weight:800;
+  box-shadow:0 3px 10px rgba(18,181,206,.34);
+}
+.jn.pay{background:var(--brand); box-shadow:0 3px 10px rgba(255,77,109,.38)}
+.jn.gh.pay{color:var(--brand); border-color:rgba(255,77,109,.45)}
+.jn small{font-size:var(--t2); font-weight:800; opacity:.95; display:inline-flex; align-items:center; gap:3px}
+.dock{position:absolute; left:var(--s4); right:var(--s4); bottom:var(--s4); z-index:6; display:flex; gap:var(--s2)}
+
+/* swipe deck */
+.deck{position:relative; flex:1 1 auto; min-height:0; margin:var(--s6) var(--s3) var(--s3)}
+.swc{
+  position:absolute; inset:0; border-radius:var(--r5); overflow:hidden;
+  display:flex; flex-direction:column; background:var(--surface);
+  border:1px solid var(--line); box-shadow:0 10px 26px rgba(22,50,60,.18);
+}
+.swc.b2{transform:scale(.89) translateY(22px); opacity:.34; z-index:0}
+.swc.b1{transform:scale(.945) translateY(11px); opacity:.62; z-index:1}
+.swc.fr{z-index:2; transform:rotate(3deg) translate(5px,-2px)}
+.pic{
+  flex:1 1 auto; position:relative; display:flex; align-items:center; justify-content:center;
+  font-size:64px; background:linear-gradient(158deg,#FFD9E2,#EAD8FF 54%,#CDE9F4);
+}
+.live{
+  position:absolute; left:var(--s3); top:var(--s3); display:inline-flex; align-items:center; gap:4px;
+  padding:2.5px var(--s2); border-radius:99px; background:rgba(255,255,255,.92);
+  font-size:var(--t1); font-weight:700; color:#1E7A4E; line-height:1.5;
+}
+.live::before{content:""; width:6px; height:6px; border-radius:50%; background:#35C77E}
+.stamp{
+  position:absolute; left:var(--s3); top:46px; z-index:3; transform:rotate(-14deg);
+  padding:3px var(--s3); border:3px solid #2FBF77; border-radius:var(--r2);
+  color:#2FBF77; font-size:var(--t6); font-weight:800; letter-spacing:.05em; opacity:.92;
+}
+.info{flex:0 0 auto; padding:var(--s4)}
+.info .nm{display:flex; align-items:baseline; font-size:var(--t6); font-weight:800; letter-spacing:-.01em}
+.info .go{margin-left:auto; font-size:var(--t2); font-weight:700; color:var(--ink3)}
+.info .bio{font-size:var(--t2); line-height:1.6; color:var(--ink2); margin-top:var(--s2)}
+.acts{display:flex; align-items:center; gap:var(--s2); margin-top:var(--s4)}
+.ab i{
+  display:flex; align-items:center; justify-content:center;
+  width:34px; height:34px; border-radius:50%; font-style:normal; font-size:var(--t6);
+  background:var(--page); border:1px solid var(--line); color:var(--ink2);
+}
+.ab.lk i{color:#fff; background:var(--brand); border-color:transparent; box-shadow:0 4px 12px rgba(255,77,109,.4)}
+.hi{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:4px; height:34px;
+  border-radius:99px; background:var(--brand); color:#fff; font-size:var(--t4); font-weight:800;
+  box-shadow:0 5px 14px rgba(255,77,109,.42);
+}
+.hi .cn{width:10px; height:10px}
+
+/* profile — the swipe card opened up */
+.hero{
+  flex:0 0 auto; position:relative; height:178px; font-size:62px;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(158deg,#FFD9E2,#EAD8FF 54%,#CDE9F4);
+}
+.hero .st{position:absolute; left:0; right:0; top:0; padding:7px 13px 0; color:#7A5F80}
+.hero .bar{
+  position:absolute; left:12px; right:12px; top:27px;
+  display:flex; align-items:center; font-size:15px; color:#4A3A52;
+}
+.hero .bar span{margin-left:auto}
+.hero .live{top:auto; bottom:11px}
+.charm{
+  display:inline-flex; align-items:center; gap:3px; padding:2px var(--s2); border-radius:99px;
+  background:rgba(255,197,61,.2); color:var(--gold); font-size:var(--t2); font-weight:800;
+}
+.stats{display:flex; border:1px solid var(--line); border-radius:var(--r4); background:var(--surface)}
+.stats div{flex:1; text-align:center; padding:var(--s3) 0; border-right:1px solid var(--line2)}
+.stats div:last-child{border-right:0}
+.stats b{display:block; font-size:var(--t5); font-weight:800}
+.stats s{display:block; text-decoration:none; font-size:var(--t1); color:var(--ink3); margin-top:1px}
+.jn.gh{background:var(--surface); color:var(--ink2); border:1px solid var(--line); box-shadow:none}
+.pbn{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  height:42px; border-radius:var(--r4); color:#fff; font-size:var(--t4); font-weight:800;
+  background:var(--aqua); box-shadow:0 6px 18px rgba(18,181,206,.5);
+}
+.pbn.glass{
+  flex:.82; background:rgba(255,255,255,.3); border:1.5px solid rgba(255,255,255,.68);
+  box-shadow:0 4px 14px rgba(8,20,36,.2); text-shadow:0 1px 3px rgba(8,20,36,.35);
+}
+.pbn small{font-size:var(--t1); font-weight:700; opacity:.94; display:inline-flex; align-items:center; gap:3px}
+/* ---------- production blocks (H series) ---------- */
+.nv{
+  flex:0 0 auto; display:flex; align-items:center; gap:var(--s3); min-height:30px;
+  padding:var(--s1) var(--s4); font-size:var(--t4); font-weight:700;
+  border-bottom:1px solid var(--line2);
+}
+.nv .sp2{margin-left:auto; font-weight:400; font-size:var(--t2); color:var(--ink3)}
+.sec{font-size:var(--t2); font-weight:700; color:var(--ink3)}
+
+.pcard{
+  position:relative; z-index:5; margin:-22px var(--s4) 0;
+  display:flex; align-items:center; gap:var(--s3);
+  padding:var(--s3) var(--s4); border-radius:var(--r4);
+  background:var(--surface); box-shadow:0 6px 20px rgba(22,50,60,.16);
+}
+.pcard .amt{font-size:var(--t7); font-weight:800; line-height:1.05; font-variant-numeric:tabular-nums}
+.pcard .unit{font-size:var(--t1); color:var(--ink3); margin-top:2px}
+
+.quad{display:grid; grid-template-columns:repeat(4,1fr); gap:var(--s2)}
+.quad div{text-align:center; font-size:var(--t1); color:var(--ink2); font-weight:600}
+.quad div b{
+  display:flex; align-items:center; justify-content:center; margin:0 auto var(--s1);
+  width:32px; height:32px; border-radius:var(--r3); background:var(--sea);
+  font-weight:400; font-size:var(--t6);
+}
+
+.lst{border:1px solid var(--line); border-radius:var(--r4); background:var(--surface); overflow:hidden}
+.lst a{
+  position:relative; display:flex; align-items:center; gap:var(--s3); min-height:30px;
+  padding:0 var(--s4); color:var(--ink); font-size:var(--t3); font-weight:600;
+}
+.lst a::after{content:""; position:absolute; left:34px; right:0; bottom:0; height:1px; background:var(--line2)}
+.lst a:last-child::after{display:none}
+.lst a i{font-style:normal; font-size:var(--t5); width:15px; text-align:center}
+.lst a span{margin-left:auto; color:var(--ink3); font-size:var(--t2); font-weight:400}
+
+.pkg{
+  position:relative; padding:var(--s3) 0; text-align:center;
+  border:1.5px solid var(--line); border-radius:var(--r3); background:var(--surface);
+}
+.pkg.on{border-color:var(--brand); background:rgba(255,77,109,.06)}
+.pkg b{display:flex; align-items:center; justify-content:center; gap:3px; font-size:var(--t5); font-weight:800}
+.pkg s{display:block; text-decoration:none; font-size:var(--t2); color:var(--ink3); margin-top:2px}
+.pkg s del{color:var(--ink3); opacity:.7; margin-left:3px}
+.pkg em{
+  position:absolute; top:-7px; left:50%; transform:translateX(-50%); font-style:normal;
+  padding:1px var(--s2); border-radius:99px; background:var(--brand); color:#fff;
+  font-size:var(--t0); font-weight:800; white-space:nowrap;
+}
+
+.pay{
+  display:flex; align-items:center; gap:var(--s3); min-height:34px; padding:0 var(--s4);
+  border:1.5px solid var(--line); border-radius:var(--r3); background:var(--surface); font-size:var(--t3);
+}
+.pay.on{border-color:var(--brand)}
+.pay u{
+  margin-left:auto; flex:0 0 auto; text-decoration:none;
+  width:13px; height:13px; border-radius:50%; border:1.5px solid var(--line);
+}
+.pay.on u{border:4px solid var(--brand)}
+
+.warn{
+  display:flex; gap:var(--s2); padding:var(--s3); border-radius:var(--r3);
+  background:rgba(255,197,61,.14); border:1px solid rgba(200,145,47,.3);
+  font-size:var(--t1); line-height:1.6; color:var(--ink2);
+}
+.foot{flex:0 0 auto; padding:var(--s3) var(--s4) var(--s4); border-top:1px solid var(--line2)}
+
+/* Button levels: default aqua = free main-path action, .pay pink = costs coins, .gh outline = secondary, .dg = destructive */
+.cta{
+  display:flex; align-items:center; justify-content:center; gap:5px; height:34px;
+  border-radius:99px; background:var(--aqua); color:#fff;
+  font-size:var(--t4); font-weight:800; box-shadow:0 5px 16px rgba(18,181,206,.38);
+}
+.cta.pay{background:var(--brand); box-shadow:0 5px 16px rgba(255,77,109,.4)}
+.cta.dg{background:var(--warn); box-shadow:0 5px 16px rgba(194,86,47,.34)}
+.cta.gh{background:transparent; color:var(--ink2); border:1px solid var(--line); box-shadow:none}
+.cta.gh.pay{color:var(--brand); border-color:rgba(255,77,109,.45); background:transparent}
+
+.mask{position:absolute; inset:0; z-index:8; background:rgba(8,20,32,.58)}
+.modal{
+  position:absolute; z-index:9; left:var(--s4); right:var(--s4); top:50%;
+  transform:translateY(-50%); border-radius:var(--r5); overflow:hidden;
+  background:var(--surface); box-shadow:0 18px 44px rgba(0,0,0,.36);
+}
+.modal .x{
+  position:absolute; right:var(--s3); top:var(--s3); z-index:2;
+  width:20px; height:20px; border-radius:50%; font-size:var(--t2); color:var(--ink3);
+  display:flex; align-items:center; justify-content:center; background:rgba(22,50,60,.09);
+}
+.modal .head{
+  padding:var(--s5) var(--s4) var(--s3); text-align:center;
+  background:linear-gradient(180deg,rgba(255,197,61,.26),rgba(255,197,61,0));
+}
+.modal .head .ico{font-size:30px; line-height:1}
+.modal .head .ico svg{display:block; width:54px; height:auto; margin:0 auto; color:var(--gold)}
+.modal .head h4{font-size:var(--t5); font-weight:800; margin:var(--s2) 0 0}
+.modal .head p{font-size:var(--t2); color:var(--ink2); line-height:1.65; margin:var(--s1) 0 0}
+.modal .body{padding:0 var(--s4) var(--s4); display:flex; flex-direction:column; gap:var(--s2)}
+.offer{
+  display:flex; align-items:center; gap:var(--s3); padding:var(--s3);
+  border:1.5px solid var(--brand); border-radius:var(--r3); background:rgba(255,77,109,.06);
+}
+.offer b{display:block; font-size:var(--t3); font-weight:700}
+.offer s{display:block; text-decoration:none; font-size:var(--t1); color:var(--ink3); margin-top:2px}
+.offer .pz{
+  margin-left:auto; display:inline-flex; align-items:center; gap:3px;
+  font-size:var(--t5); font-weight:800; color:var(--gold);
+}
+
+/* ---------- splash / timeline / slider / feed / grid ---------- */
+.splash{
+  flex:1 1 auto; position:relative; overflow:hidden; isolation:isolate;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  color:#fff; background:var(--grad);
+}
+.splash::before{
+  content:""; position:absolute; inset:-30% -20%; z-index:-1;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255,255,255,.18) 0 24px, transparent 25px),
+    radial-gradient(circle at 82% 16%, rgba(255,255,255,.13) 0 34px, transparent 35px),
+    radial-gradient(circle at 60% 84%, rgba(255,255,255,.11) 0 46px, transparent 47px);
+}
+.splash .st{position:absolute; left:0; right:0; top:0; color:rgba(255,255,255,.9)}
+.splash .wm{font-size:var(--t6); font-weight:800; letter-spacing:.2em; margin-top:var(--s3)}
+.splash .tag{font-size:var(--t2); color:rgba(255,255,255,.82); margin-top:var(--s2)}
+.splash .ldr{
+  position:absolute; bottom:var(--s6); width:74px; height:2px;
+  border-radius:99px; background:rgba(255,255,255,.3); overflow:hidden;
+}
+.splash .ldr i{display:block; width:42%; height:100%; border-radius:99px; background:#fff}
+
+.tl{display:flex; flex-direction:column}
+.tl div{
+  position:relative; display:flex; align-items:center; gap:var(--s3);
+  min-height:26px; padding-left:var(--s4); font-size:var(--t2);
+}
+.tl div::before{
+  content:""; position:absolute; left:0; top:50%; margin-top:-3px;
+  width:6px; height:6px; border-radius:50%; background:var(--brand); z-index:1;
+}
+.tl div::after{content:""; position:absolute; left:2.5px; top:50%; bottom:-3px; width:1.5px; background:var(--mist); opacity:.55}
+.tl div:last-child::after{display:none}
+.tl div span{margin-left:auto; color:var(--ink3); font-size:var(--t1)}
+
+/* Shareable poster: reuses the .tl timeline, recoloured for deep water */
+.poster{
+  position:relative; overflow:hidden; border-radius:var(--r4); color:#fff; padding:var(--s4);
+  background:linear-gradient(168deg,#0D1436 0%,#1A2456 34%,#1E3E68 66%,#26586F 100%);
+  box-shadow:0 12px 32px rgba(10,22,48,.3);
+}
+.poster::before{
+  content:""; position:absolute; inset:0 0 56% 0; pointer-events:none;
+  background:
+    radial-gradient(1.5px 1.5px at 22% 18%, rgba(255,255,255,.9), transparent),
+    radial-gradient(1.3px 1.3px at 68% 12%, rgba(255,255,255,.75), transparent),
+    radial-gradient(1px 1px at 44% 28%, rgba(255,255,255,.55), transparent),
+    radial-gradient(1.4px 1.4px at 86% 24%, rgba(255,255,255,.8), transparent);
+}
+.poster .ttl2{position:relative; font-size:var(--t5); font-weight:800; letter-spacing:-.01em}
+.poster .sub2{position:relative; font-size:var(--t1); color:rgba(255,255,255,.62); margin-top:2px}
+.poster .tl{position:relative; margin:var(--s5) 0 var(--s4)}
+.poster .tl div{color:#fff; font-size:var(--t2); min-height:30px; font-weight:700}
+.poster .tl div::before{background:#fff; box-shadow:0 0 0 3.5px rgba(255,255,255,.2)}
+.poster .tl div::after{background:rgba(255,255,255,.38); opacity:1}
+.poster .tl div span{color:rgba(255,255,255,.58); font-weight:400}
+.poster .wave{display:block; width:100%; height:auto; opacity:.4; margin-bottom:var(--s4)}
+.poster .stats2{display:flex; gap:var(--s6); padding-top:var(--s3); border-top:1px solid rgba(255,255,255,.2)}
+.poster .stats2 b{display:block; font-size:var(--t6); font-weight:800; line-height:1.05; font-variant-numeric:tabular-nums}
+.poster .stats2 s{display:block; text-decoration:none; font-size:var(--t0); color:rgba(255,255,255,.58); margin-top:2px}
+.poster .quote{
+  margin-top:var(--s4); padding-left:var(--s3); border-left:2px solid rgba(255,255,255,.35);
+  font-size:var(--t3); line-height:1.7; color:rgba(255,255,255,.92);
+}
+.poster .wm2{
+  display:flex; align-items:center; margin-top:var(--s4);
+  font-size:var(--t1); font-weight:800; letter-spacing:.16em; color:rgba(255,255,255,.5);
+}
+.poster .wm2 span{margin-left:auto; letter-spacing:0; font-weight:400}
+
+.sld .bar3{position:relative; height:3px; border-radius:99px; background:var(--line)}
+.sld .bar3 i{position:absolute; left:0; top:0; bottom:0; width:45%; border-radius:99px; background:var(--brand)}
+.sld .bar3 u{
+  position:absolute; left:45%; top:50%; margin:-7px 0 0 -7px; width:14px; height:14px;
+  border-radius:50%; background:#fff; border:2px solid var(--brand); box-shadow:0 2px 6px rgba(0,0,0,.22);
+}
+.sld .lbl{display:flex; justify-content:space-between; margin-top:var(--s3); font-size:var(--t1); color:var(--ink3)}
+
+.bar4{width:40px; height:3px; border-radius:99px; background:var(--line); overflow:hidden}
+.bar4 i{display:block; height:100%; border-radius:99px; background:var(--brand)}
+
+.mcd{
+  flex:0 0 auto; padding:var(--s3); border:1px solid var(--line);
+  border-radius:var(--r4); background:var(--surface);
+}
+.mcd .txt3{font-size:var(--t3); line-height:1.6; margin-top:var(--s2)}
+.mcd .pics{display:flex; gap:3px; margin-top:var(--s2)}
+.mcd .pics div{flex:1; aspect-ratio:1; border-radius:var(--r1); background:var(--sea)}
+.mcd .bar5{display:flex; gap:var(--s5); margin-top:var(--s3); font-size:var(--t2); color:var(--ink3)}
+
+.g9{display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s2)}
+.g9 div{position:relative; aspect-ratio:1; border-radius:var(--r2); background:var(--sea); overflow:hidden}
+.g9 div.empty{
+  background:transparent; border:1px dashed var(--line);
+  display:flex; align-items:center; justify-content:center; color:var(--ink3); font-size:var(--t6);
+}
+.g9 .num{
+  position:absolute; right:3px; top:3px; width:14px; height:14px; border-radius:50%;
+  background:var(--brand); color:#fff; font-size:var(--t0); font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.g9 .ovl{
+  position:absolute; inset:0; background:rgba(8,20,32,.52); color:#fff;
+  font-size:var(--t1); font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+}
+
+.bal{
+  padding:var(--s4); border-radius:var(--r4); text-align:center; border:1px solid var(--line2);
+  background:linear-gradient(158deg,rgba(255,77,109,.1),rgba(123,92,255,.12));
+}
+.bal .n{font-size:26px; font-weight:800; line-height:1.1; font-variant-numeric:tabular-nums}
+.bal .l{font-size:var(--t1); color:var(--ink3); margin-top:2px}
+.bal .r{display:flex; justify-content:center; gap:var(--s6); margin-top:var(--s3); font-size:var(--t1); color:var(--ink2)}
+
+.ck{display:flex; gap:3px}
+.ck div{
+  flex:1; min-height:32px; border-radius:var(--r2); background:var(--sea);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-size:var(--t0); font-weight:700; color:var(--ink3);
+}
+.ck div.ok{background:rgba(53,199,126,.2); color:#2FBF77}
+.ck div.now{background:var(--aqua); color:#fff; box-shadow:0 3px 9px rgba(18,181,206,.38)}
+.ck div.soon{background:transparent; border:1px dashed var(--line)}
+
+/* ---------- empty / loading / failure (Z series) ---------- */
+.empty2{
+  flex:1 1 auto; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:0 var(--s6); gap:var(--s1);
+}
+.empty2 .ico2{font-size:38px; line-height:1; color:var(--mist)}
+.empty2 .ico2 svg{display:block; width:92px; height:auto}
+.empty2 h5{font-size:var(--t5); font-weight:800; margin:var(--s3) 0 0; letter-spacing:-.01em}
+.empty2 p{font-size:var(--t2); line-height:1.7; color:var(--ink3); margin:var(--s1) 0 0}
+.empty2 .cta,.empty2 .oauth{margin-top:var(--s5); align-self:stretch}
+.skel{background:var(--line2); border-radius:var(--r1); animation:shim 1.5s ease-in-out infinite}
+@keyframes shim{0%,100%{opacity:.5}50%{opacity:1}}
+.skrow{display:flex; align-items:center; gap:var(--s3); padding:var(--s2) 0}
+
+/* ---------- auth (A series) ---------- */
+.fieldr{
+  display:flex; align-items:center; gap:var(--s3); min-height:34px; padding:0 var(--s3);
+  border:1px solid var(--line); border-radius:var(--r3); background:var(--surface);
+  font-size:var(--t3); color:var(--ink3);
+}
+.fieldr .val{color:var(--ink); font-weight:600}
+.fieldr .cc{color:var(--ink); font-weight:700}
+.fieldr .bar2{width:1px; height:15px; background:var(--line); flex:0 0 auto}
+.oauth{
+  display:flex; align-items:center; justify-content:center; gap:var(--s2); height:34px;
+  border:1px solid var(--line); border-radius:99px; background:var(--surface);
+  font-size:var(--t3); font-weight:700; color:var(--ink);
+}
+.dvd{display:flex; align-items:center; gap:var(--s3); font-size:var(--t1); color:var(--ink3)}
+.dvd::before,.dvd::after{content:""; flex:1; height:1px; background:var(--line)}
+.otp{display:flex; gap:var(--s2)}
+.otp div{
+  flex:1; height:38px; display:flex; align-items:center; justify-content:center;
+  border:1.5px solid var(--line); border-radius:var(--r2); background:var(--surface);
+  font-size:var(--t5); font-weight:800;
+}
+.otp div.fill{border-color:var(--ink3)}
+.otp div.cur{border-color:var(--brand); color:var(--brand)}
+.seg{
+  display:flex; gap:3px; padding:3px; border-radius:99px;
+  background:var(--page); border:1px solid var(--line2);
+}
+.seg div{
+  flex:1; min-height:24px; display:flex; align-items:center; justify-content:center;
+  border-radius:99px; font-size:var(--t2); font-weight:700; color:var(--ink2);
+}
+.seg div.on{background:var(--brand); color:#fff; box-shadow:0 2px 6px rgba(255,77,109,.35)}
+/* Sign-in channel switch uses aqua: pink means "costs coins" everywhere else in the app */
+.seg.aq div.on{background:var(--aqua); box-shadow:0 2px 6px rgba(18,181,206,.35)}
+.prog{flex:0 0 auto; height:3px; background:var(--line2)}
+.prog i{display:block; height:100%; background:var(--grad)}
+
+/* ---------- bottom sheet (H4) ---------- */
+.coin.ink{background:var(--sea); color:var(--ink); box-shadow:none}
+.sheet{
+  position:absolute; left:0; right:0; bottom:0; z-index:9;
+  padding:var(--s2) var(--s4) var(--s4); background:var(--surface);
+  border-radius:var(--r5) var(--r5) 0 0; box-shadow:0 -8px 28px rgba(0,0,0,.2);
+}
+.sheet .grab{width:30px; height:3px; border-radius:99px; background:var(--line); margin:0 auto var(--s3)}
+.gitem{padding:var(--s2) 0; text-align:center; border:1.5px solid transparent; border-radius:var(--r3)}
+.gitem.on{border-color:var(--brand); background:rgba(255,77,109,.07)}
+.gitem b{display:block; font-size:20px; font-weight:400; line-height:1.2}
+.gitem s{display:block; text-decoration:none; margin-top:2px; font-size:var(--t1); font-weight:700; color:var(--gold)}
+.qty{
+  display:flex; align-items:center; justify-content:center; gap:3px; height:34px; padding:0 var(--s3);
+  border:1px solid var(--line); border-radius:99px; font-size:var(--t3); font-weight:700; color:var(--ink2);
+}
+
+/* ---------- compose / thread (B & D series) ---------- */
+.ta{
+  flex:1 1 auto; display:flex; flex-direction:column; padding:var(--s4);
+  border:1px solid var(--line); border-radius:var(--r4); background:var(--surface);
+  font-size:var(--t3); line-height:1.75; color:var(--ink2);
+}
+.ta .cnt{margin-top:auto; text-align:right; font-size:var(--t1); color:var(--ink3)}
+.thumb{
+  width:44px; height:44px; flex:0 0 auto; border-radius:var(--r2); background:var(--sea);
+  display:flex; align-items:center; justify-content:center; color:var(--ink3); font-size:var(--t6);
+}
+.thumb.add{background:transparent; border:1px dashed var(--line)}
+.btlc{
+  position:relative; overflow:hidden;
+  padding:var(--s4); border-radius:var(--r4); border:1px solid var(--line2);
+  background:linear-gradient(158deg,rgba(255,77,109,.09),rgba(123,92,255,.11));
+}
+/* Gradient seal: shared by .letter and .btlc to mark content that came from the sea */
+.btlc::before{content:""; position:absolute; left:0; right:0; top:0; height:2.5px; background:var(--grad)}
+.btlc .body2{font-size:var(--t4); line-height:1.75; margin-top:var(--s3)}
+.blur{filter:blur(3.5px); user-select:none}
+
+.rws{display:flex; flex-direction:column}
+.rws a{
+  position:relative; display:flex; align-items:center; gap:var(--s3);
+  min-height:44px; padding:var(--s2) 0; color:var(--ink);
+}
+.rws a::after{content:""; position:absolute; left:38px; right:0; bottom:0; height:1px; background:var(--line2)}
+.rws a:last-child::after{display:none}
+.rws .tx2{flex:1; min-width:0}
+.rws .tx2 b{display:block; font-size:var(--t3); font-weight:700}
+.rws .tx2 s{
+  display:block; text-decoration:none; margin-top:1px; font-size:var(--t2); color:var(--ink3);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.rws .mt{flex:0 0 auto; text-align:right; font-size:var(--t1); color:var(--ink3)}
+.rws .mt .ub2{
+  display:block; min-width:14px; margin:var(--s1) 0 0 auto; padding:0 3px;
+  border-radius:99px; background:var(--brand); color:#fff;
+  font-size:var(--t0); font-weight:800; line-height:14px; text-align:center;
+}
+
+.bub{max-width:76%; padding:var(--s2) var(--s3); font-size:var(--t3); line-height:1.55}
+.bub.you{
+  align-self:flex-start; background:var(--sea); color:var(--ink);
+  border-radius:var(--r3) var(--r3) var(--r3) var(--r1);
+}
+.bub.me{
+  align-self:flex-end; background:var(--brand); color:#fff;
+  border-radius:var(--r3) var(--r3) var(--r1) var(--r3);
+}
+.bub .rd2{display:block; margin-top:2px; font-size:var(--t0); opacity:.8; text-align:right}
+.sys{align-self:center; font-size:var(--t1); color:var(--ink3)}
+.gift{
+  align-self:center; display:flex; align-items:center; gap:var(--s2);
+  padding:var(--s2) var(--s3); border-radius:99px; font-size:var(--t2);
+  background:rgba(255,197,61,.2); color:var(--ink2);
+}
+.inp{
+  flex:0 0 auto; display:flex; align-items:center; gap:var(--s2);
+  padding:var(--s2) var(--s4) var(--s3); border-top:1px solid var(--line2);
+}
+.inp .fd{
+  flex:1; height:30px; display:flex; align-items:center; padding:0 var(--s3);
+  border-radius:99px; background:var(--page); color:var(--ink3); font-size:var(--t3);
+}
+.inp .snd{
+  width:30px; height:30px; flex:0 0 auto; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--brand); color:#fff; font-size:var(--t3);
+}
+
+.tb.hf{
+  flex-wrap:wrap; background:var(--surface); border-top:1px solid var(--line2);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.tb.hf div{
+  flex:1; position:relative; text-align:center; padding:7px 0 7px;
+  font-size:var(--t1); font-weight:700; color:var(--ink3);
+}
+.tb.hf div svg{
+  display:block; width:18px; height:18px; margin:0 auto 3px; position:relative; z-index:2;
+  fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round;
+}
+.tb.hf div span{position:relative; z-index:2}
+.tb.hf div.on{color:#fff}
+.tb.hf div.on svg{stroke-width:2}
+.tb.hf div.on::before{
+  content:""; position:absolute; z-index:1; left:50%; top:1px; bottom:1px;
+  transform:translateX(-50%); width:42px; border-radius:13px 13px 15px 15px;
+  background:var(--grad); box-shadow:0 5px 14px rgba(255,77,109,.42);
+}
+/* Unread badge: pinned to the top-right of the icon */
+.tb.hf em{
+  position:absolute; z-index:3; top:3px; left:50%; margin-left:5px;
+  min-width:14px; height:14px; padding:0 3px; border-radius:99px;
+  background:var(--brand); color:#fff; border:1.5px solid var(--surface);
+  font-style:normal; font-size:var(--t0); font-weight:800; line-height:11px;
+}
+/* iOS home indicator: reminds devs to reserve the safe area, and makes the frame read as real */
+.tb.hf::after{
+  content:""; flex:0 0 100%; width:74px; height:3px; border-radius:99px;
+  background:var(--ink3); opacity:.28; margin:1px auto 5px;
+}
+
+/* ---------- tech panel ---------- */
+.tp{
+  border:1px solid var(--line); border-radius:12px; background:var(--surface);
+  padding:12px 13px; font-size:12px;
+}
+.tp dl{margin:0; display:grid; grid-template-columns:auto 1fr; gap:6px 10px; align-items:start}
+.tp dt{
+  font-family:var(--mono); font-size:9.5px; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--ink3); padding-top:2px; white-space:nowrap;
+}
+.tp dd{margin:0; color:var(--ink2); font-size:11.5px; line-height:1.55}
+.ep{
+  display:inline-block; font-family:var(--mono); font-size:10px; padding:1.5px 6px;
+  border-radius:5px; background:var(--sea); color:var(--ink); margin:0 3px 3px 0;
+  border:1px solid var(--line2);
+}
+.ep.n{background:transparent; border:1px dashed var(--new); color:var(--new)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:13px; min-width:660px}
+th,td{padding:10px 14px; text-align:left; border-bottom:1px solid var(--line2); vertical-align:top}
+th{
+  font-family:var(--mono); font-size:10px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink3); font-weight:400; white-space:nowrap;
+}
+tr:last-child td{border-bottom:0}
+td code, td .ep{font-family:var(--mono); font-size:11px}
+td b{font-weight:600}
+
+/* ---------- IA map ---------- */
+.ia{display:grid; grid-template-columns:repeat(auto-fit,minmax(178px,1fr)); gap:14px}
+.ia .col{border:1px solid var(--line); border-radius:12px; background:var(--surface); padding:13px 14px}
+.ia .col h4{font-size:13.5px; display:flex; align-items:center; gap:7px; margin-bottom:8px}
+.ia .col h4 span{font-size:16px}
+.ia .col ul{margin:0; padding-left:16px; color:var(--ink2); font-size:12px; line-height:1.75}
+.ia .col ul li::marker{color:var(--mist)}
+
+/* ---------- callout ---------- */
+.co{
+  border-left:2px solid var(--coral); background:var(--surface); border-radius:0 10px 10px 0;
+  padding:13px 16px; margin:22px 0; font-size:13.5px; color:var(--ink2);
+}
+.co b{color:var(--ink)}
+.co code{font-family:var(--mono); font-size:12px; background:var(--sea); padding:1px 5px; border-radius:4px; color:var(--ink)}
+
+hr{border:0; border-top:1px solid var(--line); margin:56px 0 0}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important; transition:none !important}
+}
+</style>
+
+<!-- Tab icon sprite: one line-icon set for both states; only colour and stroke width change -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+ <symbol id="ic-ocean" viewBox="0 0 24 24">
+ <path d="M2 7.5c2.2-2.4 4.4-2.4 6.6 0s4.4 2.4 6.6 0 4.4-2.4 6.6 0"/>
+ <path d="M2 13c2.2-2.4 4.4-2.4 6.6 0s4.4 2.4 6.6 0 4.4-2.4 6.6 0"/>
+ <path d="M2 18.5c2.2-2.4 4.4-2.4 6.6 0s4.4 2.4 6.6 0 4.4-2.4 6.6 0"/>
+ </symbol>
+ <symbol id="ic-discover" viewBox="0 0 24 24">
+ <circle cx="12" cy="12" r="9"/>
+ <path d="M15.8 8.2l-2.1 5.5-5.5 2.1 2.1-5.5z"/>
+ </symbol>
+ <symbol id="ic-chats" viewBox="0 0 24 24">
+ <path d="M21 11.6a8.4 8.4 0 0 1-8.4 8.4 8.5 8.5 0 0 1-3.8-.9L3.4 20.6l1.5-5.4A8.4 8.4 0 1 1 21 11.6z"/>
+ </symbol>
+ <symbol id="ic-moments" viewBox="0 0 24 24">
+ <path d="M12 2.8l2.3 6.1 6.1 2.3-6.1 2.3L12 19.6l-2.3-6.1L3.6 11.2l6.1-2.3z"/>
+ </symbol>
+ <symbol id="ic-me" viewBox="0 0 24 24">
+ <circle cx="12" cy="8" r="3.7"/>
+ <path d="M4.6 20.2c0-4.1 3.3-6.5 7.4-6.5s7.4 2.4 7.4 6.5"/>
+ </symbol>
+</svg>
+
+<div class="wrap">
+
+<header class="mast">
+ <div class="kick" style="display:flex;align-items:center"> Drift App · V1 technical prototype <button id="tg">Light / dark</button>
+ <button id="ng" aria-pressed="false">Night</button>
+ </div>
+ <h1>17 modules, 39 screens, one endpoint map</h1>
+ <p> A full prototype laid out against the V1 module list from product. Every screen is annotated with the <b>endpoints that actually exist</b> — every solid endpoint tag below is taken from the real <code style="font-family:var(--mono);font-size:13px">server/internal/*/handler.go</code> route registrations. Dashed tags are what the app still needs. Licensing, permits and other non-technical prerequisites are out of scope here. </p>
+ <div class="meta">
+ <span>2026-09-15</span>
+ <span>Flutter · go_router · Riverpod</span>
+ <span>~70% backend reuse</span>
+ <span>Solid = exists</span>
+ <span>Dashed = to build</span>
+ </div>
+</header>
+
+<!-- ========== 0. INFORMATION ARCHITECTURE ========== -->
+<section id="ia">
+ <div class="sh"><span class="no">§0</span><h2>Information architecture</h2><span class="en">Navigation &amp; routing</span></div>
+ <p class="sub"> 17 modules collapse into <b>5 bottom tabs</b>. Modules 2, 3, 4 and 6 each take a tab; everything else lives under Me. Routing uses <code>go_router</code>, the auth guard runs through <code>redirect</code>, and each tab keeps its own Navigator stack. </p>
+
+ <div class="ia">
+ <div class="col">
+ <h4><span>🌊</span> Ocean</h4>
+ <ul><li>Throw / pull</li><li>Bottle detail</li><li>Replies and unlocking</li><li>My bottles</li><li>Drift trail</li></ul>
+ </div>
+ <div class="col">
+ <h4><span>🧭</span> Discover</h4>
+ <ul><li>People feed</li><li>Language / interest / distance filters</li><li>Profile</li><li>Like / say hi</li></ul>
+ </div>
+ <div class="col">
+ <h4><span>💬</span> Chats</h4>
+ <ul><li>Conversations</li><li>1-to-1 chat</li><li>Image messages</li><li>Gifting</li><li>Report / block</li></ul>
+ </div>
+ <div class="col">
+ <h4><span>✨</span> Moments</h4>
+ <ul><li>Moments feed</li><li>Post a moment</li><li>Comments / likes</li><li>Moment detail</li></ul>
+ </div>
+ <div class="col">
+ <h4><span>👤</span> Me</h4>
+ <ul><li>Profile / connections</li><li>Wallet / top-up</li><li>Items / gifts</li><li>Check-in / rewards</li><li>Notifications / settings</li></ul>
+ </div>
+ </div>
+
+ <div class="co">
+ <b>One key difference from the mini-program:</b> In the mini-program, tab visibility comes from <code>GET /api/tabs</code> is pushed remotely to switch between tool mode and social mode. The app needs no such review disguise —<b>all 5 tabs are permanent</b>. But <code>/api/features</code> feature flags are worth keeping for staged rollout and emergency shut-off. </div>
+
+ <div class="co">
+ <b>The phone screens are drawn to a scale you can convert straight to device points.</b> 252px here maps to a 375pt device, a ratio of <code>0.672</code>; the page's CSS variables <code>--t* / --r* / --s*</code> carry the matching pt value in a comment. Type sizes are only <code>11 / 12 / 13 / 15 / 17 / 20 / 24 / 28</code>; corner radius is tiered by element <code>8 chips · 12 buttons · 16 cards · 20 panels · 28 modals · 999 pills</code>; spacing follows a <b>4pt grid</b>, with a uniform screen gutter of <b>16pt</b> so everything lines up on one vertical edge. Minimum tap-target height is <b>44pt</b> — list rows, buttons and tabs all honour that floor. <b>Fully rounded pills have a second floor — an aspect ratio of at least 1.7 : 1</b> — a minimum width alone is not enough. A one-character chip (M, F) at 30px by 22px is only a 1.35 ratio, and with <code>border-radius:99px</code> still reads as a circle. So <code>.cp</code> / <code>.ch</code> use <code>min-width:44px</code> plus 12px horizontal padding, measured at roughly 1.8 : 1. The swipe deck is the one exception, deliberately a notch wider than the body gutter. </div>
+
+ <div class="co">
+ <b>Button colour carries meaning. It is not a styling choice.</b> Four levels, fixed across the app: <b style="color:var(--aqua)">Solid aqua</b> = free actions on the main path (pull, throw, sign in, claim check-in coins) · <b style="color:var(--brand)">solid pink</b> = <b>costs coins or real money</b>(unlock, say hi, gift, top-up) · grey outline = secondary · <b style="color:var(--warn)">solid warning</b> = destructive (report and block). A secondary action that costs money uses a <b>pink outline</b>, so "pink means it costs money" holds at every level. Gradients are reserved for brand surfaces (headers, the active tab pill, progress bars);<b>buttons are always solid</b>. The direct result:<b>there is no pink anywhere in the Ocean screen's content area</b> — that is not a coincidence, it tells people the sea is free. The active tab pill is the one exception: it belongs to the <b>global shell</b> rather than the sea. Using the brand colour for the active tab is a universal convention — people read it as "which page am I on", not as a price. </div>
+
+ <div class="co">
+ <b>Tab icons are not emoji.</b> Emoji carry their own colour, which looks dirty on a coloured active pill, and the inactive state needs <code>grayscale + opacity</code> to grey them out, which leaves a shapeless blur. The same emoji also renders differently on different machines — while building this page, <code>🖼</code> rendered as a box on a test machine. Everything is now <b>one set of line SVGs</b>(a <code>&lt;symbol&gt;</code> sprite, referenced once across the page). Inactive is <code>stroke-width:1.7</code> use <code>--ink3</code>; active is <code>2</code> in white. The icon vocabulary follows the product: Ocean is three waves, Discover is a compass, Moments is a four-point star. </div>
+</section>
+
+<hr>
+
+<!-- ========== 1. AUTH ========== -->
+<section>
+ <div class="sh">
+ <span class="no">§1</span><h2>Auth & user</h2><span class="en">Auth &amp; User</span>
+ <span class="vd mod">🔨 Rework</span><span class="vd add">🆕 New</span>
+ </div>
+ <p class="sub"> The existing <code>user.resolveLogin</code> has only <code>wx</code> / <code>alipay</code> two branches, both via code2session. The app needs four entirely new sign-in paths (phone, email, Google, Apple), and <code>model.User</code> is missing email, password_hash, language, interests and lat/lng. </p>
+ <p class="sub"> <b>Day-to-day sign-in is by password; codes are only for sign-up and password reset.</b> Phone keeps one extra passwordless path (code signs you straight in) — that is the norm in India. Codes <b>must be purpose-bound</b>, or a code issued for "sign-up" can be spent resetting someone else's password. See A2r. </p>
+  <p class="sub" style="border-left:3px solid var(--warn);padding-left:var(--s3)">
+    <b>⏳ CN-first section.</b> New screens for Google Sign-In / Maps / Play Billing (<code>A2 · A2g · A2k · A2p · A6 · A6b · A7</code>) were drafted in <code>v1-screens.html</code> first and are <b>not yet mirrored here</b>. Treat the Chinese file as the source of truth for these until this note is removed.
+  </p>
+
+ <div class="grid">
+
+ <div class="scr">
+ <div class="cap"><b>Launch</b><i>A1</i></div>
+ <div class="ph hf">
+ <div class="splash">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div style="font-size:44px;line-height:1">🍾</div>
+ <div class="wm">DRIFT</div>
+ <div class="tag">One bottle. It could drift anywhere.</div>
+ <div class="ldr"><i></i></div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Branch</dt><dd>JWT in secure storage → silent validation → Ocean. Missing or 401 → sign-in</dd>
+ <dt>Endpoints</dt><dd><span class="ep">GET /api/user/profile</span><span class="ep">GET /api/features</span></dd>
+ <dt>Notes</dt><dd>Fetch features and tabs in parallel at launch so the first screen doesn't reflow</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Sign in (password)</b><i>A2</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="bd">
+ <div style="text-align:center;margin:46px 0 var(--s5)">
+ <div style="font-size:34px;line-height:1">🍾</div>
+ <div style="font-size:var(--t5);font-weight:800;letter-spacing:.18em;margin-top:var(--s2)">DRIFT</div>
+ </div>
+ <div>
+ <div style="font-size:var(--t6);font-weight:800;letter-spacing:-.01em">Welcome back</div>
+ <div style="font-size:var(--t2);color:var(--ink3);margin-top:var(--s1)">One bottle. It could drift anywhere.</div>
+ </div>
+ <div class="seg aq"><div class="on">Phone</div><div>Email</div></div>
+ <div class="fieldr">
+ <span class="cc">+91 ▾</span>
+ <span class="bar2"></span>
+ <span class="val">98765 43210</span>
+ </div>
+ <div class="fieldr">
+ <span class="val">••••••••</span>
+ <span style="margin-left:auto;color:var(--ink3)">👁</span>
+ </div>
+ <div style="text-align:right;font-size:var(--t1);font-weight:700;color:var(--ink3)">Forgot password?</div>
+ <div class="cta">Sign in</div>
+ <div class="cta gh">Sign in with a code</div>
+ <div style="text-align:center;font-size:var(--t2);color:var(--ink3)"> No account yet? <b style="color:var(--brand);font-weight:800">Sign up</b>
+ </div>
+ <div class="dvd">or</div>
+ <div class="oauth">Continue with Google</div>
+ <div class="oauth">Continue with Apple</div>
+ <div style="margin-top:auto;text-align:center;font-size:var(--t1);color:var(--ink3);line-height:1.7"> By continuing you agree to the <b style="color:var(--brand);font-weight:700">Terms</b> and <b style="color:var(--brand);font-weight:700">Privacy Policy</b>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep n">POST /api/auth/login/password</span>
+ <span class="ep n">POST /api/auth/google</span>
+ <span class="ep n">POST /api/auth/apple</span>
+ </dd>
+ <dt>Password by default</dt><dd>Codes are only for <b>sign-up</b> and <b>password reset</b>. "Sign in with a code" appears <b>on the Phone tab only</b> — passwordless is the norm in India, and offering it for email would collide with the sign-up flow</dd>
+ <dt>Error wording</dt><dd>Unknown account and wrong password return <b>the same sentence</b>. Distinguishing them hands attackers a free username-enumeration endpoint</dd>
+ <dt>Legacy accounts</dt><dd>Users created in the code-only era have no password; sign-in tells them to "set one via Forgot password". That flow doubles as the <b>only way to set an initial password</b></dd>
+ <dt>Tenancy</dt><dd>Requests carry <code>appid</code>; when the credential table has no match it falls back to <code>APP_DEFAULT_TENANT_ID</code> — the app ships as a single bundle, so its tenant is a deploy-time constant and needs no <code>app_credentials</code> row</dd>
+ <dt>Hard rule</dt><dd>Offer Google sign-in and iOS <b>must</b> also offer Sign in with Apple (App Store 4.8). Both buttons have mandatory <b>size, corner radius, wording and logo branding rules</b> — draw your own and you will be rejected. Use the button components the official SDKs ship; this mockup only marks the position</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Email sign-in (password)</b><i>A2e</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="bd">
+ <div style="text-align:center;margin:46px 0 var(--s5)">
+ <div style="font-size:34px;line-height:1">🍾</div>
+ <div style="font-size:var(--t5);font-weight:800;letter-spacing:.18em;margin-top:var(--s2)">DRIFT</div>
+ </div>
+ <div>
+ <div style="font-size:var(--t6);font-weight:800;letter-spacing:-.01em">Start with your email</div>
+ <div style="font-size:var(--t2);color:var(--ink3);margin-top:var(--s1)">One bottle. It could drift anywhere.</div>
+ </div>
+ <div class="seg aq"><div>Phone</div><div class="on">Email</div></div>
+ <div class="fieldr">
+ <span class="val">meera@gmail.com</span>
+ </div>
+ <div class="fieldr">
+ <span class="val">••••••••</span>
+ <span style="margin-left:auto;color:var(--ink3)">👁</span>
+ </div>
+ <div style="text-align:right;font-size:var(--t1);font-weight:700;color:var(--ink3)">Forgot password?</div>
+ <div class="cta">Sign in</div>
+ <div style="text-align:center;font-size:var(--t2);color:var(--ink3)"> No account yet? <b style="color:var(--brand);font-weight:800">Sign up</b>
+ </div>
+ <div class="dvd">or</div>
+ <div class="oauth">Continue with Google</div>
+ <div class="oauth">Continue with Apple</div>
+ <div style="margin-top:auto;text-align:center;font-size:var(--t1);color:var(--ink3);line-height:1.7"> By continuing you agree to the <b style="color:var(--brand);font-weight:700">Terms</b> and <b style="color:var(--brand);font-weight:700">Privacy Policy</b>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd><span class="ep n">POST /api/auth/login/password</span> The <b>same route</b> as phone — the body carries either <code>email</code> or <code>phone</code></dd>
+ <dt>Differs from phone</dt><dd><b>Email has no "sign in with a code"</b> — that entry exists on the Phone tab only. For email, codes are used solely for sign-up and password reset</dd>
+ <dt>Normalization</dt><dd>Addresses are lower-cased on both read and write. Skip that and <code>Meera@…</code> and <code>meera@…</code> become two accounts</dd>
+ <dt>Prerequisite</dt><dd>The sending domain needs <b>SPF / DKIM / DMARC</b> or codes land in spam — account setup work, not code, same as DLT registration for SMS. With no provider configured it only logs instead of sending</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Sign up / Reset</b><i>A2r</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">←<span>Create account</span></div>
+ <div class="bd" style="gap:var(--s3)">
+ <div class="seg aq" style="margin-top:var(--s3)"><div>Phone</div><div class="on">Email</div></div>
+ <div class="fieldr"><span class="val">meera@gmail.com</span></div>
+ <div class="otp">
+ <div class="fill">4</div><div class="fill">8</div><div class="fill">2</div>
+ <div class="cur">|</div><div></div><div></div>
+ </div>
+ <div style="font-size:var(--t2);color:var(--ink3)">Resend in 42s</div>
+ <div class="fieldr">
+ <span class="val">••••••••</span>
+ <span style="margin-left:auto;color:var(--ink3)">👁</span>
+ </div>
+ <div style="font-size:var(--t1);color:var(--ink3)">You'll use this to sign in from now on</div>
+ <div class="cta">Create and start</div>
+ <div style="margin-top:auto;text-align:center;font-size:var(--t1);color:var(--ink3);line-height:1.7"> By continuing you agree to the <b style="color:var(--brand);font-weight:700">Terms</b> and <b style="color:var(--brand);font-weight:700">Privacy Policy</b>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep n">POST /api/auth/otp/send</span>
+ <span class="ep n">POST /api/auth/register</span>
+ <span class="ep n">POST /api/auth/password/reset</span>
+ </dd>
+ <dt>One screen, two flows</dt><dd>Sign-up and password reset have <b>identical shape</b> (identifier → code → set password) and differ only in title, button label and which endpoint they post to. The client uses a single <code>CredentialFlowPage</code> switched by a <code>flow</code> argument — writing two would duplicate the countdown and password rules</dd>
+ <dt>⚠️ Codes must be purpose-bound</dt><dd>Sending carries <code>purpose=register|reset|login</code> and the Redis key is <code>otp:code:&lt;purpose&gt;:&lt;identifier&gt;</code>. <b>Without this, anyone who knows your email can request a code as "sign-up" and then spend it on the reset flow to take over your password.</b> Verification requires the same purpose used when sending</dd>
+ <dt>State checks</dt><dd>purpose=register rejects an identifier that already exists; =reset rejects one that doesn't. This does reveal whether an address is registered — a deliberate trade: otherwise sign-up could only fail at submit time. Credential stuffing is held off by the three-axis rate limiting, not by hiding this</dd>
+ <dt>Password</dt><dd>bcrypt (cost 10) into <code>User.PasswordHash</code>, <b>never sent down</b>. Length-only rule of 8 — <b>no complexity requirement</b>: Indian users type largely on phone keypads and forcing symbols measurably hurts conversion</dd>
+ <dt>Gates</dt><dd>The code key carries purpose, the <b>rate-limit keys do not</b>: codes are isolated per purpose while quotas are merged per identifier, so switching purpose or channel gets you nowhere</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Verification code</b><i>A3</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">←<span>Verify your number</span></div>
+ <div class="bd" style="gap:var(--s4)">
+ <div style="margin-top:var(--s3)">
+ <div style="font-size:var(--t6);font-weight:800;letter-spacing:-.01em">Enter the code</div>
+ <div style="font-size:var(--t2);color:var(--ink3);margin-top:var(--s2)"> Sent to <b style="color:var(--ink)">+91 98765 43210</b>
+ <b style="color:var(--brand);margin-left:var(--s2)">Change number</b>
+ </div>
+ </div>
+ <div class="otp">
+ <div class="fill">4</div><div class="fill">8</div><div class="fill">2</div>
+ <div class="cur">|</div><div></div><div></div>
+ </div>
+ <div style="font-size:var(--t2);color:var(--ink3)">Resend in 42s</div>
+ <div class="warn" style="margin-top:var(--s2)">
+ <span>⚠️</span>
+ <div>Didn't arrive? Check whether it was filtered. One code per number per 60 seconds; five in a row trips fraud control</div>
+ </div>
+ </div>
+ <div class="foot">
+ <div class="cta">Verify and sign in</div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd><span class="ep n">POST /api/auth/otp/verify</span></dd>
+ <dt>Returns</dt><dd>Structurally identical to the existing <code>/api/auth/login</code> :<code>{token, user, is_new}</code>, so downstream auth middleware needs no change</dd>
+ <dt>Fraud</dt><dd>Codes live in Redis with a TTL. Rate-limit across three axes — number, IP and device. Belongs to module 15</dd>
+ <dt>Both channels</dt><dd>Email reuses this screen whole; only three strings change: the title becomes "Verify email", "Sent to" shows the address, and the footer hint becomes "check your spam folder first"</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Your profile</b><i>A4</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">←<span>Your profile</span><span class="sp2">Step 1 of 2</span></div>
+ <div class="prog"><i style="width:50%"></i></div>
+ <div class="bd">
+ <div style="display:flex;gap:var(--s3);align-items:center">
+ <div class="thumb add" style="border-radius:50%">＋</div>
+ <div style="flex:1;min-width:0">
+ <div style="font-size:var(--t3);font-weight:700">Add a photo</div>
+ <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">People with photos get far more replies</div>
+ </div>
+ </div>
+ <div style="display:flex;gap:var(--s2)">
+ <div class="fieldr" style="flex:1"><span class="val">Stray Cat</span></div>
+ <div class="fieldr" style="flex:0 0 64px"><span class="val">24</span></div>
+ </div>
+ <div class="sec">Gender</div>
+ <div class="seg"><div class="on">F</div><div>M</div><div>Private</div></div>
+ <div class="sec">Languages you speak</div>
+ <div class="chs" style="padding:0;flex-wrap:wrap;gap:var(--s2)">
+ <span class="ch on">English</span><span class="ch on">हिन्दी</span>
+ <span class="ch">తెలుగు</span><span class="ch">தமிழ்</span>
+ </div>
+ <div class="sec">Interests · pick at least 3</div>
+ <div class="chs" style="padding:0;flex-wrap:wrap;gap:var(--s2)">
+ <span class="ch on">Music</span><span class="ch">Movies</span><span class="ch on">Travel</span>
+ <span class="ch">Cricket</span><span class="ch on">Food</span><span class="ch">Art</span>
+ </div>
+ <div class="lst">
+ <a><i>📍</i>
+ <div style="flex:1;min-width:0">
+ <div>Turn on location</div>
+ <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">Used to suggest people nearby. Off anytime.</div>
+ </div>
+ <span>›</span>
+ </a>
+ </div>
+ </div>
+ <div class="foot"><div class="cta">Start drifting</div></div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd><span class="ep">POST /api/user/update</span><span class="ep">POST /api/upload</span></dd>
+ <dt>Schema</dt><dd><code>User</code> add <code>Language</code> / <code>Interests</code> / <code>Lat</code> / <code>Lng</code>, and AutoMigrate adds the columns</dd>
+ <dt>Notes</dt><dd>already exist <code>Gender</code> / <code>Age</code> / <code>City</code> can be reused as-is. Denied location must degrade, never block sign-up</dd>
+ </dl></div>
+ </div>
+
+ </div>
+</section>
+
+<hr>
+
+<!-- ========== 2. BOTTLE ========== -->
+<section>
+ <div class="sh">
+ <span class="no">§2</span><h2>Bottles</h2><span class="en">Bottle</span>
+ <span class="vd keep">✅ No backend change</span>
+ </div>
+ <p class="sub"> All 12 endpoints already exist. <code>Bottle</code> ships with <code>ExpireAt</code> + <code>Status</code> expiry built in, quota through <code>quota</code>, and pulling runs off a pre-built Redis feed. The app only has to wire the endpoints and handle <code>3003 CodeQuotaExceeded</code>. The full home-screen animation list lives in <code>docs/prototype/mvp-screens.html</code>; only the skeleton is kept here. </p>
+  <p class="sub" style="border-left:3px solid var(--warn);padding-left:var(--s3)">
+    <b>⏳ CN-first section.</b> New screens for Google Sign-In / Maps / Play Billing (<code>B2 · M1 · M2</code>) were drafted in <code>v1-screens.html</code> first and are <b>not yet mirrored here</b>. Treat the Chinese file as the source of truth for these until this note is removed.
+  </p>
+
+ <div class="grid">
+
+ <div class="scr">
+ <div class="cap"><b>Ocean home</b><i>B1</i></div>
+ <div class="ph hf">
+ <div class="hdr">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="top">
+ <div class="ring sm"><u>🐱</u><span class="dot"></span></div>
+ <span class="coin"><i class="cn"></i> 248</span>
+ <div class="ic">☰</div>
+ </div>
+ <h3>The sea tonight</h3>
+ <div class="sc">1,284 replies drifting back · night opens 21:00</div>
+ </div>
+ <div class="chs raise">
+ <span class="ch on">All</span><span class="ch pk">🌙 Night</span>
+ <span class="ch aq">हिन्दी</span><span class="ch">தமிழ்</span><span class="ch">English</span>
+ </div>
+ <div class="scene">
+ <div class="tide">↓ Pull down for high tide</div>
+ <div class="sun"></div>
+ <div class="lh"><div class="lp"></div><div class="tw"></div><div class="isl"></div></div>
+ <div class="lhtag" style="left:58px;bottom:112px">Today at sea ›</div>
+ <div class="sea">
+ <div class="peek" style="left:5%;top:-13%">3 days adrift · 2 cities</div>
+ <div class="btl" style="left:22%;top:12%"><i></i><em>3</em></div>
+ <div class="btl" style="left:55%;top:2%"><i style="animation-delay:-1.4s"></i></div>
+ <div class="btl" style="left:76%;top:26%"><i style="animation-delay:-2.6s"></i><em>1</em></div>
+ <div class="btl" style="left:38%;top:38%"><i style="animation-delay:-3.3s"></i></div>
+ </div>
+ <div class="dock">
+ <div class="pbn glass">Throw one<small>3 throws left today</small></div>
+ <div class="pbn">Hold to pull one<small>8 pulls left today</small></div>
+ </div>
+ </div>
+ <div class="tb hf">
+ <div class="on"><svg><use href="#ic-ocean"/></svg><span>Ocean</span></div>
+ <div><svg><use href="#ic-discover"/></svg><span>Discover</span></div>
+ <div><svg><use href="#ic-chats"/></svg><span>Chats</span><em>3</em></div>
+ <div><svg><use href="#ic-moments"/></svg><span>Moments</span></div>
+ <div><svg><use href="#ic-me"/></svg><span>Me</span></div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/bottle/quota</span><span class="ep">GET /api/bottle/scoop</span>
+ <span class="ep">GET /api/hook-count</span><span class="ep">GET /api/features</span>
+ </dd>
+ <dt>Tappable</dt><dd>
+ <b>Tap a bottle</b> floats up a trail-preview bubble and <b>Doesn't use a pull</b>(reads the <code>trace</code> summary already in the feed — no new endpoint); <b>Pull down</b> refreshes on high tide;<b>Tap the lighthouse</b> opens today's sea report. The home tab is opened a dozen times a day — two tap targets is not enough</dd>
+ <dt>Animation</dt><dd>Twelve groups — bob, blink, ripple, cast, rise and the rest — rebuilt with <code>AnimationController</code> + <code>TweenSequence</code> rebuilt with</dd>
+ <dt>Color</dt><dd>Both buttons in the sea <b>are aqua</b> — the whole app reads pink as "costs coins", so a sea with no pink in it is saying "this is free"</dd>
+ <dt>Notes</dt><dd>Night bottles (the night tag) can only be pulled during the night window, and the cache key carries a day/night dimension — already built</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Pulling</b><i>B1a · hold</i></div>
+ <div class="ph hf">
+ <div class="scene" style="flex:1 1 auto">
+ <div class="st" style="position:absolute;left:0;right:0;top:0;z-index:6;color:rgba(255,255,255,.9)">
+ <span>9:41</span><span>▮▮▮</span>
+ </div>
+ <div style="position:absolute;inset:0;background:rgba(8,20,36,.34);z-index:2"></div>
+ <div class="ripple">
+ <i></i><i style="animation-delay:-.9s"></i><i style="animation-delay:-1.8s"></i>
+ </div>
+ <div class="rising"></div>
+ <div class="hint">
+ <b>Something's on the line</b>
+ <s>Let go to open it</s>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Gesture</dt><dd><b>Press and hold the pull button</b> and drag down → ripples spread → a bottle rises from the deep → release to open. About <b>2.5s</b></dd>
+ <dt>Why</dt><dd>"Pull" is the verb in the product's name, yet today it is a button that jumps straight to a page. These 2.5 seconds are the <b>one thing nobody can copy</b> — the anticipation of opening something is the retention hook, and it turns "8 pulls left" from a punishment into scarcity</dd>
+ <dt>Endpoints</dt><dd>Fire the request the instant they press <code>GET /api/bottle/scoop</code>, so the data is already in flight while the animation runs. 2.5s covers a weak connection, and <b>nobody perceives loading</b></dd>
+ <dt>Fallback</dt><dd>If the request fails mid-animation the bottle sinks back with a light toast, and <b>no pull is spent</b>; an empty pool goes to <code>Z1</code></dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Opening a bottle</b><i>B1b · release</i></div>
+ <div class="ph hf">
+ <div class="scene" style="flex:1 1 auto">
+ <div class="st" style="position:absolute;left:0;right:0;top:0;z-index:7;color:rgba(255,255,255,.9)">
+ <span>9:41</span><span>▮▮▮</span>
+ </div>
+ <div style="position:absolute;inset:0;background:rgba(8,20,36,.5);z-index:2"></div>
+ <div class="letter">
+ <div class="body3">If you're ever by the sea, watch a sunset for me.</div>
+ <div class="meta2">
+ <span>Anonymous · F 24</span>
+ <span style="margin-left:auto">3 days adrift · Mumbai → you</span>
+ </div>
+ </div>
+ <div class="dock" style="bottom:var(--s6)">
+ <div class="pbn glass">Put it back<small>Doesn't use a pull</small></div>
+ <div class="pbn">Write back<small>They'll be notified</small></div>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Form</dt><dd>The letter <b>unfolds from the bottle neck</b>, warm cream paper laid over the cold sea. It is the only paper texture in the app, and it marks this as a letter rather than a message</dd>
+ <dt>Two ways out</dt><dd><b>Put it back</b>(free, spends no pull, the bottle returns to the pool) or <b>Write back</b> → <code>B3</code>. Put it back is mandatory — not every bottle deserves a reply, and forcing one makes people afraid to pull</dd>
+ <dt>Time is present</dt><dd>"3 days adrift · Mumbai → you" is the emotional core of this screen. Asynchrony is what this product is, and this line is the <b>only time it is ever said out loud</b></dd>
+ <dt>Endpoints</dt><dd><span class="ep">GET /api/bottle/:id</span>; putting it back records <code>MatchLog(action=skip)</code>, not a view</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Night</b><i>B1n · from 21:00</i></div>
+ <div class="ph hf night">
+ <div class="hdr">
+ <div class="st"><span>23:18</span><span>▮▮▮</span></div>
+ <div class="top">
+ <div class="ring sm"><u>🐱</u><span class="dot"></span></div>
+ <span class="coin" style="margin-left:auto"><i class="cn"></i> 248</span>
+ <div class="ic" style="margin-left:0">☰</div>
+ </div>
+ <h3>Night session is open</h3>
+ <div class="sc">Only night bottles are drifting · 1h 42m left</div>
+ </div>
+ <div class="chs raise">
+ <span class="ch on">🌙 Night</span><span class="ch">Confession</span>
+ <span class="ch aq">हिन्दी</span><span class="ch">தமிழ்</span>
+ </div>
+ <div class="scene">
+ <div class="sun"></div>
+ <div class="lh"><div class="lp"></div><div class="tw"></div><div class="isl"></div></div>
+ <div class="lhtag" style="left:58px;bottom:112px">312 online tonight ›</div>
+ <div class="sea">
+ <div class="btl" style="left:24%;top:14%"><i></i><em>5</em></div>
+ <div class="btl" style="left:58%;top:4%"><i style="animation-delay:-1.4s"></i></div>
+ <div class="btl" style="left:78%;top:28%"><i style="animation-delay:-2.6s"></i><em>2</em></div>
+ <div class="btl" style="left:40%;top:36%"><i style="animation-delay:-3.3s"></i></div>
+ <div class="btl" style="left:12%;top:30%"><i style="animation-delay:-2s"></i></div>
+ </div>
+ <div class="dock">
+ <div class="pbn glass">Throw one<small>Night bottles unlimited</small></div>
+ <div class="pbn">Hold to pull one<small>8 pulls left today</small></div>
+ </div>
+ </div>
+ <div class="tb hf">
+ <div class="on"><svg><use href="#ic-ocean"/></svg><span>Ocean</span></div>
+ <div><svg><use href="#ic-discover"/></svg><span>Discover</span></div>
+ <div><svg><use href="#ic-chats"/></svg><span>Chats</span><em>3</em></div>
+ <div><svg><use href="#ic-moments"/></svg><span>Moments</span></div>
+ <div><svg><use href="#ic-me"/></svg><span>Me</span></div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>This is not dark mode</dt><dd><b>Night session is a product state; system dark mode is a display preference. Two independent axes.</b> The two toggles at the top of this page switch independently — all four combinations must hold</dd>
+ <dt>Why it's worth it</dt><dd>The backend already has the night tag and a day/night cache dimension, and <code>push/scheduler.go</code> already has a "five minutes before opening" scheduled push —<b>The machinery is all there. All that's missing is making it feel like an event</b>. Right now all of it shows up as one line of small text, wasting a fixed 21:00 re-engagement hook</dd>
+ <dt>What changes</dt><dd>The header turns deep indigo, the sea goes dark, a moon replaces the sun, stars appear, bottles glow faintly and the lighthouse burns brighter. <b>Pink stays pink</b> — it only ever means "costs coins" and takes no part in the day/night story</dd>
+ <dt>Content differences</dt><dd>Only night-tagged bottles can be pulled (already built). Throwing night bottles is <b>unlimited</b>, using the quota difference to hold people in that window</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Write a bottle</b><i>B2</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">✕<span>Write a bottle</span><span class="sp2">3 throws left today</span></div>
+ <div class="bd">
+ <div class="ta"> Found a beautiful shell on the beach today, and suddenly wanted to give it to a stranger… <div class="cnt">68 / 500</div>
+ </div>
+ <div style="display:flex;gap:var(--s2)">
+ <div class="thumb">📷</div>
+ <div class="thumb add">＋</div>
+ </div>
+ <div class="sec">Tags</div>
+ <div class="chs" style="padding:0;flex-wrap:wrap;gap:var(--s2)">
+ <span class="ch on">🌙 Night</span><span class="ch">Confession</span><span class="ch">Music</span>
+ </div>
+ <div class="sec">Reach</div>
+ <div class="chs" style="padding:0">
+ <span class="ch on">Nationwide</span><span class="ch">My city</span>
+ </div>
+ </div>
+ <div class="foot">
+ <div class="cta">Send it out to sea</div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd><span class="ep">POST /api/bottle/create</span><span class="ep">POST /api/upload</span></dd>
+ <dt>Rate limit</dt><dd>The backend already applies <code>throwLimit</code> middleware; the client just reads <code>quota</code> to pre-check</dd>
+ <dt>Content safety</dt><dd>WeChat's <code>msgSecCheck</code> does not work in the app; swap in third-party text moderation (see §9)</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Bottle detail</b><i>B3</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">
+ ←<span>The bottle you found</span>
+ <span class="sp2" style="font-size:var(--t4)">♡</span>
+ <span style="font-size:var(--t4)">⋯</span>
+ </div>
+ <div class="bd">
+ <div class="btlc">
+ <div style="display:flex;align-items:center;gap:var(--s2)">
+ <div class="ring sm"><u>🙂</u></div>
+ <div style="font-size:var(--t2);color:var(--ink2)">Anonymous · F 24</div>
+ <span class="tg" style="margin-left:auto">3 days adrift</span>
+ </div>
+ <div class="body2">If you're ever by the sea, watch a sunset for me.</div>
+ </div>
+ <div class="sec">3 replies · latest 12 min ago</div>
+ <div class="rws">
+ <a>
+ <div class="ring sm"><u>🧑</u></div>
+ <div class="tx2"><b>Anonymous · M 26</b><s class="blur">I watched the sunset in Goa yesterday — the clouds were thick</s></div>
+ <div class="mt">2 days ago</div>
+ </a>
+ <a>
+ <div class="ring sm"><u>👧</u></div>
+ <div class="tx2"><b>Anonymous · F 22</b><s class="blur">I'd love to go, never found the time</s></div>
+ <div class="mt">Yesterday</div>
+ </a>
+ <a>
+ <div class="ring sm"><u>🙂</u></div>
+ <div class="tx2"><b>Anonymous · F 24</b><s class="blur">Sunsets are the kind of thing you need company for</s></div>
+ <div class="mt">12 min ago</div>
+ </a>
+ </div>
+ <div class="cta pay" style="margin-top:auto">🔒 Unlock 3 replies <i class="cn"></i> 2</div>
+ </div>
+ <div class="inp">
+ <div class="fd">Write your reply…</div>
+ <div class="snd">➤</div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/bottle/:id</span><span class="ep">GET /api/bottle/:id/replies</span>
+ <span class="ep">POST /api/bottle/:id/reply</span><span class="ep">POST /api/bottle/reply/:rid/unlock</span>
+ </dd>
+ <dt>Charging</dt><dd>Unlocking costs <code>price_unlock</code> 2 coins by default, through a <code>wallet</code> transaction with scene=<code>unlock</code></dd>
+ <dt>Notes</dt><dd><code>ReplyUnlock</code> is recorded per viewer — anyone who pays can read, not just the bottle's owner</dd>
+ <dt>Time semantics</dt><dd>A bottle says <b>"3 days adrift"</b>(a duration); a reply says <b>"12 min ago"</b>(a point in time). The two must not be mixed. Asynchrony is what this product is, and time is the <b>only form it can take that people can see</b>. 
+ <b>⚠ Store everything in UTC, render in the user's local zone</b>: India runs on IST (UTC+5:30, with a half-hour offset) while the backend's KPIs are computed in UTC+8 (hard constraint #4). Mix three time zones and "today" will land on different days</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>My bottles · trail</b><i>B4</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">←<span>My bottles</span></div>
+ <div class="bd">
+ <div class="chs" style="padding:0">
+ <span class="ch on">Thrown</span><span class="ch">Found</span><span class="ch">Saved</span>
+ </div>
+ <div class="mcd">
+ <div style="font-size:var(--t3);line-height:1.6">If you're ever by the sea, watch a sunset for me.</div>
+ <div class="bar5" style="margin-top:var(--s2)">
+ <span>👁 42</span><span>💬 3</span><span>♡ 8</span>
+ <span style="margin-left:auto">3 days adrift</span>
+ </div>
+ </div>
+ <div class="sec">Where this bottle drifted</div>
+ <div class="mcd">
+ <div class="tl">
+ <div>Mumbai · thrown<span>3 days ago</span></div>
+ <div>Pune · seen by 18<span>1h ago</span></div>
+ <div>Delhi · 3 replies<span>12 min ago</span></div>
+ </div>
+ <div style="font-size:var(--t1);color:var(--ink3);margin-top:var(--s3)"> Seen by 42 people across 3 cities </div>
+ </div>
+ <div class="mcd">
+ <div style="font-size:var(--t3);line-height:1.6">Anyone still listening to Jay Chou? Any song will do.</div>
+ <div class="bar5" style="margin-top:var(--s2)">
+ <span>👁 7</span><span>💬 0</span><span>♡ 1</span>
+ <span style="margin-left:auto">1 day ago</span>
+ </div>
+ </div>
+ <div class="mcd" style="opacity:.5">
+ <div style="font-size:var(--t3);line-height:1.6">That line I wrote at 2am…</div>
+ <div class="bar5" style="margin-top:var(--s2)">
+ <span>Expired</span><span style="margin-left:auto">7 days ago</span>
+ </div>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/bottle/mine</span><span class="ep">GET /api/bottle/:id/trace</span>
+ <span class="ep">GET /api/collection/list</span>
+ </dd>
+ <dt>Data source</dt><dd>The trail is aggregated from <code>MatchLog</code>(action = view / reply / like / skip), not a separate table</dd>
+ <dt>Feature flag</dt><dd>The trail is gated by <code>bottle_trace_enabled</code> , off by default</dd>
+ <dt>Exits</dt><dd>The trail card's top-right corner opens <code>B4s Drift chart</code> — the only self-propagating moment in the app, and it deserves more than one line of small text</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Drift chart</b><i>B4s · shareable</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">←<span>Where this bottle went</span></div>
+ <div class="bd">
+ <div class="poster">
+ <div class="ttl2">A letter's journey</div>
+ <div class="sub2">Left Mumbai on 2026-09-13</div>
+ <div class="tl">
+ <div>Mumbai · you threw it in<span>3 days ago</span></div>
+ <div>Pune · seen by 18<span>1h ago</span></div>
+ <div>Delhi · 3 replies<span>12 min ago</span></div>
+ </div>
+ <svg class="wave" viewBox="0 0 220 22" fill="none" stroke="#fff" stroke-linecap="round">
+ <path d="M4 9c9-6 18-6 27 0s18 6 27 0 18-6 27 0 18 6 27 0 18-6 27 0 18 6 27 0 18-6 27 0" stroke-width="1.6"/>
+ <path d="M10 18c8-5 16-5 24 0s16 5 24 0 16-5 24 0 16 5 24 0 16-5 24 0" stroke-width="1.3" opacity=".5"/>
+ </svg>
+ <div class="stats2">
+ <div><b>42</b><s>people saw it</s></div>
+ <div><b>3</b><s>cities</s></div>
+ <div><b>1,180</b><s>km</s></div>
+ </div>
+ <div class="quote">If you're ever by the sea, watch a sunset for me.</div>
+ <div class="wm2">DRIFT<span>ambertu.com</span></div>
+ </div>
+ <div class="warn" style="margin-top:var(--s1)">
+ <span>🔒</span>
+ <div>The poster <b>shows only your words and the cities</b> — never anything about who replied</div>
+ </div>
+ </div>
+ <div class="foot">
+ <div style="display:flex;gap:var(--s2)">
+ <div class="cta gh" style="flex:1">Save image</div>
+ <div class="cta" style="flex:1.3">Share on WhatsApp</div>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Why its own screen</dt><dd>This is the app's <b>only screenshot-worthy moment</b>. The "seen by 42 people across 3 cities" data <code>B4</code> has existed all along, buried in one line of small text on a second-level page — which is the same as not existing</dd>
+ <dt>Rendering</dt><dd>Compose the image on device (Flutter <code>RepaintBoundary</code> + <code>toImage</code>) , 
+ <b>never render it server-side</b> — one extra round trip halves the share rate</dd>
+ <dt>Reuse</dt><dd>The timeline is the same <code>B4</code> <code>.tl</code> component, just recoloured for deep water. One dataset, one component, two densities</dd>
+ <dt>Privacy</dt><dd>The poster <b>Only the bottle's text and the cities appear</b>, never anything about who replied — replies are anonymous, and sharing them is a leak</dd>
+ <dt>Watermark</dt><dd>The domain sits bottom-right. That is the loop back in. A shared image without a watermark is a giveaway</dd>
+ </dl></div>
+ </div>
+
+ </div>
+</section>
+
+<hr>
+
+<!-- ========== 3. MATCH ========== -->
+<section>
+ <div class="sh">
+ <span class="no">§3</span><h2>Discovery</h2><span class="en">Match</span>
+ <span class="vd mod">🔨 Redefined</span>
+ </div>
+ <p class="sub">
+ <b>This is the most commonly misread item on the whole list.</b> The existing <code>match</code> module has only <code>/api/city/users</code>(same city) and <code>/api/expand/wall</code>(the expand wall). At heart it is bottle scoring plus <code>MatchLog</code> behaviour logging. What V1 wants — finding people by language, interest and geography — is <b>a new candidate source</b>(a pool of people, not bottles) and <b>new similarity dimensions</b>, which has to wait for §1 to add the language, interests and lat/lng fields. </p>
+
+ <div class="grid">
+
+ <div class="scr">
+ <div class="cap"><b>Swipe to discover</b><i>C1</i></div>
+ <div class="ph hf">
+ <div class="hdr slim">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="top">
+ <div class="ring sm"><u>🐱</u><span class="dot"></span></div>
+ <span class="ttl">Online today</span>
+ <span class="coin" style="margin-left:auto"><i class="cn"></i> 248</span>
+ <div class="ic" style="margin-left:0">⚙</div>
+ </div>
+ </div>
+ <div class="chs raise">
+ <span class="ch on">For you</span><span class="ch pk">Nearby</span>
+ <span class="ch">New</span><span class="ch aq">हिन्दी</span><span class="ch">தமிழ்</span>
+ </div>
+ <div class="deck">
+ <div class="swc b2"></div>
+ <div class="swc b1"></div>
+ <div class="swc fr">
+ <div class="pic">
+ 👩
+ <span class="live">Online</span>
+ <span class="stamp">LIKE</span>
+ </div>
+ <div class="info">
+ <div class="nm">Aanya, 23<span class="go">Profile ›</span></div>
+ <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">
+ <span class="tg pk">📍 2.4 km</span><span class="tg">हिन्दी</span>
+ <span class="tg pu">Music</span><span class="tg">Travel</span>
+ </div>
+ <div class="bio">Listens to music late at night. Sometimes writes things nobody reads.</div>
+ <div class="acts">
+ <div class="ab"><i>✕</i></div>
+ <div class="hi">💬 Say hi <i class="cn"></i> 5</div>
+ <div class="ab lk"><i>♥</i></div>
+ </div>
+ </div>
+ </div>
+ </div>
+ <div class="tb hf">
+ <div><svg><use href="#ic-ocean"/></svg><span>Ocean</span></div>
+ <div class="on"><svg><use href="#ic-discover"/></svg><span>Discover</span></div>
+ <div><svg><use href="#ic-chats"/></svg><span>Chats</span><em>3</em></div>
+ <div><svg><use href="#ic-moments"/></svg><span>Moments</span></div>
+ <div><svg><use href="#ic-me"/></svg><span>Me</span></div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep n">GET /api/discover/users</span>
+ <span class="ep">POST /api/relation/like</span>
+ <span class="ep">POST /api/chat/start</span>
+ <span class="ep">GET /api/city/users</span>
+ </dd>
+ <dt>Swipe</dt><dd>Right = <code>relation/like</code>, swipe left only records <code>MatchLog(action=skip)</code>. 
+ <b>Both actions must be persisted</b> — otherwise the next fetch can't de-duplicate and the same person keeps reappearing. MatchLog is the same table the bottle feed uses; the columns already exist</dd>
+ <dt>Prefetch</dt><dd>Fetch 15–20 people at a time and cache locally; refill silently at five cards left. <b>Never one request per card</b>: swiping is a continuous gesture, and waiting on the network kills the feel</dd>
+ <dt>Ranking</dt><dd>Language overlap × interest Jaccard × distance decay × activity. Put the weights in sysconfig so they can be tuned, the same way the bottle feed already works</dd>
+ <dt>Depends on</dt><dd><b>Blocked by §1</b>: without language, interests and lat/lng there is nothing to rank on</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Filters</b><i>C2</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">✕<span>Filters</span><span class="sp2" style="color:var(--brand);font-weight:700">Reset</span></div>
+ <div class="bd">
+ <div class="sec">Language</div>
+ <div class="chs" style="padding:0;flex-wrap:wrap;gap:var(--s2)">
+ <span class="ch on">English</span><span class="ch on">हिन्दी</span>
+ <span class="ch">తెలుగు</span><span class="ch">தமிழ்</span><span class="ch">বাংলা</span>
+ </div>
+ <div class="sec">Interests</div>
+ <div class="chs" style="padding:0;flex-wrap:wrap;gap:var(--s2)">
+ <span class="ch on">Music</span><span class="ch">Movies</span>
+ <span class="ch on">Travel</span><span class="ch">Cricket</span>
+ </div>
+ <div class="sec">Distance</div>
+ <div class="sld">
+ <div class="bar3"><i></i><u></u></div>
+ <div class="lbl">
+ <span>1 km</span><span style="color:var(--ink);font-weight:700">25 km</span><span>Any</span>
+ </div>
+ </div>
+ <div class="sec">Gender</div>
+ <div class="seg"><div class="on">All</div><div>F</div><div>M</div></div>
+ <div class="sec">Age</div>
+ <div class="fieldr"><span class="val">18 – 30</span></div>
+ </div>
+ <div class="foot">
+ <div class="cta">Apply · 34 people match</div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>State</dt><dd>Filters persist locally (<code>shared_preferences</code>) and ride along with each request</dd>
+ <dt>Performance</dt><dd>Geo filtering needs an index on <code>User</code> lat/lng needs an index, or a geohash prefix query. A plain <code>WHERE</code> computing distance scans the whole table and is slow</dd>
+ <dt>Tenancy</dt><dd>The candidate set must be filtered by <code>tenant_id</code> (project hard rule)</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Profile</b><i>C3 · tapped from the card</i></div>
+ <div class="ph hf">
+ <div class="hero">
+ 👩
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="bar">←<span>⋯</span></div>
+ <span class="live">Online</span>
+ </div>
+ <div class="bd" style="gap:9px">
+ <div style="display:flex;align-items:baseline;gap:7px">
+ <div style="font-size:16px;font-weight:800;letter-spacing:-.01em">Aanya, 23</div>
+ <span class="charm" style="margin-left:auto">✦ 1,280</span>
+ </div>
+ <div style="display:flex;flex-wrap:wrap;gap:4px">
+ <span class="tg pk">📍 Mumbai · 2.4 km</span><span class="tg">हिन्दी</span>
+ <span class="tg pu">Music</span><span class="tg">Travel</span><span class="tg">Foodie</span>
+ </div>
+ <div style="font-size:10px;color:var(--ink2);line-height:1.65"> Listens to music late at night. Sometimes writes things nobody reads. </div>
+ <div class="stats">
+ <div><b>28</b><s>Bottles</s></div>
+ <div><b>64</b><s>Moments</s></div>
+ <div><b>close</b><s>Connections</s></div>
+ </div>
+ <div style="display:flex;gap:8px;margin-top:auto">
+ <div class="jn gh pay" style="flex:0 0 76px">🎁 Gift</div>
+ <div class="jn pay" style="flex:1">Say hi <small><i class="cn"></i> 5</small></div>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/user/card/:id</span><span class="ep">POST /api/relation/like</span>
+ <span class="ep">POST /api/chat/start</span><span class="ep">GET /api/item/list</span>
+ </dd>
+ <dt>Charging</dt><dd>Starting a chat costs <code>price_chat</code> 5 coins by default, scene=<code>chat</code>, implemented in <code>chat/service.go</code> </dd>
+ <dt>Compliance</dt><dd>Report and block must live permanently in the top-right, never buried a level down</dd>
+ </dl></div>
+ </div>
+
+ </div>
+</section>
+
+<hr>
+
+<!-- ========== 4. CHAT ========== -->
+<section>
+ <div class="sh">
+ <span class="no">§4</span><h2>Direct messages</h2><span class="en">Chat</span>
+ <span class="vd keep">✅ Reuse</span><span class="vd mod">🔨 Add presence</span>
+ </div>
+ <p class="sub"> Six endpoints plus the WebSocket already exist. <code>Message.Type</code> already supports <code>image</code>, <code>Message.ReadStatus</code> already exists, and <code>Block</code> is already there. <b>The only gap is presence</b> — fall back to <code>User.LastActiveAt</code> as "recently active". </p>
+
+ <div class="grid">
+
+ <div class="scr">
+ <div class="cap"><b>Conversations</b><i>D1</i></div>
+ <div class="ph hf">
+ <div class="hdr slim">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="top">
+ <span class="ttl">Chats</span>
+ <span class="coin" style="margin-left:auto"><i class="cn"></i> 248</span>
+ <div class="ic" style="margin-left:0">🔔</div>
+ </div>
+ </div>
+ <div class="chs raise">
+ <span class="ch on">All</span><span class="ch pk">Unread 3</span><span class="ch">Bottles</span>
+ </div>
+ <div class="bd" style="padding-top:18px">
+ <div class="rws">
+ <a>
+ <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+ <div class="tx2"><b>Aanya</b><s>So will you watch the sunset tonight?</s></div>
+ <div class="mt">2 min<span class="ub2">2</span></div>
+ </a>
+ <a>
+ <div class="ring sm"><u>🧑</u></div>
+ <div class="tx2"><b>Rohan</b><s>[Photo]</s></div>
+ <div class="mt">1h</div>
+ </a>
+ <a>
+ <div class="ring sm"><u>🙂</u></div>
+ <div class="tx2"><b>Anonymous</b><s>🎁 Sent a Little Star</s></div>
+ <div class="mt">Yesterday</div>
+ </a>
+ <a>
+ <div class="ring sm"><u>👧</u></div>
+ <div class="tx2"><b>Meera</b><s>Sure, it's a deal</s></div>
+ <div class="mt">3 days ago</div>
+ </a>
+ <a>
+ <div class="ring sm"><u>🙂</u></div>
+ <div class="tx2"><b>Anonymous</b><s>That bottle you found — it was mine</s></div>
+ <div class="mt">5 days ago</div>
+ </a>
+ <a>
+ <div class="ring sm"><u>🧔</u></div>
+ <div class="tx2"><b>Vikram</b><s>Sure, talk later</s></div>
+ <div class="mt">Last week</div>
+ </a>
+ <a style="opacity:.55">
+ <div class="ring sm"><u>👤</u></div>
+ <div class="tx2"><b>Deleted account</b><s>Account deleted — read only</s></div>
+ <div class="mt">Last week</div>
+ </a>
+ </div>
+ </div>
+ <div class="tb hf">
+ <div><svg><use href="#ic-ocean"/></svg><span>Ocean</span></div>
+ <div><svg><use href="#ic-discover"/></svg><span>Discover</span></div>
+ <div class="on"><svg><use href="#ic-chats"/></svg><span>Chats</span></div>
+ <div><svg><use href="#ic-moments"/></svg><span>Moments</span></div>
+ <div><svg><use href="#ic-me"/></svg><span>Me</span></div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd><span class="ep">GET /api/chat/list</span><span class="ep">GET /api/chat/unread</span></dd>
+ <dt>Realtime</dt><dd>Update the list locally when WS pushes a message; never refetch — that is one full request per message</dd>
+ <dt>Also</dt><dd>The green dot needs presence: broadcast WS connection state, or poll <code>LastActiveAt</code></dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Chat</b><i>D2</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">
+ ←
+ <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+ <span>Aanya</span>
+ <span class="tg" style="color:#2FBF77">Online</span>
+ <span class="sp2" style="font-size:var(--t4)">⋯</span>
+ </div>
+ <div class="bd" style="gap:var(--s2);justify-content:flex-end">
+ <div class="sys">This started with a bottle</div>
+ <div class="bub you">I watched the sunset in Goa yesterday 🌅</div>
+ <div class="bub me">Really? I'm jealous<span class="rd2">Read</span></div>
+ <div class="bub you">Go together next time?</div>
+ <div class="bub me" style="padding:3px">
+ <div style="width:80px;height:56px;border-radius:var(--r2);background:rgba(255,255,255,.35)"></div>
+ <span class="rd2">Read</span>
+ </div>
+ <div class="gift">🎁 They sent you a Little Star <b style="color:var(--gold)">Charm +10</b></div>
+ </div>
+ <div class="inp">
+ <span style="font-size:var(--t6)">📷</span>
+ <span style="font-size:var(--t6)">🎁</span>
+ <div class="fd">Say something…</div>
+ <div class="snd">➤</div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/chat/:id/messages</span><span class="ep">POST /api/chat/:id/send</span>
+ <span class="ep">POST /api/chat/:id/gift</span><span class="ep">wss://…/ws?token=</span>
+ </dd>
+ <dt>Charging</dt><dd>Each message costs <code>price_msg</code> default <b>0 (off)</b>; gifting goes through <code>ItemOrder</code> + <code>User.Charm</code> accumulation</dd>
+ <dt>⚠ Architecture</dt><dd>The chat hub is <b>single-instance in-memory state</b>, so a multi-instance deployment drops messages. Horizontal scaling in V1 means moving to Redis Pub/Sub</dd>
+ <dt>App-only</dt><dd>Disconnect on backgrounding, reconnect with exponential backoff, then fetch the delta to fill the gap</dd>
+ </dl></div>
+ </div>
+
+ </div>
+</section>
+
+<hr>
+
+<!-- ========== 5-6. RELATION + MOMENT ========== -->
+<section>
+ <div class="sh">
+ <span class="no">§5–6</span><h2>Connections & moments</h2><span class="en">Relation &amp; Moment</span>
+ <span class="vd keep">✅ Neither module changes</span>
+ </div>
+ <p class="sub">
+ <code>model.Relation</code> already carries <code>Type(like/viewed/friend)</code> / <code>StrengthScore(0~100)</code> /
+ <code>Stage</code> / <code>InteractionCount</code>, matching "interaction/relationship strength" in the module list word for word. The three moment tables (<code>Moment</code> / <code>MomentLike</code> / <code>MomentComment</code>) cover images, single-level replies and gift comments — all already built. </p>
+  <p class="sub" style="border-left:3px solid var(--warn);padding-left:var(--s3)">
+    <b>⏳ CN-first section.</b> New screens for Google Sign-In / Maps / Play Billing (<code>F2</code>) were drafted in <code>v1-screens.html</code> first and are <b>not yet mirrored here</b>. Treat the Chinese file as the source of truth for these until this note is removed.
+  </p>
+
+ <div class="grid">
+
+ <div class="scr">
+ <div class="cap"><b>Connections</b><i>E1</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">←<span>My connections</span></div>
+ <div class="bd">
+ <div class="chs" style="padding:0">
+ <span class="ch on">Likes you · 12</span><span class="ch">You like · 8</span><span class="ch">Viewed you</span>
+ </div>
+ <div class="rws">
+ <a>
+ <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+ <div class="tx2"><b>Aanya</b><s>24 interactions · close</s></div>
+ <div class="mt">
+ <div class="bar4"><i style="width:72%"></i></div>
+ <div style="margin-top:3px">72</div>
+ </div>
+ </a>
+ <a>
+ <div class="ring sm"><u>🧑</u></div>
+ <div class="tx2"><b>Rohan</b><s>6 interactions · known</s></div>
+ <div class="mt">
+ <div class="bar4"><i style="width:31%;background:var(--mist)"></i></div>
+ <div style="margin-top:3px">31</div>
+ </div>
+ </a>
+ <a>
+ <div class="ring sm"><u>👧</u></div>
+ <div class="tx2"><b>Meera</b><s>1 interaction · new</s></div>
+ <div class="mt">
+ <div class="bar4"><i style="width:9%;background:var(--mist)"></i></div>
+ <div style="margin-top:3px">9</div>
+ </div>
+ </a>
+ <a>
+ <div class="ring sm"><u>🧔</u></div>
+ <div class="tx2"><b>Vikram</b><s>11 interactions · known</s></div>
+ <div class="mt">
+ <div class="bar4"><i style="width:48%;background:var(--mist)"></i></div>
+ <div style="margin-top:3px">48</div>
+ </div>
+ </a>
+ <a>
+ <div class="ring sm"><u>🙂</u></div>
+ <div class="tx2"><b>Anonymous</b><s>3 interactions · new</s></div>
+ <div class="mt">
+ <div class="bar4"><i style="width:17%;background:var(--mist)"></i></div>
+ <div style="margin-top:3px">17</div>
+ </div>
+ </a>
+ </div>
+ <div class="warn" style="margin-top:var(--s1)">
+ <span>💡</span>
+ <div>The strength score is <b>interaction count × time decay</b> and decays after 30 days without interaction. Put the curve's parameters in sysconfig</div>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/relation/stats</span><span class="ep">GET /api/relation/list</span>
+ <span class="ep">GET /api/relation/i-viewed</span><span class="ep">POST /api/relation/like</span>
+ </dd>
+ <dt>Fields</dt><dd>The bar is <code>StrengthScore</code>, the label is <code>Stage</code>(stranger / known / close)</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Moments feed</b><i>F1</i></div>
+ <div class="ph hf">
+ <div class="hdr slim">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="top">
+ <span class="ttl">Moments</span>
+ <span class="coin" style="margin-left:auto"><i class="cn"></i> 248</span>
+ <div class="ic" style="margin-left:0">✏️</div>
+ </div>
+ </div>
+ <div class="chs raise">
+ <span class="ch on">For you</span><span class="ch pk">Following</span><span class="ch">My city</span>
+ </div>
+ <div class="bd" style="padding-top:18px">
+ <div class="mcd">
+ <div style="display:flex;align-items:center;gap:var(--s2)">
+ <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+ <div style="flex:1;min-width:0">
+ <div style="font-size:var(--t3);font-weight:700">Aanya</div>
+ <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">2h ago · Mumbai</div>
+ </div>
+ </div>
+ <div class="txt3">The sunset in Goa is worth the trip.</div>
+ <div class="pics"><div></div><div></div><div></div></div>
+ <div class="bar5"><span>♡ 42</span><span>💬 8</span><span>🎁 Gift</span></div>
+ </div>
+ <div class="mcd">
+ <div style="display:flex;align-items:center;gap:var(--s2)">
+ <div class="ring sm"><u>🧑</u></div>
+ <div style="flex:1;min-width:0">
+ <div style="font-size:var(--t3);font-weight:700">Rohan</div>
+ <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">5h ago</div>
+ </div>
+ </div>
+ <div class="txt3">The chai tastes especially good today.</div>
+ <div class="bar5"><span>♡ 6</span><span>💬 1</span><span>🎁 Gift</span></div>
+ </div>
+ <div class="mcd">
+ <div style="display:flex;align-items:center;gap:var(--s2)">
+ <div class="ring sm"><u>👧</u></div>
+ <div style="flex:1;min-width:0">
+ <div style="font-size:var(--t3);font-weight:700">Meera</div>
+ <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">Yesterday · Pune</div>
+ </div>
+ </div>
+ <div class="txt3">Someone's bottle asked where I was. I said: waiting for the rain to stop.</div>
+ <div class="pics"><div></div><div></div></div>
+ <div class="bar5"><span>♡ 128</span><span>💬 24</span><span>🎁 Gift</span></div>
+ </div>
+ </div>
+ <div class="tb hf">
+ <div><svg><use href="#ic-ocean"/></svg><span>Ocean</span></div>
+ <div><svg><use href="#ic-discover"/></svg><span>Discover</span></div>
+ <div><svg><use href="#ic-chats"/></svg><span>Chats</span><em>3</em></div>
+ <div class="on"><svg><use href="#ic-moments"/></svg><span>Moments</span></div>
+ <div><svg><use href="#ic-me"/></svg><span>Me</span></div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/moment/feed</span><span class="ep">POST /api/moment/:id/like</span>
+ <span class="ep">POST /api/moment</span>
+ </dd>
+ <dt>Feature flag</dt><dd>Gated by <code>square_enabled</code> , off by default — turn it on in admin for the app</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Moment detail</b><i>F3</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">←<span>Moments</span><span class="sp2" style="font-size:var(--t4)">⋯</span></div>
+ <div class="bd">
+ <div style="display:flex;align-items:center;gap:var(--s2)">
+ <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+ <div style="flex:1;min-width:0">
+ <div style="font-size:var(--t3);font-weight:700">Aanya</div>
+ <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">2h ago · Mumbai</div>
+ </div>
+ <div class="jn gh">＋ Follow</div>
+ </div>
+ <div style="font-size:var(--t3);line-height:1.6">The sunset in Goa is worth the trip.</div>
+ <div style="aspect-ratio:16/10;border-radius:var(--r3);background:var(--sea)"></div>
+ <div class="bar5" style="margin:0"><span>♡ 42</span><span>💬 8</span><span>🎁 Gift</span></div>
+ <div class="sec">8 comments</div>
+ <div class="rws">
+ <a>
+ <div class="ring sm"><u>🧑</u></div>
+ <div class="tx2"><b>Rohan</b><s style="color:var(--ink2)">Take me next time</s></div>
+ </a>
+ <a>
+ <div class="ring sm"><u>👧</u></div>
+ <div class="tx2"><b>Meera</b><s style="color:var(--gold)">🎁 Sent a Little Star</s></div>
+ </a>
+ </div>
+ </div>
+ <div class="inp">
+ <div class="fd">Write a comment…</div>
+ <span style="font-size:var(--t6)">🎁</span>
+ <span style="font-size:var(--t6)">♡</span>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/moment/:id</span><span class="ep">GET /api/moment/:id/comments</span>
+ <span class="ep">POST /api/moment/:id/comment</span><span class="ep">POST /api/moment/:id/gift</span>
+ </dd>
+ <dt>Rate limit</dt><dd>Comments already run through <code>commentLimit</code> middleware</dd>
+ <dt>Gifts</dt><dd><code>MomentComment.Type=gift</code> stores JSON in content <code>{name,icon,coins}</code></dd>
+ </dl></div>
+ </div>
+
+ </div>
+</section>
+
+<hr>
+
+<!-- ========== 7-9. MEDIA / PUSH / SAFETY ========== -->
+<section>
+ <div class="sh">
+ <span class="no">§7–9</span><h2>Media, push, safety</h2><span class="en">Media · Push · Safety</span>
+ <span class="vd mod">🔨 Rework</span><span class="vd add">🆕 New</span>
+ </div>
+ <p class="sub"> These three diverge most sharply between app and mini-program:<code>upload</code> writes to local disk and is served raw from <code>/static</code>; 
+ <code>push</code> is WeChat subscription-message only and unusable in the app. Image moderation depends on <code>mediaCheckAsync</code> is likewise a mini-program-only API. </p>
+
+ <div class="grid">
+
+ <div class="scr">
+ <div class="cap"><b>Media upload</b><i>G1 · Media</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">✕<span>Choose photos</span><span class="sp2">3 of 9 selected</span></div>
+ <div class="bd">
+ <div class="g9">
+ <div><span class="num">1</span></div>
+ <div><span class="num">2</span></div>
+ <div><span class="ovl">Compressing 62%</span></div>
+ <div class="empty">＋</div>
+ </div>
+ <div class="mcd">
+ <div style="display:flex;font-size:var(--t2);color:var(--ink2)">
+ <span>Original 4.2 MB</span><span style="margin-left:auto;color:var(--ink)">Compressed 480 KB</span>
+ </div>
+ <div class="bar4" style="width:100%;margin-top:var(--s2)"><i style="width:66%"></i></div>
+ <div style="display:flex;align-items:center;gap:var(--s2);margin-top:var(--s2);font-size:var(--t1)">
+ <span style="color:var(--ink3)">Uploading 2 of 3</span>
+ <span style="margin-left:auto;color:var(--brand);font-weight:700">1 failed — retry</span>
+ </div>
+ </div>
+ </div>
+ <div class="foot">
+ <div class="cta">Done</div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd><span class="ep">POST /api/upload</span></dd>
+ <dt>⚠ Today</dt><dd>writes to <b>local disk</b>, <code>/static</code> served raw, with no compression, no thumbnails and no CDN. The code comment itself says "switch to object storage in production"</dd>
+ <dt>Must do</dt><dd>Object storage plus a CDN, server-side thumbnails, client-side compression before upload. The <b>video</b> needs a transcoding pipeline — entirely new work</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Notifications</b><i>G2 · Notify</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">←<span>Notifications</span><span class="sp2" style="color:var(--brand);font-weight:700">Mark all read</span></div>
+ <div class="bd">
+ <div class="btlc" style="display:flex;align-items:center;gap:var(--s3)">
+ <span style="font-size:var(--t6)">🔔</span>
+ <div style="flex:1;min-width:0">
+ <div style="font-size:var(--t3);font-weight:700">Turn on push</div>
+ <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">Know the moment someone replies</div>
+ </div>
+ <div class="jn">Turn on</div>
+ </div>
+ <div class="rws">
+ <a>
+ <div class="thumb" style="width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font-size:var(--t3)">💬</div>
+ <div class="tx2"><b>Your bottle got a reply</b><s>"I watched the sunset in Goa yesterday…"</s></div>
+ <div class="mt">2 min</div>
+ </a>
+ <a>
+ <div class="thumb" style="width:30px;height:30px;border-radius:50%;background:var(--coin);color:#5A3E00;font-size:var(--t3)">🎁</div>
+ <div class="tx2"><b>Meera sent you a gift</b><s>Little Star · Charm +10</s></div>
+ <div class="mt">1h</div>
+ </a>
+ <a style="opacity:.55">
+ <div class="thumb" style="width:30px;height:30px;border-radius:50%;background:var(--sea);font-size:var(--t3)">♡</div>
+ <div class="tx2"><b>Rohan liked your moment</b><s>The sunset in Goa is worth the trip.</s></div>
+ <div class="mt">Yesterday</div>
+ </a>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/notify/list</span><span class="ep">GET /api/notify/unread</span>
+ <span class="ep">POST /api/notify/read</span><span class="ep n">POST /api/push/device</span>
+ </dd>
+ <dt>In-app inbox</dt><dd>✅ Fully reusable</dd>
+ <dt>⚠ Push</dt><dd>The existing <code>push</code> is hard-wired to WeChat: template IDs, <code>PushSubscription.OpenID</code>, the shared access_token mechanism — <b>all void in the app</b>. FCM and APNs need a new device-token table, certificate management, cross-device de-duplication, and changes to <code>push/scheduler.go</code></dd>
+ <dt>Timing</dt><dd>Don't ask for permission at launch. Ask after the first bottle is thrown — the opt-in rate is far higher</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Report and block</b><i>G3 · Safety</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">
+ ←
+ <div class="ring sm"><u>👩</u></div>
+ <span>Aanya</span>
+ <span class="sp2" style="font-size:var(--t4)">⋯</span>
+ </div>
+ <div class="bd" style="gap:var(--s2)">
+ <div class="sys">This started with a bottle</div>
+ <div class="bub you">I watched the sunset in Goa yesterday 🌅</div>
+ <div class="bub me">Really? I'm jealous</div>
+ <div class="bub you">Add me here, I'll send the full-size photos 👉 wx_8821</div>
+ <div class="bub you">Cheap. I can get you premium</div>
+ </div>
+ <div class="mask" style="z-index:7"></div>
+ <div class="sheet">
+ <div class="grab"></div>
+ <div style="font-size:var(--t3);font-weight:800;margin-bottom:var(--s3)">Report Aanya</div>
+ <div style="display:flex;flex-direction:column;gap:var(--s2)">
+ <div class="pay"><span style="flex:1">Sexual or explicit content</span><u></u></div>
+ <div class="pay on"><span style="flex:1">Spam, ads or scams</span><u></u></div>
+ <div class="pay"><span style="flex:1">Harassment or abuse</span><u></u></div>
+ <div class="pay"><span style="flex:1">Involves a minor</span><u></u></div>
+ </div>
+ <div style="display:flex;gap:var(--s2);margin-top:var(--s3)">
+ <div class="cta gh" style="flex:1">Just block</div>
+ <div class="cta dg" style="flex:1">Report and block</div>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">POST /api/report</span><span class="ep">POST /api/block</span>
+ <span class="ep">GET /api/block/list</span><span class="ep">POST /api/block/remove</span>
+ </dd>
+ <dt>✅ Reuse</dt><dd>The report table, block table, local word list and anti-spam rules all exist</dd>
+ <dt>⚠ Replace</dt><dd>Image moderation's <code>mediaCheckAsync</code> is mini-program only. The app needs a third party instead — OpenAI Moderation, Rekognition, or a local model</dd>
+ <dt>Compliance</dt><dd>A report entry point must appear in <b>chat, bottle detail, moments and profile</b> — all four. Miss one and you risk rejection</dd>
+ </dl></div>
+ </div>
+
+ </div>
+</section>
+
+<hr>
+
+<!-- ========== 10-14. MONETIZATION ========== -->
+<section>
+ <div class="sh">
+ <span class="no">§10–14</span><h2>Monetization loop</h2><span class="en">Wallet · Payment · Items · Quota · Rewards</span>
+ <span class="vd keep">✅ Wallet / items / quota unchanged</span><span class="vd money">💰 Payments are new</span>
+ </div>
+ <p class="sub"> Of the five monetization modules, <b>wallet, items and quota need almost no backend change</b> ——
+ <code>Wallet</code> + <code>WalletTxn</code> (credit/debit + scene + <code>BalanceAfter</code> reconcilable), <code>Item</code> / <code>ItemOrder</code> and quota packs all exist; the five existing charge points just need wiring. The only genuinely new piece is the payment channel, and <code>pay</code> already exist <code>Driver</code> interface abstraction, <b>so a new channel is just one Driver implementation</b>. 
+ </p>
+  <p class="sub" style="border-left:3px solid var(--warn);padding-left:var(--s3)">
+    <b>⏳ CN-first section.</b> New screens for Google Sign-In / Maps / Play Billing (<code>H3 · H7a · H9 · H11</code>) were drafted in <code>v1-screens.html</code> first and are <b>not yet mirrored here</b>. Treat the Chinese file as the source of truth for these until this note is removed.
+  </p>
+
+ <div class="grid">
+
+ <div class="scr">
+ <div class="cap"><b>Me</b><i>H1</i></div>
+ <div class="ph hf">
+ <div class="hdr" style="padding-bottom:30px">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="top">
+ <div class="ring"><u>🐱</u><span class="dot"></span></div>
+ <div style="flex:1;min-width:0">
+ <div style="font-size:var(--t5);font-weight:800;letter-spacing:-.01em">Stray Cat</div>
+ <div style="font-size:var(--t1);opacity:.85;margin-top:2px">ID 8842103 · F 24</div>
+ </div>
+ <div class="ic" style="margin-left:0">⚙</div>
+ </div>
+ </div>
+ <div class="pcard">
+ <i class="cn" style="width:22px;height:22px"></i>
+ <div style="flex:1">
+ <div class="amt">248</div>
+ <div class="unit">Coin balance</div>
+ </div>
+ <div class="jn pay">Top up</div>
+ </div>
+ <div class="bd">
+ <div class="quad">
+ <div><b>📅</b> Check in</div><div><b>🎁</b> Items</div>
+ <div><b>📺</b> Watch</div><div><b>💗</b> Connections</div>
+ </div>
+ <div class="lst">
+ <a><i>💰</i> Wallet history<span>›</span></a>
+ <a><i>🍾</i> My bottles<span>28 ›</span></a>
+ <a><i>🚫</i> Blocked<span>›</span></a>
+ <a><i>⚙</i> Settings<span>›</span></a>
+ </div>
+ </div>
+ <div class="tb hf">
+ <div><svg><use href="#ic-ocean"/></svg><span>Ocean</span></div>
+ <div><svg><use href="#ic-discover"/></svg><span>Discover</span></div>
+ <div><svg><use href="#ic-chats"/></svg><span>Chats</span><em>3</em></div>
+ <div><svg><use href="#ic-moments"/></svg><span>Moments</span></div>
+ <div class="on"><svg><use href="#ic-me"/></svg><span>Me</span></div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/user/profile</span><span class="ep">GET /api/wallet/balance</span>
+ <span class="ep">GET /api/mine-functions</span>
+ </dd>
+ <dt>Config</dt><dd>Each entry's visibility comes from <code>/api/mine-functions</code> pushed remotely — 14 flags already exist</dd>
+ <dt>Compliance</dt><dd>Settings must contain an <b>Delete account</b> entry (App Store 5.1.1(v))</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Wallet history</b><i>H2</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">←<span>Wallet</span><span class="sp2" style="color:var(--brand);font-weight:700">Top up</span></div>
+ <div class="bd">
+ <div class="bal">
+ <div class="n">248</div>
+ <div class="l">Coin balance</div>
+ <div class="r"><span>Bought <b>500</b></span><span>Spent <b>252</b></span></div>
+ </div>
+ <div class="chs" style="padding:0">
+ <span class="ch on">All</span><span class="ch">In</span><span class="ch">Out</span>
+ </div>
+ <div class="rws">
+ <a>
+ <div class="tx2"><b>Unlock replies</b><s>unlock · 10-14 21:03</s></div>
+ <div class="mt" style="font-size:var(--t4);font-weight:800;color:var(--brand)">−2</div>
+ </a>
+ <a>
+ <div class="tx2"><b>Start chat</b><s>chat · 10-14 20:41</s></div>
+ <div class="mt" style="font-size:var(--t4);font-weight:800;color:var(--brand)">−5</div>
+ </a>
+ <a>
+ <div class="tx2"><b>Daily check-in</b><s>checkin · 10-14 09:12</s></div>
+ <div class="mt" style="font-size:var(--t4);font-weight:800;color:#2FBF77">+10</div>
+ </a>
+ <a>
+ <div class="tx2"><b>Top-up · 60 pack</b><s>recharge · 10-13 19:28</s></div>
+ <div class="mt" style="font-size:var(--t4);font-weight:800;color:#2FBF77">+120</div>
+ </a>
+ <a>
+ <div class="tx2"><b>Sent a Little Star</b><s>gift · 10-13 15:02</s></div>
+ <div class="mt" style="font-size:var(--t4);font-weight:800;color:var(--brand)">−10</div>
+ </a>
+ <a>
+ <div class="tx2"><b>Watch a rewarded ad</b><s>ad_reward · 10-13 11:40</s></div>
+ <div class="mt" style="font-size:var(--t4);font-weight:800;color:#2FBF77">+5</div>
+ </a>
+ <a>
+ <div class="tx2"><b>Pull pack ×20</b><s>gift · 10-12 22:15</s></div>
+ <div class="mt" style="font-size:var(--t4);font-weight:800;color:var(--brand)">−20</div>
+ </a>
+ </div>
+ <div class="warn" style="margin-top:var(--s1)">
+ <span>🧾</span>
+ <div><code>WalletTxn.BalanceAfter</code> records the balance after every change, so the ledger reconciles itself with no snapshot table</div>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd><span class="ep">GET /api/wallet/balance</span><span class="ep">GET /api/wallet/txns</span></dd>
+ <dt>scene</dt><dd>Out <code>chat</code> / <code>unlock</code> / <code>msg</code> / <code>gift</code>; in: <code>recharge</code> / <code>reward</code> / <code>checkin</code> / <code>share</code> / <code>ad_reward</code></dd>
+ <dt>✅ No backend change</dt><dd><code>WalletTxn.BalanceAfter</code> makes the ledger reconcile itself</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Top-up · platform fork</b><i>H3</i></div>
+ <div class="ph hf">
+ <div class="hdr" style="padding-bottom:var(--s3)">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="top">
+ <span style="font-size:var(--t4)">←</span>
+ <span class="ttl">Buy coins</span>
+ <span class="coin" style="margin-left:auto"><i class="cn"></i> 248</span>
+ </div>
+ </div>
+ <div class="bd">
+ <div class="sec">Choose a pack</div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)">
+ <div class="pkg"><b><i class="cn"></i> 60</b><s>₹49</s></div>
+ <div class="pkg on">
+ <em>+20% bonus</em>
+ <b><i class="cn"></i> 300</b><s>₹199 <del>₹249</del></s>
+ </div>
+ <div class="pkg"><b><i class="cn"></i> 680</b><s>₹449</s></div>
+ <div class="pkg"><b><i class="cn"></i> 1980</b><s>₹1299</s></div>
+ </div>
+ <div class="sec" style="margin-top:var(--s1)">Payment</div>
+ <div class="pay on">
+ <span style="font-size:var(--t5)">📱</span>
+ <div style="flex:1;min-width:0">
+ <b style="font-weight:700">UPI</b>
+ <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">GPay · PhonePe · Paytm</div>
+ </div>
+ <u></u>
+ </div>
+ <div class="pay">
+ <span style="font-size:var(--t5)">💳</span>
+ <div style="flex:1;min-width:0"><b style="font-weight:700">Card / Netbanking</b></div>
+ <u></u>
+ </div>
+ <div class="warn">
+ <span>⚠️</span>
+ <div>On iOS this whole screen is replaced by the <b>IAP product list</b>, and none of the channels above are shown</div>
+ </div>
+ </div>
+ <div class="foot">
+ <div class="cta pay">Pay ₹199 · get <i class="cn"></i> 300</div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/pay/packages</span><span class="ep">POST /api/pay/order</span>
+ <span class="ep">GET /api/pay/orders</span><span class="ep n">POST /api/pay/iap/verify</span>
+ </dd>
+ <dt>Effort</dt><dd><code>pay.Driver</code> already defines <code>Prepay</code> / <code>VerifyCallback</code> / <code>SuccessResponse</code>, so a new channel <b>is one Driver implementation</b>; orders, callback idempotency and crediting are all reused</dd>
+ <dt>⚠ Fork</dt><dd>Digital goods on iOS must go through IAP; third-party channels get rejected. <code>PayOrder.Platform</code> needs extending, packs must be configured per platform, and you need server-side receipt validation, replay protection and dropped-order recovery</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Gift panel</b><i>H4</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">
+ ←
+ <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+ <span>Aanya</span>
+ <span class="sp2" style="font-size:var(--t4)">⋯</span>
+ </div>
+ <div class="bd" style="gap:var(--s2)">
+ <div class="sys">This started with a bottle</div>
+ <div class="bub you">I watched the sunset in Goa yesterday 🌅</div>
+ <div class="bub me">Really? I'm jealous</div>
+ <div class="bub you">Go together next time?</div>
+ <div class="bub me">Deal — grilled fish by the sea, on me</div>
+ <div class="bub you">Deal 🤝</div>
+ </div>
+ <div class="mask" style="z-index:7"></div>
+ <div class="sheet">
+ <div class="grab"></div>
+ <div style="display:flex;align-items:center;margin-bottom:var(--s3)">
+ <span style="font-size:var(--t3);font-weight:800">Send a gift</span>
+ <span class="coin ink" style="margin-left:auto"><i class="cn"></i> 248</span>
+ </div>
+ <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2)">
+ <div class="gitem on"><b>⭐</b><s>10</s></div>
+ <div class="gitem"><b>🌹</b><s>20</s></div>
+ <div class="gitem"><b>🍰</b><s>66</s></div>
+ <div class="gitem"><b>💎</b><s>188</s></div>
+ </div>
+ <div style="display:flex;gap:var(--s2);margin-top:var(--s3)">
+ <div class="qty">×1 ▾</div>
+ <div class="cta pay" style="flex:1">Send <i class="cn"></i> 10</div>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/item/list</span><span class="ep">POST /api/item/buy</span>
+ <span class="ep">POST /api/chat/:id/gift</span><span class="ep">POST /api/moment/:id/gift</span>
+ </dd>
+ <dt>✅ No backend change</dt><dd>All three gifting points — chat, moments, profile — share one path: a coin transaction plus <code>ItemOrder(target)</code> +
+ <code>User.Charm</code> accumulation and a notification — already built</dd>
+ <dt>Note</dt><dd>After gifting, call <code>rank.InvalidateWeekCache</code> to refresh the weekly charm board</dd>
+ <dt>Quantity</dt><dd>×1 / ×10 / ×99 combo sending is an average-order-value lever. <code>ItemOrder</code> needs a <code>Qty</code> field; charging and <code>Charm</code> scale with the multiplier, and combo sends must <b>collapse into one notification</b>, or the thread floods</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Out of pulls</b><i>H5 · Quota</i></div>
+ <div class="ph hf">
+ <div class="hdr" style="padding-bottom:var(--s3)">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="top">
+ <div class="ring sm"><u>🐱</u><span class="dot"></span></div>
+ <span class="coin" style="margin-left:auto"><i class="cn"></i> 248</span>
+ </div>
+ </div>
+ <div class="scene">
+ <div class="sun"></div>
+ <div class="sea">
+ <div class="btl" style="left:22%;top:14%"><i></i></div>
+ <div class="btl" style="left:62%;top:6%"><i style="animation-delay:-2s"></i></div>
+ </div>
+ </div>
+ <div class="mask"></div>
+ <div class="modal">
+ <div class="x">✕</div>
+ <div class="head">
+ <div class="ico">
+ <svg viewBox="0 0 56 52" fill="none" stroke="currentColor" stroke-linecap="round">
+ <path d="M10 9h36l-4.6 25.4A14.2 14.2 0 0 1 28 46a14.2 14.2 0 0 1-13.4-11.6z" stroke-width="2.2"/>
+ <path d="M19 9l2.6 33M28 9v36.5M37 9l-2.6 33" stroke-width="1.3" opacity=".5"/>
+ <path d="M12.2 21h31.6M14.8 32.5h26.4" stroke-width="1.3" opacity=".5"/>
+ </svg>
+ </div>
+ <h4>You've used all 8 pulls today</h4>
+ <p>Resets at midnight.<br>Two ways to keep going now.</p>
+ </div>
+ <div class="body">
+ <div class="offer">
+ <span style="font-size:var(--t6)">🎣</span>
+ <div style="min-width:0">
+ <b>Pull pack ×20</b>
+ <s>Instant, never expires</s>
+ </div>
+ <span class="pz"><i class="cn"></i> 20</span>
+ </div>
+ <div class="cta pay">Spend <i class="cn"></i> 20 to buy</div>
+ <div class="cta gh">📺 Watch an ad for a free pull</div>
+ </div>
+ </div>
+ <div class="tb hf">
+ <div class="on"><svg><use href="#ic-ocean"/></svg><span>Ocean</span></div>
+ <div><svg><use href="#ic-discover"/></svg><span>Discover</span></div>
+ <div><svg><use href="#ic-chats"/></svg><span>Chats</span><em>3</em></div>
+ <div><svg><use href="#ic-moments"/></svg><span>Moments</span></div>
+ <div><svg><use href="#ic-me"/></svg><span>Me</span></div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/bottle/quota</span><span class="ep">POST /api/item/buy</span>
+ <span class="ep">POST /api/ad/reward</span>
+ </dd>
+ <dt>Config</dt><dd><code>quota_throw_pack</code> defaults to 10, <code>quota_scoop_pack</code> defaults to 20, scene=<code>gift</code></dd>
+ <dt>Error code</dt><dd>The backend returns <code>3003 CodeQuotaExceeded</code>; the client intercepts it and shows this screen. <b>Never surface it as a generic error</b> — this is a conversion point</dd>
+ <dt>Usability</dt><dd>The modal <b>must be dismissible</b>(✕ top-right plus tapping the scrim). When the balance is short, Spend 20 to buy should jump straight to H3 with a return path — never just say "not enough coins"</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Daily rewards</b><i>H6 · Rewards</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">←<span>Daily rewards</span><span class="sp2">4-day streak</span></div>
+ <div class="bd">
+ <div class="btlc">
+ <div style="display:flex;align-items:baseline">
+ <span style="font-size:var(--t3);font-weight:800">4-day streak</span>
+ <span style="margin-left:auto;font-size:var(--t1);color:var(--ink3)">Day 7 is the big one</span>
+ </div>
+ <div class="ck" style="margin-top:var(--s3)">
+ <div class="ok">✓</div><div class="ok">✓</div><div class="ok">✓</div><div class="ok">✓</div>
+ <div class="now">+20</div><div class="soon">6</div><div class="soon">7</div>
+ </div>
+ <div class="cta" style="margin-top:var(--s3)">Check in for <i class="cn"></i> 20</div>
+ </div>
+ <div class="sec">Other ways to earn</div>
+ <div class="lst">
+ <a><i>📺</i>
+ <div style="flex:1;min-width:0">
+ <div>Watch a rewarded ad</div>
+ <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">2 of 5 today · +5 each</div>
+ </div>
+ <span>Watch ›</span>
+ </a>
+ <a><i>🔗</i>
+ <div style="flex:1;min-width:0">
+ <div>Invite a friend</div>
+ <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">You both get 50 when they sign up</div>
+ </div>
+ <span>Invite ›</span>
+ </a>
+ <a><i>✨</i>
+ <div style="flex:1;min-width:0">
+ <div>Post a moment</div>
+ <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">+5 for your first each day</div>
+ </div>
+ <span>Post ›</span>
+ </a>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd>
+ <span class="ep">GET /api/checkin/status</span><span class="ep">POST /api/checkin</span>
+ <span class="ep">POST /api/checkin/makeup</span><span class="ep">POST /api/ad/reward</span>
+ <span class="ep">POST /api/share/reward</span>
+ </dd>
+ <dt>✅ Reuse</dt><dd><code>CheckinLog</code> A unique index on <code>(user_id, date)</code> guarantees one per person per day and keeps the money reconcilable</dd>
+ <dt>⚠ Replace</dt><dd>The existing <code>ad</code> module targets <b>WeChat's ad platform</b>. Sixteen ad-slot configs are void in the app; switch to AdMob and rebuild the config layer</dd>
+ <dt>Anti-fraud</dt><dd>Invite rewards are the classic farming target. Module 15: device fingerprint, per-IP limits, and a retention threshold before payout</dd>
+ </dl></div>
+ </div>
+
+ </div>
+</section>
+
+<hr>
+
+<!-- ========== 15-17 ========== -->
+<section>
+ <div class="sh">
+ <span class="no">§15–17</span><h2>Three modules with no app UI</h2><span class="en">Fraud · Admin · Analytics</span>
+ </div>
+ <p class="sub">These three produce no app UI, but they all need technical design. Don't let "there's no mockup" drop them out of the schedule.</p>
+
+ <div class="tw">
+ <table>
+ <thead><tr><th>Module</th><th>Today</th><th>V1 work</th><th>Lands in</th></tr></thead>
+ <tbody>
+ <tr>
+ <td><b>15 Fraud Protection</b></td>
+ <td>No unified module — just scattered rate-limit middleware (<code>throwLimit</code> / <code>replyLimit</code> / <code>commentLimit</code>) </td>
+ <td>Payment fraud, anomalous coin-flow alerts, invite-reward farming. Device fingerprint plus behavioural frequency plus a rule engine</td>
+ <td>🆕 New package <code>internal/risk</code></td>
+ </tr>
+ <tr>
+ <td><b>16 Admin</b></td>
+ <td>22 views and a 166-item config allowlist are in place</td>
+ <td>Add four views: OTP logs, India payment orders, FCM push records, anti-fraud rules</td>
+ <td>✅ <code>internal/admin</code> extends it. A new key <b>must</b> be written to both <code>sysconfig.defaults</code> and <code>admin/meta.go</code> allowlist</td>
+ </tr>
+ <tr>
+ <td><b>17 Analytics</b></td>
+ <td><code>admin/overview.go</code> has KPI aggregation but <b>no event instrumentation</b></td>
+ <td>signup / bottle / match / chat / purchase / retention event reporting</td>
+ <td>🔨 Own event table, or Firebase Analytics</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+
+ <div class="co">
+ <b>Analytics has a hidden trap:</b> every existing KPI is computed in <b>UTC+8</b>(<code>admin/overview.go</code> 's <code>periodStarts</code>, and hard constraint #4 explicitly forbids <code>time.Now().Truncate(24h)</code>). A third-party analytics tool defaults to UTC or the user's local zone, <b>the two datasets' "today" are different days</b>, and reconciliation will produce contradictory numbers. For India you then stack IST on top (UTC+5:30, with a half-hour offset). <b>Pin the time-zone definition before you instrument anything</b>. 
+ </div>
+</section>
+
+<hr>
+
+<!-- ========== SUMMARY ========== -->
+<section>
+ <div class="sh"><span class="no">§18</span><h2>New endpoints</h2><span class="en">New endpoints</span></div>
+ <p class="sub">All of V1 needs just nine new backend endpoints. The other 60-plus already exist and can be wired straight in.</p>
+
+ <div class="tw">
+ <table>
+ <thead><tr><th>Method</th><th>Path</th><th>Module</th><th>Notes</th></tr></thead>
+ <tbody>
+ <tr><td>POST</td><td><code>/api/auth/otp/send</code></td><td>1</td><td>Send the SMS or email code (phone or email) + <b>purpose binding</b>; store in Redis with three-axis rate limiting</td></tr>
+ <tr><td>POST</td><td><code>/api/auth/register</code></td><td>1</td><td>Code + password creates the account in one call; bcrypt hash</td></tr>
+ <tr><td>POST</td><td><code>/api/auth/login/password</code></td><td>1</td><td>Day-to-day sign-in. Unknown account and wrong password return the same message</td></tr>
+ <tr><td>POST</td><td><code>/api/auth/password/reset</code></td><td>1</td><td>Password reset; also the only way legacy accounts set an initial password. Issues a token on success</td></tr>
+ <tr><td>POST</td><td><code>/api/auth/otp/verify</code></td><td>1</td><td>Verify then sign in or register; response shape matches the existing login</td></tr>
+ <tr><td>POST</td><td><code>/api/auth/google</code></td><td>1</td><td>Validate the Google ID token</td></tr>
+ <tr><td>POST</td><td><code>/api/auth/apple</code></td><td>1</td><td>Validate the Apple identityToken (mandatory once Google is offered)</td></tr>
+ <tr><td>DELETE</td><td><code>/api/user/account</code></td><td>1</td><td>Delete account: anonymize and release identifiers, in one transaction</td></tr>
+ <tr><td>GET</td><td><code>/api/discover/users</code></td><td>3</td><td>Recommend people by language, interest and distance</td></tr>
+ <tr><td>POST</td><td><code>/api/push/device</code></td><td>8</td><td>Register the FCM / APNs device token</td></tr>
+ <tr><td>POST</td><td><code>/api/pay/iap/verify</code></td><td>11</td><td>iOS receipt validation and crediting</td></tr>
+ <tr><td>GET</td><td><code>/api/chat/presence</code></td><td>4</td><td>Presence (or move it to WS broadcast — one or the other)</td></tr>
+ </tbody>
+ </table>
+ </div>
+
+ <div class="co">
+ <b>Every backend change must be additive.</b> The mini-program and the app share one Go service, so any behavioural change to an existing endpoint reaches production immediately. New columns go through GORM AutoMigrate;<code>User.DeletedAt</code> must be <code>*time.Time</code> not <code>gorm.DeletedAt</code> — the latter enables global soft-delete and silently changes every existing <b></b> query. </div>
+</section>
+
+<hr>
+
+
+<section>
+ <div class="sh"><span class="no">§19</span><h2>Open technical questions</h2><span class="en">Open technical questions</span></div>
+
+ <div class="tw">
+ <table>
+ <thead><tr><th>#</th><th>Question</th><th>Why it has to be settled now</th></tr></thead>
+ <tbody>
+ <tr><td>T1</td><td>Do the app and the mini-program share one <code>tenant_id</code></td>
+ <td>Share it and the app can pull mini-program users' bottles from day one. Isolate it and the pool starts empty and needs bots. <b>Determines the whole content strategy in §2</b></td></tr>
+ <tr><td>T2</td><td>Does the chat hub move to Redis Pub/Sub?</td>
+ <td>Without it the backend is single-instance only, which caps V1's capacity and dictates how you release</td></tr>
+ <tr><td>T3</td><td>Object storage and CDN choice</td>
+ <td>Blocks §7. No amount of front-end tuning fixes Indian users pulling images off a disk in another region</td></tr>
+ <tr><td>T4</td><td>Geo lookup: lat/lng index or geohash</td>
+ <td>Blocks distance filtering in §3. At scale, a plain <code>WHERE</code> distance computation scans the whole table</td></tr>
+ <tr><td>T5</td><td>Build analytics or buy it</td>
+ <td>Decides whether you standardise on UTC+8, UTC or IST. Changing it after instrumentation means reprocessing data</td></tr>
+ <tr><td>T6</td><td>Which image moderation vendor</td>
+ <td>Blocks §9. <code>mediaCheckAsync</code> simply does not exist in the app. This is not degradation, it is absence</td></tr>
+ </tbody>
+ </table>
+ </div>
+</section>
+
+<hr>
+
+<!-- ========== 20. STATES ========== -->
+<section>
+ <div class="sh">
+ <span class="no">§20</span><h2>Empty, loading, failure</h2><span class="en">Empty · Loading · Failure</span>
+ <span class="vd add">🆕 Front-end only</span>
+ </div>
+ <p class="sub"> The screens above all show <b>ideal data</b>. In a real app these three states carry a lot of weight, and the backend <b>provides no endpoints for any of them</b> — all of it is front-end work. Skip them and you ship white screens, endless spinners, and users who have no idea what they did wrong. Only the eight worth a decision are drawn here; the rest follow the same template. </p>
+
+ <div class="grid">
+
+ <div class="scr">
+ <div class="cap"><b>Empty sea</b><i>Z1 · Empty</i></div>
+ <div class="ph hf">
+ <div class="hdr">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="top">
+ <div class="ring sm"><u>🐱</u><span class="dot"></span></div>
+ <span class="coin" style="margin-left:auto"><i class="cn"></i> 248</span>
+ </div>
+ <h3>The sea tonight</h3>
+ <div class="sc">No bottles drifting here right now</div>
+ </div>
+ <div class="scene">
+ <div class="empty2" style="color:#fff;position:relative;z-index:3">
+ <div class="ico2" style="color:rgba(255,255,255,.88)">
+ <svg viewBox="0 0 96 60" fill="none" stroke="currentColor" stroke-linecap="round">
+ <circle cx="71" cy="17" r="7.5" stroke-width="2" opacity=".4"/>
+ <path d="M20 30c4-3.2 8-3.2 12 0s8 3.2 12 0" stroke-width="2" opacity=".32"/>
+ <path d="M7 42c6.5-5 13-5 19.5 0s13 5 19.5 0 13-5 19.5 0 13 5 19.5 0" stroke-width="2.6"/>
+ <path d="M16 52c5.5-4 11-4 16.5 0s11 4 16.5 0 11-4 16.5 0" stroke-width="2.2" opacity=".5"/>
+ </svg>
+ </div>
+ <h5 style="color:#fff">The sea is quiet</h5>
+ <p style="color:rgba(255,255,255,.85)">Try another language, or throw one yourself<br>Someone usually finds it within minutes</p>
+ <div class="cta">Throw a bottle</div>
+ </div>
+ </div>
+ <div class="tb hf">
+ <div class="on"><svg><use href="#ic-ocean"/></svg><span>Ocean</span></div>
+ <div><svg><use href="#ic-discover"/></svg><span>Discover</span></div>
+ <div><svg><use href="#ic-chats"/></svg><span>Chats</span><em>3</em></div>
+ <div><svg><use href="#ic-moments"/></svg><span>Moments</span></div>
+ <div><svg><use href="#ic-me"/></svg><span>Me</span></div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Trigger</dt><dd><code>GET /api/bottle/scoop</code> returns an empty array. That is <b>not an error</b> — don't route it to the error branch and pop a toast</dd>
+ <dt>Way out</dt><dd>An empty state must offer a <b>next action</b>. Here it is Throw a bottle, which turns a dead end into supply</dd>
+ <dt>Root cause</dt><dd>An empty pool on cold start is a direct consequence of <b>T1 (shared tenant with the mini-program or not)</b> , see §19</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>No conversations</b><i>Z2 · Empty</i></div>
+ <div class="ph hf">
+ <div class="hdr slim">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="top">
+ <span class="ttl">Chats</span>
+ <span class="coin" style="margin-left:auto"><i class="cn"></i> 248</span>
+ </div>
+ </div>
+ <div class="empty2">
+ <div class="ico2">
+ <svg viewBox="0 0 108 56" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round">
+ <path d="M16 20v-6h7v6c0 2.4 3.4 3.4 3.4 6.4v17a4.4 4.4 0 0 1-4.4 4.4h-5A4.4 4.4 0 0 1 12.6 43.4v-17c0-3 3.4-4 3.4-6.4z"/>
+ <g opacity=".42">
+ <path d="M85 20v-6h7v6c0 2.4 3.4 3.4 3.4 6.4v17a4.4 4.4 0 0 1-4.4 4.4h-5A4.4 4.4 0 0 1 81.6 43.4v-17c0-3 3.4-4 3.4-6.4z"/>
+ </g>
+ <path d="M36 34h36" stroke-width="2" stroke-dasharray="3 6" stroke-linecap="round" opacity=".38"/>
+ </svg>
+ </div>
+ <h5>Nobody has written to you yet</h5>
+ <p>Reply to a bottle you found,<br>or say hi from Discover</p>
+ <div class="cta">Go pull a bottle</div>
+ <div class="oauth" style="margin-top:var(--s2)">See who's online</div>
+ </div>
+ <div class="tb hf">
+ <div><svg><use href="#ic-ocean"/></svg><span>Ocean</span></div>
+ <div><svg><use href="#ic-discover"/></svg><span>Discover</span></div>
+ <div class="on"><svg><use href="#ic-chats"/></svg><span>Chats</span></div>
+ <div><svg><use href="#ic-moments"/></svg><span>Moments</span></div>
+ <div><svg><use href="#ic-me"/></svg><span>Me</span></div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Endpoints</dt><dd><code>GET /api/chat/list</code> an empty array</dd>
+ <dt>Two exits</dt><dd>offer <b>Two paths</b> ways out: the primary button returns to the bottle loop, the secondary goes to Discover. One button traps people at a single entrance</dd>
+ <dt>Anti-pattern</dt><dd>Don't draw a grey "no data" illustration — it tells people nothing about what to do</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Loading</b><i>Z3 · Loading</i></div>
+ <div class="ph hf">
+ <div class="hdr slim">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="top">
+ <span class="ttl">Online today</span>
+ <span class="coin" style="margin-left:auto"><i class="cn"></i> 248</span>
+ </div>
+ </div>
+ <div class="chs raise">
+ <span class="ch on">For you</span><span class="ch">Nearby</span><span class="ch">New</span>
+ </div>
+ <div class="bd" style="padding-top:18px">
+ <div class="skel" style="flex:1 1 auto;border-radius:var(--r5);min-height:200px"></div>
+ <div style="display:flex;gap:var(--s2);align-items:center">
+ <div class="skel" style="width:34px;height:34px;border-radius:50%"></div>
+ <div class="skel" style="flex:1;height:34px;border-radius:99px"></div>
+ <div class="skel" style="width:34px;height:34px;border-radius:50%"></div>
+ </div>
+ </div>
+ <div class="tb hf">
+ <div><svg><use href="#ic-ocean"/></svg><span>Ocean</span></div>
+ <div class="on"><svg><use href="#ic-discover"/></svg><span>Discover</span></div>
+ <div><svg><use href="#ic-chats"/></svg><span>Chats</span><em>3</em></div>
+ <div><svg><use href="#ic-moments"/></svg><span>Moments</span></div>
+ <div><svg><use href="#ic-me"/></svg><span>Me</span></div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Form</dt><dd><b>A skeleton, not a spinner</b>. The skeleton mirrors the real layout so nothing jumps when data lands</dd>
+ <dt>Timing</dt><dd>Under 300ms show nothing (a flash is worse); over 8s switch to failure state Z6</dd>
+ <dt>Swipe-specific</dt><dd>Prefetching is covered in C1, so this screen is <b>only a cold start</b>; every refill after that is silent</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Not enough coins</b><i>Z4 · Blocked</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">
+ ←<div class="ring sm"><u>👩</u></div><span>Aanya</span>
+ <span class="sp2" style="font-size:var(--t4)">⋯</span>
+ </div>
+ <div class="bd" style="gap:var(--s2)">
+ <div class="bub you">Go together next time?</div>
+ <div class="bub me">It's a deal</div>
+ </div>
+ <div class="mask" style="z-index:7"></div>
+ <div class="modal">
+ <div class="x">✕</div>
+ <div class="head">
+ <div class="ico"><i class="cn" style="width:30px;height:30px"></i></div>
+ <h4>190 coins short</h4>
+ <p>The Limited Gift Box costs <b>438</b>, <br>you have <b>248</b>. </p>
+ </div>
+ <div class="body">
+ <div class="offer">
+ <span style="font-size:var(--t6)">🎁</span>
+ <div style="min-width:0">
+ <b>300 coins · +20% bonus</b>
+ <s>Was ₹249 · covers 2 unlocks</s>
+ </div>
+ <span class="pz">₹199</span>
+ </div>
+ <div class="cta pay">Top up</div>
+ <div class="cta gh">Pick a cheaper gift</div>
+ </div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Error code</dt><dd>the backend <code>wallet</code> The wallet transaction fails with an insufficient-funds code; the client <b>intercepts it and shows this screen</b>, never a generic toast</dd>
+ <dt>Key point</dt><dd>with <b>a recommended pack</b> straight to top-up, then return to where they were. One fewer hop makes a large difference to conversion</dd>
+ <dt>Escape hatch</dt><dd>Pick a cheaper gift is mandatory — not everyone will top up on the spot, and the conversation must not dead-end</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>No connection</b><i>Z5 · Failure</i></div>
+ <div class="ph hf">
+ <div class="hdr slim">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="top">
+ <span class="ttl">Moments</span>
+ <span class="coin" style="margin-left:auto"><i class="cn"></i> 248</span>
+ </div>
+ </div>
+ <div class="empty2">
+ <div class="ico2">
+ <svg viewBox="0 0 96 62" fill="none" stroke="currentColor" stroke-linecap="round">
+ <circle cx="48" cy="16" r="9.5" stroke-width="2.4"/>
+ <path d="M48 26v7" stroke-width="2.4"/>
+ <path d="M48 38v4" stroke-width="2.4" opacity=".45"/>
+ <path d="M48 47v3" stroke-width="2.4" opacity=".22"/>
+ <path d="M10 56c6-4.5 12-4.5 18 0s12 4.5 18 0 12-4.5 18 0 12 4.5 18 0" stroke-width="2.2" opacity=".55"/>
+ </svg>
+ </div>
+ <h5>Can't reach the server</h5>
+ <p>Check your connection, or try again later.<br>Your draft is saved on this device.</p>
+ <div class="cta">Retry</div>
+ <div class="oauth" style="margin-top:var(--s2)">View cached content</div>
+ </div>
+ <div class="tb hf">
+ <div><svg><use href="#ic-ocean"/></svg><span>Ocean</span></div>
+ <div><svg><use href="#ic-discover"/></svg><span>Discover</span></div>
+ <div><svg><use href="#ic-chats"/></svg><span>Chats</span><em>3</em></div>
+ <div class="on"><svg><use href="#ic-moments"/></svg><span>Moments</span></div>
+ <div><svg><use href="#ic-me"/></svg><span>Me</span></div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Tiering</dt><dd>Timeout, 5xx and offline each need different copy. <b>Never render a 5xx as "check your connection"</b> — checking won't help them</dd>
+ <dt>Drafts</dt><dd>Text typed into a bottle, a moment or a comment must be <b>saved locally</b> so it survives a failure. This is the most painful place to lose data</dd>
+ <dt>Backoff</dt><dd>Auto-retry on exponential backoff (1s / 2s / 4s, three attempts). Only then show this screen</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Location denied</b><i>Z6 · Degrade</i></div>
+ <div class="ph hf">
+ <div class="hdr slim">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="top">
+ <span class="ttl">Online today</span>
+ <span class="coin" style="margin-left:auto"><i class="cn"></i> 248</span>
+ <div class="ic" style="margin-left:0">⚙</div>
+ </div>
+ </div>
+ <div class="chs raise">
+ <span class="ch on">For you</span><span class="ch">New</span><span class="ch aq">हिन्दी</span>
+ </div>
+ <div class="bd" style="padding-top:18px">
+ <div class="warn">
+ <span>📍</span>
+ <div><b>Location is off — Nearby won't work</b><br>Recommendations still use language and interests, just without distance</div>
+ </div>
+ <div class="oauth">Open system settings</div>
+ <div class="sec" style="margin-top:var(--s1)">Ranked by language and interests</div>
+ <div class="mcd">
+ <div style="display:flex;align-items:center;gap:var(--s2)">
+ <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+ <div style="flex:1;min-width:0">
+ <div style="font-size:var(--t3);font-weight:700">Aanya, 23</div>
+ <div style="display:flex;gap:4px;margin-top:3px">
+ <span class="tg">हिन्दी</span><span class="tg pu">Music</span>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+ <div class="tb hf">
+ <div><svg><use href="#ic-ocean"/></svg><span>Ocean</span></div>
+ <div class="on"><svg><use href="#ic-discover"/></svg><span>Discover</span></div>
+ <div><svg><use href="#ic-chats"/></svg><span>Chats</span><em>3</em></div>
+ <div><svg><use href="#ic-moments"/></svg><span>Moments</span></div>
+ <div><svg><use href="#ic-me"/></svg><span>Me</span></div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Principle</dt><dd><b>Degrade, don't block</b>. Deny location and everything still works, just with one fewer ranking dimension. Same constraint as A4</dd>
+ <dt>Never</dt><dd>Don't re-prompt the system dialog — iOS gives you one chance, after which it's Settings only</dd>
+ <dt>Ranking</dt><dd>With no lat/lng, <code>discover/users</code> sets the distance weight to 0 and renormalizes the rest</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Conversation closed</b><i>Z7 · Blocked</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">
+ ←<div class="ring sm"><u>👤</u></div><span>Aanya</span>
+ <span class="sp2" style="font-size:var(--t4)">⋯</span>
+ </div>
+ <div class="bd" style="gap:var(--s2);justify-content:flex-end">
+ <div class="bub you" style="opacity:.5">Go together next time?</div>
+ <div class="bub me" style="opacity:.5">It's a deal</div>
+ <div class="warn" style="margin-top:var(--s3)">
+ <span>🔒</span>
+ <div><b>You can no longer send messages</b><br>They may have changed their privacy settings, blocked you, or deleted their account. Past messages stay readable.</div>
+ </div>
+ </div>
+ <div class="inp">
+ <div class="fd" style="opacity:.5">Sending disabled</div>
+ <div class="snd" style="background:var(--line);color:var(--ink3)">➤</div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Compliance</dt><dd>Copy <b>Must stay vague</b> — never let someone confirm who blocked them, or you invite harassment and retaliation</dd>
+ <dt>Three in one</dt><dd>Blocked, deleted and privacy-restricted all share one string and one UI — the client never distinguishes them</dd>
+ <dt>History</dt><dd>Past messages stay readable and the composer greys out rather than disappearing — vanishing UI reads as a bug</dd>
+ </dl></div>
+ </div>
+
+ <div class="scr">
+ <div class="cap"><b>Upload failed</b><i>Z8 · Failure</i></div>
+ <div class="ph hf">
+ <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+ <div class="nv">✕<span>Choose photos</span><span class="sp2">3 of 9 selected</span></div>
+ <div class="bd">
+ <div class="g9">
+ <div><span class="num">1</span></div>
+ <div><span class="num">2</span></div>
+ <div><span class="ovl" style="background:rgba(200,40,70,.6)">Failure</span></div>
+ <div class="empty">＋</div>
+ </div>
+ <div class="warn">
+ <span>⚠️</span>
+ <div><b>Photo 3 didn't upload</b><br>The file may be too large, or the connection dropped. 2 uploaded fine — you can keep going.</div>
+ </div>
+ <div style="display:flex;gap:var(--s2)">
+ <div class="cta gh" style="flex:1">Remove it</div>
+ <div class="cta" style="flex:1">Try again</div>
+ </div>
+ </div>
+ <div class="foot">
+ <div class="cta">Use these 2</div>
+ </div>
+ </div>
+ <div class="tp"><dl>
+ <dt>Granularity</dt><dd>Failure must name <b>which photo failed</b>, never roll back the batch — reselecting nine photos is brutal</dd>
+ <dt>Three choices</dt><dd>Retry, remove, or carry on with what succeeded — offer all three. Retry alone traps people on a weak connection</dd>
+ <dt>Upstream</dt><dd>Compress on the client before uploading (see G1). Most upload failures are oversized originals and disappear once compression is in</dd>
+ </dl></div>
+ </div>
+
+ </div>
+
+ <div class="co">
+ <b>Not one of these eight screens has a backend endpoint.</b> But they determine crash rate, support volume and payment conversion. They are the first thing cut as "styling polish" during planning, and the cuts all surface at once during rollout. Make <b>Z1 empty, Z4 insufficient funds and Z5 network failure</b> P0, tested in the same batch as the main flow. </div>
+</section>
+
+<hr>
+
+<section>
+ <div class="sh">
+ <span class="no">§21</span><h2>Gestures & motion</h2><span class="en">Gestures &amp; motion</span>
+ <span class="vd add">🆕 Front-end only</span>
+ </div>
+ <p class="sub"> If a static mockup doesn't state the gesture and the duration, everyone invents their own and the app ends up with no rhythm. These are values Flutter can use directly. <b>One rule throughout: animation that answers a user action must be fast (≤300ms); decorative animation that plays on its own must be slow and switchable.</b>
+ </p>
+
+ <div class="tw">
+ <table>
+ <thead><tr><th>Scene</th><th>Gesture / trigger</th><th>Animation</th><th>Notes</th></tr></thead>
+ <tbody>
+ <tr>
+ <td><b>C1 swipe</b></td>
+ <td>Horizontal drag, distance &gt; <b>25% of screen width</b> or flick speed &gt; 800 px/s commits; otherwise it springs back</td>
+ <td>1:1 with the finger; rotation = distance × 0.06° (max 12°); fly-out <code>easeOutCubic 280ms</code>, spring back <code>spring(0.6, 18)</code></td>
+ <td>The commit test needs <b>both distance and velocity</b>; distance alone kills quick flicks, velocity alone kills slow drags</td>
+ </tr>
+ <tr>
+ <td><b>C1 stamp</b></td>
+ <td>Fades in live during the drag</td>
+ <td>Opacity maps linearly to distance, 0→1, full at 25%</td>
+ <td>Full opacity at the threshold lets people <b>know the outcome before they let go</b> — the single most important feedback in a swipe deck</td>
+ </tr>
+ <tr>
+ <td><b>B1a pull ritual</b></td>
+ <td><b>Press and hold</b> and drag down &gt; 30pt to commit. Release early and the bottle sinks back without spending a pull</td>
+ <td>Ripples <code>2.6s ease-out</code> three rings out of phase; the bottle rises with <code>rise 2.6s ease-in-out</code>; on release the bottle scales up and fades over <code>220ms</code>, and the letter <code>scaleY 0.3→1 easeOutCubic 340ms</code></td>
+ <td><b>Fire the request the instant they press</b>, so animation and network run in parallel. 2.5s covers a weak connection and nobody perceives loading — this is the standard way to hide a loading state inside a ritual</td>
+ </tr>
+ <tr>
+ <td><b>B1 tappable sea</b></td>
+ <td>Tap a bottle for a bubble; drag &gt; 60pt for high-tide refresh; tap the lighthouse for the sea report</td>
+ <td>The bubble <code>spring(0.7,20) 240ms</code> pops from the bottle neck; high tide lifts the sea <code>translateY</code> 12pt then settles back</td>
+ <td>The bubble <b>does not spend a pull</b>. The home tab is opened a dozen times a day and needs something free to play with, or it is just two buttons</td>
+ </tr>
+ <tr>
+ <td><b>B1 throw</b></td>
+ <td>After tapping Throw one</td>
+ <td>Parabola <code>easeOutQuad 600ms</code> + splash ripple <code>400ms</code>, then the bottle shrinks and fades</td>
+ <td>This is a ritual animation, <b>must never block</b>: a failed request must be able to cut to an error state mid-flight, not wait for the animation to finish</td>
+ </tr>
+ <tr>
+ <td><b>B1 bottle bob</b></td>
+ <td>Looping</td>
+ <td><code>bob 4.5s ease-in-out infinite</code>, each bottle phase-offset at random</td>
+ <td>Must respect <code>prefers-reduced-motion</code>; without phase offsets they march in lockstep</td>
+ </tr>
+ <tr>
+ <td><b>Bottom sheet</b><br>(H4 gifts / G3 report)</td>
+ <td>Swipe up to open; drag down past <b>40%</b> or tap the scrim to close</td>
+ <td>In <code>spring(0.75, 22) 320ms</code>, out <code>easeInCubic 220ms</code>; the scrim's opacity tweens in step</td>
+ <td>Exit is <b>100ms faster than entry</b> — closing should be crisp, opening can have spring</td>
+ </tr>
+ <tr>
+ <td><b>H5 / Z4 modal</b></td>
+ <td>Appears on its own; ✕ or scrim closes it</td>
+ <td>scale 0.92→1 + opacity, <code>spring(0.8, 20) 280ms</code></td>
+ <td>Modal <b>must not slide up from the bottom</b> — it gets confused with a sheet the user opened</td>
+ </tr>
+ <tr>
+ <td><b>Tab switch</b></td>
+ <td>Tap a tab</td>
+ <td>Content <b>No transition</b> swaps instantly; the active pill moves with <code>spring(0.7, 20) 260ms</code> distance</td>
+ <td>Cross-fading between tabs feels sluggish. Each tab keeps its own Navigator stack and scroll position</td>
+ </tr>
+ <tr>
+ <td><b>Tab unread badge</b></td>
+ <td>Appears the moment a message arrives over WS; after entering the tab, waits <b>400ms</b> before it disappears</td>
+ <td>Appearance <code>spring(0.6,16) 200ms</code> springs 0→1; disappearing is a plain fade of <code>120ms</code></td>
+ <td>Vanishing instantly makes people doubt they saw it. Above 99 show <code>99+</code>; 
+ <b>The badge ring uses <code>--surface</code></b> so it darkens automatically — never hard-code white</td>
+ </tr>
+ <tr>
+ <td><b>Safe area</b></td>
+ <td>—</td>
+ <td>Leave <code>env(safe-area-inset-bottom)</code> below the tab bar; this page uses a home indicator as a stand-in</td>
+ <td>Without it the gesture bar covers your UI. <b>Sticky bottom CTAs (<code>.foot</code>) need it too</b></td>
+ </tr>
+ <tr>
+ <td><b>Push transition</b></td>
+ <td>C1→C3, list→detail</td>
+ <td>Platform native: iOS push with edge-back gesture, Android <code>fadeThrough 300ms</code></td>
+ <td>Don't roll your own. <b>The iOS edge-back gesture is muscle memory; disabling it will be complained about</b></td>
+ </tr>
+ <tr>
+ <td><b>C1 → C3</b></td>
+ <td>Tap the card</td>
+ <td>The photo area <code>Hero</code> shared-element zoom, <code>300ms easeInOutCubic</code></td>
+ <td>Both photo areas share one gradient precisely for this — the card expands into the profile</td>
+ </tr>
+ <tr>
+ <td><b>Skeleton → content</b></td>
+ <td>Data arrives</td>
+ <td>Cross-fade <code>160ms</code>, <b>no movement</b></td>
+ <td>The skeleton must match the real content's size, or it jumps the moment it fades</td>
+ </tr>
+ <tr>
+ <td><b>Gift effect</b></td>
+ <td>After sending</td>
+ <td>The gift flies to their avatar <code>700ms</code>; big gifts add a full-screen effect</td>
+ <td>On a ×10 combo, <b>collapse into one effect</b> — playing it ten times will freeze the chat</td>
+ </tr>
+ <tr>
+ <td><b>Pull to refresh</b></td>
+ <td>Drag the list past <b>&gt; 60pt</b></td>
+ <td>Platform indicator</td>
+ <td>While refreshing <b>Don't clear the old data</b> — people will think their content vanished</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+
+ <p class="sub" style="margin-top:44px">
+ <b>Sound.</b> A drifting-bottle app is immersive and asynchronous, yet nothing in this prototype makes room for sound. It is cheap to add and lifts the atmosphere a lot — but <b>default everything off, ask once on first visit to Ocean</b> — a lot of Indian users are on their phones in public, and silence is the default expectation. </p>
+
+ <div class="tw">
+ <table>
+ <thead><tr><th>Sound</th><th>Trigger</th><th>Character</th><th>Notes</th></tr></thead>
+ <tbody>
+ <tr><td><b>Ocean ambience</b></td><td>While on <code>B1</code> the Ocean tab</td>
+ <td>Looping, −28dB, seamless 8-second bed; a deeper one for the night session</td>
+ <td><b>the only continuous sound</b>, and the only one needing its own switch. Fades out in 300ms on leaving the tab</td></tr>
+ <tr><td><b>Bottle hits water</b></td><td><code>B2</code> Tap Send it out to sea</td><td>A dull thud plus a short ripple tail, about 500ms</td>
+ <td>Line it up with where the arc lands; 100ms either way and it feels detached</td></tr>
+ <tr><td><b>Bottle rising</b></td><td><code>B1a</code> While held</td><td>Low bubbling that rises in pitch with the drag</td>
+ <td><b>tracking the gesture</b> pitch carries half the tension of those 2.5 seconds. Cut it the instant they let go</td></tr>
+ <tr><td><b>Opening a bottle</b></td><td><code>B1b</code> Release</td><td>A cork pop plus the rustle of unfolding paper, about 400ms</td>
+ <td>This is the app's <b>signature sound</b>. Worth commissioning properly — like WeChat's chime</td></tr>
+ <tr><td><b>Reply arrives</b></td><td>Foreground <code>bottle_reply</code></td><td>A single water drop, about 200ms</td>
+ <td>Distinct from the system notification sound. Multiple arrivals in one second play once</td></tr>
+ <tr><td><b>Gifting</b></td><td><code>H4</code> Send</td><td>Three tiers by gift price; the 188-coin one carries a chord</td>
+ <td>A ×10 combo plays once, never stacked</td></tr>
+ <tr><td><b>Swipe card</b></td><td><code>C1</code> fly-out</td><td>Very faint wind, −34dB, 120ms</td>
+ <td>Optional. On rapid swipes, <b>play only every third one</b> — otherwise it's noise</td></tr>
+ <tr><td colspan="4" style="color:var(--ink3)">
+ <b>Not doing:</b> button taps, tab switches, keyboard clicks. Leave those to the system; your own will only fight it.</td></tr>
+ </tbody>
+ </table>
+ </div>
+
+ <div class="co">
+ <b>One hard requirement:</b><b>auto-playing</b> animation — bobbing bottles, the blinking lighthouse, breathing skeletons, gift effects — must fall back to static when the system Reduce Motion setting is on. It is an App Store accessibility review item, and this page already does it in CSS (see <code>@media (prefers-reduced-motion:reduce)</code>) — on Flutter that is <code>MediaQuery.disableAnimations</code>. 
+ </div>
+</section>
+
+
+</div>
+
+<script>
+(function(){
+  var b = document.getElementById('tg');
+  if(!b) return;
+  b.addEventListener('click', function(){
+    var r = document.documentElement;
+    var cur = r.getAttribute('data-theme');
+    if(!cur){
+      cur = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    r.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+  });
+})();
+(function(){
+  var n = document.getElementById('ng');
+  if(!n) return;
+  n.addEventListener('click', function(){
+    var r = document.documentElement;
+    var on = !r.hasAttribute('data-night');
+    if(on){ r.setAttribute('data-night',''); } else { r.removeAttribute('data-night'); }
+    n.setAttribute('aria-pressed', String(on));
+    n.textContent = on ? 'Night · on' : 'Night';
+  });
+})();
+</script>

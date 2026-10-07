@@ -1,0 +1,4197 @@
+<title>Drift V1 Blueprint</title>
+
+<style>
+:root{
+  --sea:#DCEFF2; --mist:#9DBDC8; --coral:#FF4D6D; --surface:#FBFEFF;
+  --ink:#16323C; --ink2:#56727D; --ink3:#8AA3AC;
+  --page:#F2F8FA; --line:rgba(22,50,60,.13); --line2:rgba(22,50,60,.07);
+  --gold:#C8912F; --new:#3E7F99; --warn:#C2562F;
+  --brand:#FF4D6D; --brand2:#7B5CFF; --aqua:#12B5CE; --coin:#FFC53D;
+  --grad:linear-gradient(118deg,#FF4D6D 0%,#FF7EA8 52%,#9B6BE0 100%);
+
+  /* 几何刻度：原型 px（真机 pt）。屏宽 252px = 375pt，比例 0.672 */
+  --t0:7.5px;   /* 11pt 角标   */  --t1:8px;     /* 12pt 辅助   */
+  --t2:9px;     /* 13pt 次要   */  --t3:10px;    /* 15pt 正文   */
+  --t4:11.5px;  /* 17pt 强调   */  --t5:13.5px;  /* 20pt 小标题 */
+  --t6:16px;    /* 24pt 标题   */  --t7:19px;    /* 28pt 数字   */
+  --r1:5px;     /* 8pt  标签   */  --r2:8px;     /* 12pt 按钮   */
+  --r3:11px;    /* 16pt 卡片   */  --r4:13.5px;  /* 20pt 大卡   */
+  --r5:19px;    /* 28pt 模态   */
+  --s1:2.5px;   /* 4pt  */  --s2:5.5px;  /* 8pt  */  --s3:8px;   /* 12pt */
+  --s4:11px;    /* 16pt */  --s5:13.5px; /* 20pt */  --s6:16px;  /* 24pt */
+  --shadow:0 1px 2px rgba(22,50,60,.05), 0 8px 24px rgba(22,50,60,.07);
+  --mono:ui-monospace,"Cascadia Code","SF Mono",Consolas,"Liberation Mono",monospace;
+  --sans:"Segoe UI",ui-sans-serif,system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --sea:#12252D; --mist:#5A7C88; --coral:#FF6B85; --surface:#16292F;
+    --ink:#E3F0F3; --ink2:#9BB5BD; --ink3:#6E8992;
+    --page:#0D1B21; --line:rgba(227,240,243,.15); --line2:rgba(227,240,243,.07);
+    --gold:#E0AE55; --new:#6FB3CC; --warn:#F09070;
+    --brand:#FF6B85; --brand2:#9B82FF; --aqua:#3FC6DC; --coin:#FFD166;
+    --grad:linear-gradient(118deg,#E8365A 0%,#E8619A 52%,#7B4FD6 100%);
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --sea:#12252D; --mist:#5A7C88; --coral:#FF6B85; --surface:#16292F;
+  --ink:#E3F0F3; --ink2:#9BB5BD; --ink3:#6E8992;
+  --page:#0D1B21; --line:rgba(227,240,243,.15); --line2:rgba(227,240,243,.07);
+  --gold:#E0AE55; --new:#6FB3CC; --warn:#F09070;
+  --brand:#FF6B85; --brand2:#9B82FF; --aqua:#3FC6DC; --coin:#FFD166;
+  --grad:linear-gradient(118deg,#E8365A 0%,#E8619A 52%,#7B4FD6 100%);
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--page); color:var(--ink);
+  font-family:var(--sans); font-size:15px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:0 24px 96px}
+h1,h2,h3,h4{margin:0; text-wrap:balance; letter-spacing:-.02em; font-weight:700}
+
+/* ---------- masthead ---------- */
+.mast{padding:64px 0 40px; border-bottom:1px solid var(--line)}
+.mast .kick{
+  font-family:var(--mono); font-size:11px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--ink3); margin-bottom:18px;
+}
+.mast h1{font-size:clamp(34px,5.2vw,52px); line-height:1.08; max-width:16ch}
+.mast p{color:var(--ink2); max-width:62ch; margin:18px 0 0; font-size:16px}
+.mast .meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:26px}
+.mast .meta span{
+  font-family:var(--mono); font-size:11.5px; padding:5px 11px; border-radius:99px;
+  border:1px solid var(--line); color:var(--ink2); background:var(--surface);
+}
+#tg,#ng{
+  cursor:pointer; font-family:var(--mono); font-size:11.5px;
+  padding:5px 13px; border-radius:99px; border:1px solid var(--line);
+  color:var(--ink2); background:var(--surface);
+}
+#tg{margin-left:auto}
+#ng{margin-left:8px}
+#tg:hover,#ng:hover{border-color:var(--mist); color:var(--ink)}
+#tg:focus-visible,#ng:focus-visible{outline:2px solid var(--coral); outline-offset:2px}
+#ng[aria-pressed="true"]{border-color:var(--brand2); color:var(--brand2)}
+
+/* ---------- section ---------- */
+section{padding-top:64px}
+.sh{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:8px}
+.sh .no{
+  font-family:var(--mono); font-size:13px; color:var(--coral);
+  font-weight:700; letter-spacing:.04em;
+}
+.sh h2{font-size:26px}
+.sh .en{font-family:var(--mono); font-size:12.5px; color:var(--ink3)}
+.sub{color:var(--ink2); max-width:74ch; margin:0 0 26px; font-size:14.5px}
+.sub code{font-family:var(--mono); font-size:12.5px; background:var(--sea); padding:1px 5px; border-radius:4px; color:var(--ink)}
+
+.vd{
+  font-family:var(--mono); font-size:11px; padding:3px 9px; border-radius:5px;
+  border:1px solid var(--line); background:var(--surface); color:var(--ink2); white-space:nowrap;
+}
+.vd.keep{color:#2E7D5B; border-color:rgba(46,125,91,.35)}
+.vd.mod{color:var(--warn); border-color:rgba(194,86,47,.35)}
+.vd.add{color:var(--new); border-color:rgba(62,127,153,.4)}
+.vd.money{color:var(--gold); border-color:rgba(200,145,47,.4)}
+
+/* ---------- screen grid ---------- */
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(258px,1fr)); gap:30px}
+.scr{display:flex; flex-direction:column; gap:12px}
+.scr>.cap{display:flex; align-items:baseline; gap:8px}
+.scr>.cap b{font-size:14.5px; font-weight:700}
+.scr>.cap i{font-family:var(--mono); font-style:normal; font-size:11px; color:var(--ink3)}
+
+/* ---------- phone ---------- */
+.ph{
+  width:100%; max-width:252px; aspect-ratio:252/512; border-radius:26px;
+  border:1px solid var(--line); background:var(--surface); box-shadow:var(--shadow);
+  overflow:hidden; display:flex; flex-direction:column; position:relative;
+  font-size:11px; line-height:1.5;
+}
+.st{
+  display:flex; justify-content:space-between; align-items:center; flex:0 0 auto;
+  padding:7px var(--s4) 4px; font-family:var(--mono); font-size:9px; color:var(--ink3);
+}
+.bd{flex:1 1 auto; overflow:hidden; padding:var(--s4); display:flex; flex-direction:column; gap:var(--s3)}
+.tb{flex:0 0 auto; display:flex; border-top:1px solid var(--line2); background:var(--surface)}
+
+/* ---------- ocean at dusk ---------- */
+.scene{
+  position:relative; z-index:1; flex:1 1 auto; overflow:hidden;
+  background:linear-gradient(180deg,
+    #8E6FE0 0%, #B06CC8 13%, #E07AA0 25%, #F2A47E 32%,
+    #6389B6 40%, #43729F 56%, #33608A 70%, #C9B48C 82%, #E8DAB9 100%);
+}
+.sun{
+  position:absolute; top:27%; right:26px; width:24px; height:24px; border-radius:50%;
+  background:#FFEBB0; box-shadow:0 0 22px 9px rgba(255,214,150,.6); z-index:1;
+}
+.lh{position:absolute; left:13px; bottom:104px; z-index:2}
+.lh .tw{width:12px; height:42px; background:#F4EDE0; border-radius:3px 3px 0 0; position:relative}
+.lh .tw::after{content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,transparent 0 8px,#E0705F 8px 15px); border-radius:3px 3px 0 0; opacity:.85}
+.lh .lp{width:8px; height:7px; background:#FFE9A8; border-radius:2px; margin:0 auto -1px; box-shadow:0 0 11px 4px rgba(255,233,168,.9); animation:glow 3s ease-in-out infinite}
+.lh .isl{width:38px; height:11px; background:#6E7F58; border-radius:50% 50% 0 0; margin:-1px -13px 0}
+@keyframes glow{0%,100%{opacity:.72}50%{opacity:1}}
+.sea{position:absolute; left:0; right:0; top:42%; bottom:76px; z-index:2}
+.btl{position:absolute; width:17px; height:24px; z-index:3}
+.btl i{
+  display:block; width:100%; height:100%; border-radius:5px 5px 7px 7px;
+  background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(255,190,205,.85));
+  border:1px solid rgba(255,255,255,.8); animation:bob 4.5s ease-in-out infinite;
+  box-shadow:0 2px 6px rgba(20,35,70,.25);
+}
+.btl em{
+  position:absolute; top:-7px; right:-6px; background:var(--brand); color:#fff;
+  font-size:7.5px; font-style:normal; font-weight:800; border-radius:99px; padding:0 4px;
+  box-shadow:0 1px 4px rgba(0,0,0,.25);
+}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+
+/* ---------- 夜场（21:00–01:00 的产品状态，与系统暗色是两根独立的轴）----------
+   全局开关 :root[data-night]；单屏演示用 .ph.night。--brand 不变——
+   粉色永远只代表「要花币」，不参与昼夜叙事。                                  */
+:root[data-night]{--grad:linear-gradient(118deg,#2E2A7A 0%,#5B3E9E 52%,#8C3D80 100%)}
+.ph.night{--grad:linear-gradient(118deg,#2E2A7A 0%,#5B3E9E 52%,#8C3D80 100%)}
+.ph.night .hdr{background:var(--grad)}
+
+:root[data-night] .scene, .ph.night .scene{
+  background:linear-gradient(180deg,
+    #0A0E2E 0%, #161C48 13%, #2A2160 26%, #3B2A63 33%,
+    #16244A 40%, #101C3A 58%, #0B1730 72%, #2E2A3C 84%, #423C4E 100%);
+}
+:root[data-night] .scene::before, .ph.night .scene::before{
+  content:""; position:absolute; inset:0 0 58% 0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(1.6px 1.6px at 18% 20%, rgba(255,255,255,.95), transparent),
+    radial-gradient(1.4px 1.4px at 63% 12%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1.1px 1.1px at 38% 31%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1.6px 1.6px at 85% 26%, rgba(255,255,255,.85), transparent),
+    radial-gradient(1.1px 1.1px at 73% 41%, rgba(255,255,255,.5), transparent),
+    radial-gradient(1.1px 1.1px at 27% 45%, rgba(255,255,255,.45), transparent),
+    radial-gradient(1.3px 1.3px at 50% 8%, rgba(255,255,255,.7), transparent);
+}
+:root[data-night] .sun, .ph.night .sun{
+  width:20px; height:20px; background:#EDF1FF;
+  box-shadow:0 0 20px 8px rgba(196,212,255,.4), inset -6px -2px 0 0 rgba(14,20,58,.6);
+}
+:root[data-night] .btl i, .ph.night .btl i{
+  background:linear-gradient(160deg,rgba(255,255,255,.96),rgba(176,206,255,.9));
+  box-shadow:0 0 15px 4px rgba(150,190,255,.38), 0 2px 6px rgba(0,0,0,.45);
+}
+:root[data-night] .lh .lp, .ph.night .lh .lp{box-shadow:0 0 16px 6px rgba(255,233,168,1)}
+:root[data-night] .lh .isl, .ph.night .lh .isl{background:#3A4438}
+:root[data-night] .pbn, .ph.night .pbn{background:#3E7FA8; box-shadow:0 6px 18px rgba(20,60,110,.55)}
+
+/* ---------- ocean interactions（海面可点 + 捞瓶仪式）---------- */
+.tide{
+  position:absolute; left:50%; top:30px; transform:translateX(-50%); z-index:4;
+  padding:2.5px var(--s3); border-radius:99px; white-space:nowrap;
+  background:rgba(255,255,255,.26); border:1px solid rgba(255,255,255,.42);
+  color:#fff; font-size:var(--t1); font-weight:700;
+}
+.peek{
+  position:absolute; z-index:5; padding:var(--s2) var(--s3); border-radius:var(--r3);
+  background:rgba(255,255,255,.95); color:var(--ink); font-size:var(--t1); font-weight:700;
+  box-shadow:0 6px 18px rgba(10,25,40,.3); white-space:nowrap;
+}
+.peek::after{
+  content:""; position:absolute; left:50%; bottom:-5px; margin-left:-5px;
+  border:5px solid transparent; border-bottom:0; border-top-color:rgba(255,255,255,.95);
+}
+.lhtag{
+  position:absolute; z-index:4; padding:2px var(--s2); border-radius:99px; white-space:nowrap;
+  background:rgba(255,255,255,.9); color:#0E3846; font-size:var(--t0); font-weight:700;
+}
+.ripple::before{
+  content:""; position:absolute; left:50%; top:46%; transform:translate(-50%,-50%);
+  width:190px; height:190px; border-radius:50%; z-index:2;
+  background:radial-gradient(circle,rgba(255,232,242,.34) 0%,rgba(255,232,242,0) 62%);
+}
+.ripple i{
+  position:absolute; left:50%; top:44%; transform:translate(-50%,-50%); z-index:3;
+  border:2px solid rgba(255,255,255,.9); border-radius:50%;
+  animation:rip 2.6s ease-out infinite;
+}
+@keyframes rip{0%{width:22px;height:22px;opacity:1}100%{width:158px;height:158px;opacity:0}}
+.rising{
+  position:absolute; left:50%; top:46%; z-index:4;
+  width:36px; height:51px; border-radius:9px 9px 13px 13px;
+  background:linear-gradient(160deg,rgba(255,255,255,.98),rgba(255,196,214,.94));
+  border:1.5px solid rgba(255,255,255,.9);
+  box-shadow:0 0 34px 12px rgba(255,222,238,.4), 0 12px 26px rgba(8,20,36,.5);
+  animation:rise 2.6s ease-in-out infinite;
+}
+.rising::after{
+  content:""; position:absolute; left:50%; top:-14px; margin-left:-3px;
+  width:6px; height:14px; border-radius:2px 2px 0 0;
+  background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,.85));
+}
+@keyframes rise{
+  0%,100%{transform:translateX(-50%) translateY(8px) rotate(-3deg)}
+  50%{transform:translateX(-50%) translateY(-10px) rotate(3deg)}
+}
+.hint{position:absolute; left:0; right:0; bottom:var(--s6); z-index:5; text-align:center; color:#fff}
+.hint b{display:block; font-size:var(--t5); font-weight:800; letter-spacing:-.01em}
+.hint s{display:block; text-decoration:none; font-size:var(--t2); opacity:.85; margin-top:var(--s1)}
+.letter{
+  position:absolute; left:var(--s4); right:var(--s4); top:50%; transform:translateY(-50%); z-index:6;
+  padding:var(--s5) var(--s4) var(--s4); border-radius:var(--r4); overflow:hidden;
+  background:linear-gradient(170deg,#FFFDF6,#FFF3DF);
+  box-shadow:0 20px 48px rgba(8,20,36,.45);
+}
+.letter::before{content:""; position:absolute; left:0; right:0; top:0; height:4px; background:var(--grad)}
+.letter .body3{font-size:var(--t4); line-height:1.95; color:#3A2E22}
+.letter .meta2{
+  display:flex; align-items:center; gap:var(--s2); margin-top:var(--s4);
+  padding-top:var(--s3); border-top:1px dashed rgba(58,46,34,.28);
+  font-size:var(--t1); color:#7A6852;
+}
+
+/* ---------- hi-fi screen kit ---------- */
+.cn{
+  display:inline-block; width:11px; height:11px; border-radius:50%; vertical-align:-1px;
+  background:radial-gradient(circle at 34% 30%,#FFF2C6,var(--coin) 58%,#D4930F);
+  box-shadow:inset 0 -1px 2px rgba(120,70,0,.28);
+}
+.hdr{
+  flex:0 0 auto; position:relative; overflow:hidden; isolation:isolate;
+  background:var(--grad); color:#fff; padding:7px var(--s4) var(--s5);
+}
+.hdr::before{
+  content:""; position:absolute; inset:-50% -20%; z-index:-1;
+  background:
+    radial-gradient(circle at 16% 26%, rgba(255,255,255,.20) 0 19px, transparent 20px),
+    radial-gradient(circle at 81% 13%, rgba(255,255,255,.15) 0 29px, transparent 30px),
+    radial-gradient(circle at 57% 78%, rgba(255,255,255,.12) 0 42px, transparent 43px),
+    radial-gradient(circle at 33% 62%, rgba(255,255,255,.14) 0 11px, transparent 12px);
+}
+.hdr .st{padding:0 0 var(--s2); color:rgba(255,255,255,.9)}
+.hdr .top{display:flex; align-items:center; gap:var(--s2)}
+.hdr.slim{padding-bottom:var(--s3)}
+.hdr .ttl{font-size:var(--t5); font-weight:800; letter-spacing:-.01em}
+.hdr h3{font-size:var(--t6); font-weight:800; letter-spacing:-.01em; line-height:1.25; margin:var(--s4) 0 0}
+.hdr .sc{font-size:var(--t2); line-height:1.5; color:rgba(255,255,255,.85); margin-top:var(--s1)}
+.hdr .ic{
+  margin-left:auto; width:23px; height:23px; border-radius:50%; font-size:var(--t4);
+  background:rgba(255,255,255,.94); color:#C43158;
+  display:flex; align-items:center; justify-content:center;
+}
+.coin{
+  display:inline-flex; align-items:center; gap:4px; padding:2.5px var(--s2) 2.5px 3px;
+  border-radius:99px; background:rgba(255,255,255,.94); color:#4A3200;
+  font-size:var(--t3); font-weight:800; font-variant-numeric:tabular-nums;
+  box-shadow:0 1px 4px rgba(0,0,0,.16);
+}
+.ring{position:relative; width:44px; height:44px; flex:0 0 auto}
+.ring::before{
+  content:""; position:absolute; inset:0; border-radius:50%;
+  background:conic-gradient(from 200deg,#FFDD93,#FF9A62,#FFDD93,#E3A94F);
+}
+.ring u{
+  position:absolute; inset:2.5px; border-radius:50%; text-decoration:none;
+  background:var(--sea); border:1.5px solid var(--surface); font-size:17px;
+  display:flex; align-items:center; justify-content:center;
+}
+.ring .dot{
+  position:absolute; right:0; bottom:0; z-index:2; width:10px; height:10px;
+  border-radius:50%; background:#35C77E; border:2px solid var(--surface);
+}
+.ring.sm{width:30px; height:30px}
+.ring.sm u{font-size:12px; inset:2px}
+.ring.sm .dot{width:8px; height:8px; border-width:1.5px}
+.chs{display:flex; gap:var(--s2); flex:0 0 auto; padding:0 var(--s4)}
+.chs .ch{
+  flex:0 0 auto; min-width:44px; white-space:nowrap; text-align:center;
+  padding:4px var(--s4); border-radius:99px;
+  font-size:var(--t3); font-weight:700; background:var(--surface);
+  border:1.5px solid var(--line); color:var(--ink2);
+}
+.chs .ch.on{
+  background:var(--brand2); border-color:var(--brand2); color:#fff;
+  box-shadow:0 3px 9px rgba(123,92,255,.36);
+}
+.chs .ch.pk{color:var(--brand); border-color:rgba(255,77,109,.45)}
+.chs .ch.aq{color:var(--aqua); border-color:rgba(18,181,206,.45)}
+.chs.raise{position:relative; z-index:5; margin:-13px 0}
+.tg{
+  display:inline-flex; align-items:center; gap:3px; padding:var(--s1) var(--s2);
+  border-radius:var(--r1); font-size:var(--t1); font-weight:700;
+  background:var(--sea); color:var(--ink2);
+}
+.tg.pk{background:rgba(255,77,109,.14); color:var(--brand)}
+.tg.pu{background:rgba(123,92,255,.15); color:var(--brand2)}
+.jn{
+  display:flex; align-items:center; justify-content:center; gap:5px;
+  height:30px; padding:0 var(--s3); border-radius:99px;
+  background:var(--aqua); color:#fff; font-size:var(--t4); font-weight:800;
+  box-shadow:0 3px 10px rgba(18,181,206,.34);
+}
+.jn.pay{background:var(--brand); box-shadow:0 3px 10px rgba(255,77,109,.38)}
+.jn.gh.pay{color:var(--brand); border-color:rgba(255,77,109,.45)}
+.jn small{font-size:var(--t2); font-weight:800; opacity:.95; display:inline-flex; align-items:center; gap:3px}
+.dock{position:absolute; left:var(--s4); right:var(--s4); bottom:var(--s4); z-index:6; display:flex; gap:var(--s2)}
+
+/* swipe deck */
+.deck{position:relative; flex:1 1 auto; min-height:0; margin:var(--s6) var(--s3) var(--s3)}
+.swc{
+  position:absolute; inset:0; border-radius:var(--r5); overflow:hidden;
+  display:flex; flex-direction:column; background:var(--surface);
+  border:1px solid var(--line); box-shadow:0 10px 26px rgba(22,50,60,.18);
+}
+.swc.b2{transform:scale(.89) translateY(22px); opacity:.34; z-index:0}
+.swc.b1{transform:scale(.945) translateY(11px); opacity:.62; z-index:1}
+.swc.fr{z-index:2; transform:rotate(3deg) translate(5px,-2px)}
+.pic{
+  flex:1 1 auto; position:relative; display:flex; align-items:center; justify-content:center;
+  font-size:64px; background:linear-gradient(158deg,#FFD9E2,#EAD8FF 54%,#CDE9F4);
+}
+.live{
+  position:absolute; left:var(--s3); top:var(--s3); display:inline-flex; align-items:center; gap:4px;
+  padding:2.5px var(--s2); border-radius:99px; background:rgba(255,255,255,.92);
+  font-size:var(--t1); font-weight:700; color:#1E7A4E; line-height:1.5;
+}
+.live::before{content:""; width:6px; height:6px; border-radius:50%; background:#35C77E}
+.stamp{
+  position:absolute; left:var(--s3); top:46px; z-index:3; transform:rotate(-14deg);
+  padding:3px var(--s3); border:3px solid #2FBF77; border-radius:var(--r2);
+  color:#2FBF77; font-size:var(--t6); font-weight:800; letter-spacing:.05em; opacity:.92;
+}
+.info{flex:0 0 auto; padding:var(--s4)}
+.info .nm{display:flex; align-items:baseline; font-size:var(--t6); font-weight:800; letter-spacing:-.01em}
+.info .go{margin-left:auto; font-size:var(--t2); font-weight:700; color:var(--ink3)}
+.info .bio{font-size:var(--t2); line-height:1.6; color:var(--ink2); margin-top:var(--s2)}
+.acts{display:flex; align-items:center; gap:var(--s2); margin-top:var(--s4)}
+.ab i{
+  display:flex; align-items:center; justify-content:center;
+  width:34px; height:34px; border-radius:50%; font-style:normal; font-size:var(--t6);
+  background:var(--page); border:1px solid var(--line); color:var(--ink2);
+}
+.ab.lk i{color:#fff; background:var(--brand); border-color:transparent; box-shadow:0 4px 12px rgba(255,77,109,.4)}
+.hi{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:4px; height:34px;
+  border-radius:99px; background:var(--brand); color:#fff; font-size:var(--t4); font-weight:800;
+  box-shadow:0 5px 14px rgba(255,77,109,.42);
+}
+.hi .cn{width:10px; height:10px}
+
+/* profile — the swipe card opened up */
+.hero{
+  flex:0 0 auto; position:relative; height:178px; font-size:62px;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(158deg,#FFD9E2,#EAD8FF 54%,#CDE9F4);
+}
+.hero .st{position:absolute; left:0; right:0; top:0; padding:7px 13px 0; color:#7A5F80}
+.hero .bar{
+  position:absolute; left:12px; right:12px; top:27px;
+  display:flex; align-items:center; font-size:15px; color:#4A3A52;
+}
+.hero .bar span{margin-left:auto}
+.hero .live{top:auto; bottom:11px}
+.charm{
+  display:inline-flex; align-items:center; gap:3px; padding:2px var(--s2); border-radius:99px;
+  background:rgba(255,197,61,.2); color:var(--gold); font-size:var(--t2); font-weight:800;
+}
+.stats{display:flex; border:1px solid var(--line); border-radius:var(--r4); background:var(--surface)}
+.stats div{flex:1; text-align:center; padding:var(--s3) 0; border-right:1px solid var(--line2)}
+.stats div:last-child{border-right:0}
+.stats b{display:block; font-size:var(--t5); font-weight:800}
+.stats s{display:block; text-decoration:none; font-size:var(--t1); color:var(--ink3); margin-top:1px}
+.jn.gh{background:var(--surface); color:var(--ink2); border:1px solid var(--line); box-shadow:none}
+.pbn{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  height:42px; border-radius:var(--r4); color:#fff; font-size:var(--t4); font-weight:800;
+  background:var(--aqua); box-shadow:0 6px 18px rgba(18,181,206,.5);
+}
+.pbn.glass{
+  flex:.82; background:rgba(255,255,255,.3); border:1.5px solid rgba(255,255,255,.68);
+  box-shadow:0 4px 14px rgba(8,20,36,.2); text-shadow:0 1px 3px rgba(8,20,36,.35);
+}
+.pbn small{font-size:var(--t1); font-weight:700; opacity:.94; display:inline-flex; align-items:center; gap:3px}
+/* ---------- production blocks (H 系列) ---------- */
+.nv{
+  flex:0 0 auto; display:flex; align-items:center; gap:var(--s3); min-height:30px;
+  padding:var(--s1) var(--s4); font-size:var(--t4); font-weight:700;
+  border-bottom:1px solid var(--line2);
+}
+.nv .sp2{margin-left:auto; font-weight:400; font-size:var(--t2); color:var(--ink3)}
+.sec{font-size:var(--t2); font-weight:700; color:var(--ink3)}
+
+.pcard{
+  position:relative; z-index:5; margin:-22px var(--s4) 0;
+  display:flex; align-items:center; gap:var(--s3);
+  padding:var(--s3) var(--s4); border-radius:var(--r4);
+  background:var(--surface); box-shadow:0 6px 20px rgba(22,50,60,.16);
+}
+.pcard .amt{font-size:var(--t7); font-weight:800; line-height:1.05; font-variant-numeric:tabular-nums}
+.pcard .unit{font-size:var(--t1); color:var(--ink3); margin-top:2px}
+
+.quad{display:grid; grid-template-columns:repeat(4,1fr); gap:var(--s2)}
+.quad div{text-align:center; font-size:var(--t1); color:var(--ink2); font-weight:600}
+.quad div b{
+  display:flex; align-items:center; justify-content:center; margin:0 auto var(--s1);
+  width:32px; height:32px; border-radius:var(--r3); background:var(--sea);
+  font-weight:400; font-size:var(--t6);
+}
+
+.lst{border:1px solid var(--line); border-radius:var(--r4); background:var(--surface); overflow:hidden}
+.lst a{
+  position:relative; display:flex; align-items:center; gap:var(--s3); min-height:30px;
+  padding:0 var(--s4); color:var(--ink); font-size:var(--t3); font-weight:600;
+}
+.lst a::after{content:""; position:absolute; left:34px; right:0; bottom:0; height:1px; background:var(--line2)}
+.lst a:last-child::after{display:none}
+.lst a i{font-style:normal; font-size:var(--t5); width:15px; text-align:center}
+.lst a span{margin-left:auto; color:var(--ink3); font-size:var(--t2); font-weight:400}
+
+.pkg{
+  position:relative; padding:var(--s3) 0; text-align:center;
+  border:1.5px solid var(--line); border-radius:var(--r3); background:var(--surface);
+}
+.pkg.on{border-color:var(--brand); background:rgba(255,77,109,.06)}
+.pkg b{display:flex; align-items:center; justify-content:center; gap:3px; font-size:var(--t5); font-weight:800}
+.pkg s{display:block; text-decoration:none; font-size:var(--t2); color:var(--ink3); margin-top:2px}
+.pkg s del{color:var(--ink3); opacity:.7; margin-left:3px}
+.pkg em{
+  position:absolute; top:-7px; left:50%; transform:translateX(-50%); font-style:normal;
+  padding:1px var(--s2); border-radius:99px; background:var(--brand); color:#fff;
+  font-size:var(--t0); font-weight:800; white-space:nowrap;
+}
+
+.pay{
+  display:flex; align-items:center; gap:var(--s3); min-height:34px; padding:0 var(--s4);
+  border:1.5px solid var(--line); border-radius:var(--r3); background:var(--surface); font-size:var(--t3);
+}
+.pay.on{border-color:var(--brand)}
+.pay u{
+  margin-left:auto; flex:0 0 auto; text-decoration:none;
+  width:13px; height:13px; border-radius:50%; border:1.5px solid var(--line);
+}
+.pay.on u{border:4px solid var(--brand)}
+
+.warn{
+  display:flex; gap:var(--s2); padding:var(--s3); border-radius:var(--r3);
+  background:rgba(255,197,61,.14); border:1px solid rgba(200,145,47,.3);
+  font-size:var(--t1); line-height:1.6; color:var(--ink2);
+}
+.foot{flex:0 0 auto; padding:var(--s3) var(--s4) var(--s4); border-top:1px solid var(--line2)}
+
+/* 按钮三级 —— 默认海蓝=主线免费动作，.pay 粉=要花币，.gh 描边=次要，.dg=破坏性 */
+.cta{
+  display:flex; align-items:center; justify-content:center; gap:5px; height:34px;
+  border-radius:99px; background:var(--aqua); color:#fff;
+  font-size:var(--t4); font-weight:800; box-shadow:0 5px 16px rgba(18,181,206,.38);
+}
+.cta.pay{background:var(--brand); box-shadow:0 5px 16px rgba(255,77,109,.4)}
+.cta.dg{background:var(--warn); box-shadow:0 5px 16px rgba(194,86,47,.34)}
+.cta.gh{background:transparent; color:var(--ink2); border:1px solid var(--line); box-shadow:none}
+.cta.gh.pay{color:var(--brand); border-color:rgba(255,77,109,.45); background:transparent}
+
+.mask{position:absolute; inset:0; z-index:8; background:rgba(8,20,32,.58)}
+.modal{
+  position:absolute; z-index:9; left:var(--s4); right:var(--s4); top:50%;
+  transform:translateY(-50%); border-radius:var(--r5); overflow:hidden;
+  background:var(--surface); box-shadow:0 18px 44px rgba(0,0,0,.36);
+}
+.modal .x{
+  position:absolute; right:var(--s3); top:var(--s3); z-index:2;
+  width:20px; height:20px; border-radius:50%; font-size:var(--t2); color:var(--ink3);
+  display:flex; align-items:center; justify-content:center; background:rgba(22,50,60,.09);
+}
+.modal .head{
+  padding:var(--s5) var(--s4) var(--s3); text-align:center;
+  background:linear-gradient(180deg,rgba(255,197,61,.26),rgba(255,197,61,0));
+}
+.modal .head .ico{font-size:30px; line-height:1}
+.modal .head .ico svg{display:block; width:54px; height:auto; margin:0 auto; color:var(--gold)}
+.modal .head h4{font-size:var(--t5); font-weight:800; margin:var(--s2) 0 0}
+.modal .head p{font-size:var(--t2); color:var(--ink2); line-height:1.65; margin:var(--s1) 0 0}
+.modal .body{padding:0 var(--s4) var(--s4); display:flex; flex-direction:column; gap:var(--s2)}
+.offer{
+  display:flex; align-items:center; gap:var(--s3); padding:var(--s3);
+  border:1.5px solid var(--brand); border-radius:var(--r3); background:rgba(255,77,109,.06);
+}
+.offer b{display:block; font-size:var(--t3); font-weight:700}
+.offer s{display:block; text-decoration:none; font-size:var(--t1); color:var(--ink3); margin-top:2px}
+.offer .pz{
+  margin-left:auto; display:inline-flex; align-items:center; gap:3px;
+  font-size:var(--t5); font-weight:800; color:var(--gold);
+}
+
+/* ---------- splash / timeline / slider / feed / grid ---------- */
+/* ---------- 支付状态（§11⁺）----------
+   成功/失败/等待三态共用一套居中版式，只换图标环的颜色。
+   转圈响应 prefers-reduced-motion，和海面瓶子一个标准。       */
+.pst{
+  flex:1 1 auto; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; text-align:center; padding:0 var(--s5); gap:var(--s2);
+}
+.pst .rng{
+  width:52px; height:52px; border-radius:50%; font-size:24px;
+  display:flex; align-items:center; justify-content:center; margin-bottom:var(--s2);
+}
+.pst .rng.ok{background:rgba(47,191,119,.14); color:#2FBF77; border:2px solid rgba(47,191,119,.45)}
+.pst .rng.err{background:rgba(194,86,47,.12); color:var(--warn); border:2px solid rgba(194,86,47,.45)}
+.pst h5{font-size:var(--t5); font-weight:800; margin:0}
+.pst p{font-size:var(--t2); color:var(--ink2); line-height:1.65; margin:0}
+.pst .amt2{font-size:26px; font-weight:800; color:var(--gold); line-height:1.1}
+.spin{
+  width:30px; height:30px; border-radius:50%; margin-bottom:var(--s2);
+  border:2.5px solid var(--line); border-top-color:var(--aqua);
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+
+/* 订单号这类需要被复制/报给客服的串，一律等宽 */
+.oid{
+  font-family:var(--mono); font-size:var(--t1); color:var(--ink3);
+  background:var(--sea); border-radius:var(--r1); padding:2px 6px;
+}
+.ordr{display:flex; flex-direction:column}
+.ordr a{
+  display:flex; align-items:center; gap:var(--s3); min-height:44px;
+  padding:var(--s2) 0; border-bottom:1px solid var(--line2); color:var(--ink);
+}
+.ordr a:last-child{border-bottom:0}
+.stt{font-size:var(--t0); font-weight:800; padding:1.5px 6px; border-radius:var(--r1); white-space:nowrap}
+.stt.ok{background:rgba(47,191,119,.14); color:#2FBF77}
+.stt.ing{background:rgba(18,181,206,.14); color:var(--aqua)}
+.stt.err{background:rgba(194,86,47,.12); color:var(--warn)}
+.stt.rfd{background:var(--sea); color:var(--ink3)}
+
+.splash{
+  flex:1 1 auto; position:relative; overflow:hidden; isolation:isolate;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  color:#fff; background:var(--grad);
+}
+.splash::before{
+  content:""; position:absolute; inset:-30% -20%; z-index:-1;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255,255,255,.18) 0 24px, transparent 25px),
+    radial-gradient(circle at 82% 16%, rgba(255,255,255,.13) 0 34px, transparent 35px),
+    radial-gradient(circle at 60% 84%, rgba(255,255,255,.11) 0 46px, transparent 47px);
+}
+.splash .st{position:absolute; left:0; right:0; top:0; color:rgba(255,255,255,.9)}
+.splash .wm{font-size:var(--t6); font-weight:800; letter-spacing:.2em; margin-top:var(--s3)}
+.splash .tag{font-size:var(--t2); color:rgba(255,255,255,.82); margin-top:var(--s2)}
+.splash .ldr{
+  position:absolute; bottom:var(--s6); width:74px; height:2px;
+  border-radius:99px; background:rgba(255,255,255,.3); overflow:hidden;
+}
+.splash .ldr i{display:block; width:42%; height:100%; border-radius:99px; background:#fff}
+
+.tl{display:flex; flex-direction:column}
+.tl div{
+  position:relative; display:flex; align-items:center; gap:var(--s3);
+  min-height:26px; padding-left:var(--s4); font-size:var(--t2);
+}
+.tl div::before{
+  content:""; position:absolute; left:0; top:50%; margin-top:-3px;
+  width:6px; height:6px; border-radius:50%; background:var(--brand); z-index:1;
+}
+.tl div::after{content:""; position:absolute; left:2.5px; top:50%; bottom:-3px; width:1.5px; background:var(--mist); opacity:.55}
+.tl div:last-child::after{display:none}
+.tl div span{margin-left:auto; color:var(--ink3); font-size:var(--t1)}
+
+/* 可分享海报：复用 .tl 时间线，换深海配色 */
+.poster{
+  position:relative; overflow:hidden; border-radius:var(--r4); color:#fff; padding:var(--s4);
+  background:linear-gradient(168deg,#0D1436 0%,#1A2456 34%,#1E3E68 66%,#26586F 100%);
+  box-shadow:0 12px 32px rgba(10,22,48,.3);
+}
+.poster::before{
+  content:""; position:absolute; inset:0 0 56% 0; pointer-events:none;
+  background:
+    radial-gradient(1.5px 1.5px at 22% 18%, rgba(255,255,255,.9), transparent),
+    radial-gradient(1.3px 1.3px at 68% 12%, rgba(255,255,255,.75), transparent),
+    radial-gradient(1px 1px at 44% 28%, rgba(255,255,255,.55), transparent),
+    radial-gradient(1.4px 1.4px at 86% 24%, rgba(255,255,255,.8), transparent);
+}
+.poster .ttl2{position:relative; font-size:var(--t5); font-weight:800; letter-spacing:-.01em}
+.poster .sub2{position:relative; font-size:var(--t1); color:rgba(255,255,255,.62); margin-top:2px}
+.poster .tl{position:relative; margin:var(--s5) 0 var(--s4)}
+.poster .tl div{color:#fff; font-size:var(--t2); min-height:30px; font-weight:700}
+.poster .tl div::before{background:#fff; box-shadow:0 0 0 3.5px rgba(255,255,255,.2)}
+.poster .tl div::after{background:rgba(255,255,255,.38); opacity:1}
+.poster .tl div span{color:rgba(255,255,255,.58); font-weight:400}
+.poster .wave{display:block; width:100%; height:auto; opacity:.4; margin-bottom:var(--s4)}
+.poster .stats2{display:flex; gap:var(--s6); padding-top:var(--s3); border-top:1px solid rgba(255,255,255,.2)}
+.poster .stats2 b{display:block; font-size:var(--t6); font-weight:800; line-height:1.05; font-variant-numeric:tabular-nums}
+.poster .stats2 s{display:block; text-decoration:none; font-size:var(--t0); color:rgba(255,255,255,.58); margin-top:2px}
+.poster .quote{
+  margin-top:var(--s4); padding-left:var(--s3); border-left:2px solid rgba(255,255,255,.35);
+  font-size:var(--t3); line-height:1.7; color:rgba(255,255,255,.92);
+}
+.poster .wm2{
+  display:flex; align-items:center; margin-top:var(--s4);
+  font-size:var(--t1); font-weight:800; letter-spacing:.16em; color:rgba(255,255,255,.5);
+}
+.poster .wm2 span{margin-left:auto; letter-spacing:0; font-weight:400}
+
+.sld .bar3{position:relative; height:3px; border-radius:99px; background:var(--line)}
+.sld .bar3 i{position:absolute; left:0; top:0; bottom:0; width:45%; border-radius:99px; background:var(--brand)}
+.sld .bar3 u{
+  position:absolute; left:45%; top:50%; margin:-7px 0 0 -7px; width:14px; height:14px;
+  border-radius:50%; background:#fff; border:2px solid var(--brand); box-shadow:0 2px 6px rgba(0,0,0,.22);
+}
+.sld .lbl{display:flex; justify-content:space-between; margin-top:var(--s3); font-size:var(--t1); color:var(--ink3)}
+
+.bar4{width:40px; height:3px; border-radius:99px; background:var(--line); overflow:hidden}
+.bar4 i{display:block; height:100%; border-radius:99px; background:var(--brand)}
+
+.mcd{
+  flex:0 0 auto; padding:var(--s3); border:1px solid var(--line);
+  border-radius:var(--r4); background:var(--surface);
+}
+.mcd .txt3{font-size:var(--t3); line-height:1.6; margin-top:var(--s2)}
+.mcd .pics{display:flex; gap:3px; margin-top:var(--s2)}
+.mcd .pics div{flex:1; aspect-ratio:1; border-radius:var(--r1); background:var(--sea)}
+.mcd .bar5{display:flex; gap:var(--s5); margin-top:var(--s3); font-size:var(--t2); color:var(--ink3)}
+
+.g9{display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s2)}
+.g9 div{position:relative; aspect-ratio:1; border-radius:var(--r2); background:var(--sea); overflow:hidden}
+.g9 div.empty{
+  background:transparent; border:1px dashed var(--line);
+  display:flex; align-items:center; justify-content:center; color:var(--ink3); font-size:var(--t6);
+}
+.g9 .num{
+  position:absolute; right:3px; top:3px; width:14px; height:14px; border-radius:50%;
+  background:var(--brand); color:#fff; font-size:var(--t0); font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.g9 .ovl{
+  position:absolute; inset:0; background:rgba(8,20,32,.52); color:#fff;
+  font-size:var(--t1); font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+}
+
+.bal{
+  padding:var(--s4); border-radius:var(--r4); text-align:center; border:1px solid var(--line2);
+  background:linear-gradient(158deg,rgba(255,77,109,.1),rgba(123,92,255,.12));
+}
+.bal .n{font-size:26px; font-weight:800; line-height:1.1; font-variant-numeric:tabular-nums}
+.bal .l{font-size:var(--t1); color:var(--ink3); margin-top:2px}
+.bal .r{display:flex; justify-content:center; gap:var(--s6); margin-top:var(--s3); font-size:var(--t1); color:var(--ink2)}
+
+.ck{display:flex; gap:3px}
+.ck div{
+  flex:1; min-height:32px; border-radius:var(--r2); background:var(--sea);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-size:var(--t0); font-weight:700; color:var(--ink3);
+}
+.ck div.ok{background:rgba(53,199,126,.2); color:#2FBF77}
+.ck div.now{background:var(--aqua); color:#fff; box-shadow:0 3px 9px rgba(18,181,206,.38)}
+.ck div.soon{background:transparent; border:1px dashed var(--line)}
+
+/* ---------- empty / loading / failure (Z 系列) ---------- */
+.empty2{
+  flex:1 1 auto; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:0 var(--s6); gap:var(--s1);
+}
+.empty2 .ico2{font-size:38px; line-height:1; color:var(--mist)}
+.empty2 .ico2 svg{display:block; width:92px; height:auto}
+.empty2 h5{font-size:var(--t5); font-weight:800; margin:var(--s3) 0 0; letter-spacing:-.01em}
+.empty2 p{font-size:var(--t2); line-height:1.7; color:var(--ink3); margin:var(--s1) 0 0}
+.empty2 .cta,.empty2 .oauth{margin-top:var(--s5); align-self:stretch}
+.skel{background:var(--line2); border-radius:var(--r1); animation:shim 1.5s ease-in-out infinite}
+@keyframes shim{0%,100%{opacity:.5}50%{opacity:1}}
+.skrow{display:flex; align-items:center; gap:var(--s3); padding:var(--s2) 0}
+
+/* ---------- auth (A 系列) ---------- */
+.fieldr{
+  display:flex; align-items:center; gap:var(--s3); min-height:34px; padding:0 var(--s3);
+  border:1px solid var(--line); border-radius:var(--r3); background:var(--surface);
+  font-size:var(--t3); color:var(--ink3);
+}
+.fieldr .val{color:var(--ink); font-weight:600}
+.fieldr .cc{color:var(--ink); font-weight:700}
+.fieldr .bar2{width:1px; height:15px; background:var(--line); flex:0 0 auto}
+.oauth{
+  display:flex; align-items:center; justify-content:center; gap:var(--s2); height:34px;
+  border:1px solid var(--line); border-radius:99px; background:var(--surface);
+  font-size:var(--t3); font-weight:700; color:var(--ink);
+}
+.dvd{display:flex; align-items:center; gap:var(--s3); font-size:var(--t1); color:var(--ink3)}
+.dvd::before,.dvd::after{content:""; flex:1; height:1px; background:var(--line)}
+.otp{display:flex; gap:var(--s2)}
+.otp div{
+  flex:1; height:38px; display:flex; align-items:center; justify-content:center;
+  border:1.5px solid var(--line); border-radius:var(--r2); background:var(--surface);
+  font-size:var(--t5); font-weight:800;
+}
+.otp div.fill{border-color:var(--ink3)}
+.otp div.cur{border-color:var(--brand); color:var(--brand)}
+.seg{
+  display:flex; gap:3px; padding:3px; border-radius:99px;
+  background:var(--page); border:1px solid var(--line2);
+}
+.seg div{
+  flex:1; min-height:24px; display:flex; align-items:center; justify-content:center;
+  border-radius:99px; font-size:var(--t2); font-weight:700; color:var(--ink2);
+}
+.seg div.on{background:var(--brand); color:#fff; box-shadow:0 2px 6px rgba(255,77,109,.35)}
+/* 登录页的渠道切换用海蓝：粉色在全 App 的语义是「要花币」,登录不该沾 */
+.seg.aq div.on{background:var(--aqua); box-shadow:0 2px 6px rgba(18,181,206,.35)}
+.prog{flex:0 0 auto; height:3px; background:var(--line2)}
+.prog i{display:block; height:100%; background:var(--grad)}
+
+/* ---------- bottom sheet (H4) ---------- */
+.coin.ink{background:var(--sea); color:var(--ink); box-shadow:none}
+.sheet{
+  position:absolute; left:0; right:0; bottom:0; z-index:9;
+  padding:var(--s2) var(--s4) var(--s4); background:var(--surface);
+  border-radius:var(--r5) var(--r5) 0 0; box-shadow:0 -8px 28px rgba(0,0,0,.2);
+}
+.sheet .grab{width:30px; height:3px; border-radius:99px; background:var(--line); margin:0 auto var(--s3)}
+.gitem{padding:var(--s2) 0; text-align:center; border:1.5px solid transparent; border-radius:var(--r3)}
+.gitem.on{border-color:var(--brand); background:rgba(255,77,109,.07)}
+.gitem b{display:block; font-size:20px; font-weight:400; line-height:1.2}
+.gitem s{display:block; text-decoration:none; margin-top:2px; font-size:var(--t1); font-weight:700; color:var(--gold)}
+.qty{
+  display:flex; align-items:center; justify-content:center; gap:3px; height:34px; padding:0 var(--s3);
+  border:1px solid var(--line); border-radius:99px; font-size:var(--t3); font-weight:700; color:var(--ink2);
+}
+
+/* ---------- compose / thread (B·D 系列) ---------- */
+.ta{
+  flex:1 1 auto; display:flex; flex-direction:column; padding:var(--s4);
+  border:1px solid var(--line); border-radius:var(--r4); background:var(--surface);
+  font-size:var(--t3); line-height:1.75; color:var(--ink2);
+}
+.ta .cnt{margin-top:auto; text-align:right; font-size:var(--t1); color:var(--ink3)}
+.thumb{
+  width:44px; height:44px; flex:0 0 auto; border-radius:var(--r2); background:var(--sea);
+  display:flex; align-items:center; justify-content:center; color:var(--ink3); font-size:var(--t6);
+}
+.thumb.add{background:transparent; border:1px dashed var(--line)}
+.btlc{
+  position:relative; overflow:hidden;
+  padding:var(--s4); border-radius:var(--r4); border:1px solid var(--line2);
+  background:linear-gradient(158deg,rgba(255,77,109,.09),rgba(123,92,255,.11));
+}
+/* 渐变封口：信纸 .letter 与强调卡 .btlc 共用，标记「这是从海里来的内容」 */
+.btlc::before{content:""; position:absolute; left:0; right:0; top:0; height:2.5px; background:var(--grad)}
+.btlc .body2{font-size:var(--t4); line-height:1.75; margin-top:var(--s3)}
+.blur{filter:blur(3.5px); user-select:none}
+
+.rws{display:flex; flex-direction:column}
+.rws a{
+  position:relative; display:flex; align-items:center; gap:var(--s3);
+  min-height:44px; padding:var(--s2) 0; color:var(--ink);
+}
+.rws a::after{content:""; position:absolute; left:38px; right:0; bottom:0; height:1px; background:var(--line2)}
+.rws a:last-child::after{display:none}
+.rws .tx2{flex:1; min-width:0}
+.rws .tx2 b{display:block; font-size:var(--t3); font-weight:700}
+.rws .tx2 s{
+  display:block; text-decoration:none; margin-top:1px; font-size:var(--t2); color:var(--ink3);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.rws .mt{flex:0 0 auto; text-align:right; font-size:var(--t1); color:var(--ink3)}
+.rws .mt .ub2{
+  display:block; min-width:14px; margin:var(--s1) 0 0 auto; padding:0 3px;
+  border-radius:99px; background:var(--brand); color:#fff;
+  font-size:var(--t0); font-weight:800; line-height:14px; text-align:center;
+}
+
+.bub{max-width:76%; padding:var(--s2) var(--s3); font-size:var(--t3); line-height:1.55}
+.bub.you{
+  align-self:flex-start; background:var(--sea); color:var(--ink);
+  border-radius:var(--r3) var(--r3) var(--r3) var(--r1);
+}
+.bub.me{
+  align-self:flex-end; background:var(--brand); color:#fff;
+  border-radius:var(--r3) var(--r3) var(--r1) var(--r3);
+}
+.bub .rd2{display:block; margin-top:2px; font-size:var(--t0); opacity:.8; text-align:right}
+.sys{align-self:center; font-size:var(--t1); color:var(--ink3)}
+.gift{
+  align-self:center; display:flex; align-items:center; gap:var(--s2);
+  padding:var(--s2) var(--s3); border-radius:99px; font-size:var(--t2);
+  background:rgba(255,197,61,.2); color:var(--ink2);
+}
+.inp{
+  flex:0 0 auto; display:flex; align-items:center; gap:var(--s2);
+  padding:var(--s2) var(--s4) var(--s3); border-top:1px solid var(--line2);
+}
+.inp .fd{
+  flex:1; height:30px; display:flex; align-items:center; padding:0 var(--s3);
+  border-radius:99px; background:var(--page); color:var(--ink3); font-size:var(--t3);
+}
+.inp .snd{
+  width:30px; height:30px; flex:0 0 auto; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--brand); color:#fff; font-size:var(--t3);
+}
+
+.tb.hf{
+  flex-wrap:wrap; background:var(--surface); border-top:1px solid var(--line2);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.tb.hf div{
+  flex:1; position:relative; text-align:center; padding:7px 0 7px;
+  font-size:var(--t1); font-weight:700; color:var(--ink3);
+}
+.tb.hf div svg{
+  display:block; width:18px; height:18px; margin:0 auto 3px; position:relative; z-index:2;
+  fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round;
+}
+.tb.hf div span{position:relative; z-index:2}
+.tb.hf div.on{color:#fff}
+.tb.hf div.on svg{stroke-width:2}
+.tb.hf div.on::before{
+  content:""; position:absolute; z-index:1; left:50%; top:1px; bottom:1px;
+  transform:translateX(-50%); width:42px; border-radius:13px 13px 15px 15px;
+  background:var(--grad); box-shadow:0 5px 14px rgba(255,77,109,.42);
+}
+/* 未读红点：挂在图标右上角，跟着 Tab 走 */
+.tb.hf em{
+  position:absolute; z-index:3; top:3px; left:50%; margin-left:5px;
+  min-width:14px; height:14px; padding:0 3px; border-radius:99px;
+  background:var(--brand); color:#fff; border:1.5px solid var(--surface);
+  font-style:normal; font-size:var(--t0); font-weight:800; line-height:11px;
+}
+/* iOS home indicator —— 提醒开发预留安全区，顺便让手机壳看起来是真的 */
+.tb.hf::after{
+  content:""; flex:0 0 100%; width:74px; height:3px; border-radius:99px;
+  background:var(--ink3); opacity:.28; margin:1px auto 5px;
+}
+
+/* ---------- tech panel ---------- */
+.tp{
+  border:1px solid var(--line); border-radius:12px; background:var(--surface);
+  padding:12px 13px; font-size:12px;
+}
+.tp dl{margin:0; display:grid; grid-template-columns:auto 1fr; gap:6px 10px; align-items:start}
+.tp dt{
+  font-family:var(--mono); font-size:9.5px; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--ink3); padding-top:2px; white-space:nowrap;
+}
+.tp dd{margin:0; color:var(--ink2); font-size:11.5px; line-height:1.55}
+.ep{
+  display:inline-block; font-family:var(--mono); font-size:10px; padding:1.5px 6px;
+  border-radius:5px; background:var(--sea); color:var(--ink); margin:0 3px 3px 0;
+  border:1px solid var(--line2);
+}
+.ep.n{background:transparent; border:1px dashed var(--new); color:var(--new)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:13px; min-width:660px}
+th,td{padding:10px 14px; text-align:left; border-bottom:1px solid var(--line2); vertical-align:top}
+th{
+  font-family:var(--mono); font-size:10px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink3); font-weight:400; white-space:nowrap;
+}
+tr:last-child td{border-bottom:0}
+td code, td .ep{font-family:var(--mono); font-size:11px}
+td b{font-weight:600}
+
+/* ---------- IA map ---------- */
+.ia{display:grid; grid-template-columns:repeat(auto-fit,minmax(178px,1fr)); gap:14px}
+.ia .col{border:1px solid var(--line); border-radius:12px; background:var(--surface); padding:13px 14px}
+.ia .col h4{font-size:13.5px; display:flex; align-items:center; gap:7px; margin-bottom:8px}
+.ia .col h4 span{font-size:16px}
+.ia .col ul{margin:0; padding-left:16px; color:var(--ink2); font-size:12px; line-height:1.75}
+.ia .col ul li::marker{color:var(--mist)}
+
+/* ---------- callout ---------- */
+.co{
+  border-left:2px solid var(--coral); background:var(--surface); border-radius:0 10px 10px 0;
+  padding:13px 16px; margin:22px 0; font-size:13.5px; color:var(--ink2);
+}
+.co b{color:var(--ink)}
+.co code{font-family:var(--mono); font-size:12px; background:var(--sea); padding:1px 5px; border-radius:4px; color:var(--ink)}
+
+hr{border:0; border-top:1px solid var(--line); margin:56px 0 0}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important; transition:none !important}
+}
+
+/* ---- 框内线性图标 ----------------------------------------------------
+   §0 「Tab 图标不用 emoji」那条政策，适用范围是手机框内的**所有**图标。
+   emoji 自带颜色、各平台字形不一、无法跟随 --ink 系列变色，
+   也无法在暗色模式下正确反相。统一走顶部 sprite。
+   注解区（.tp / .co）的 ⚠ 🆕 ✅ 属于**文档标记**，不是产品 UI，保留。 */
+.lst a i svg{width:15px; height:15px}
+.warn>svg{width:13px; height:13px; flex:none; margin-top:2px; color:var(--gold)}
+.pst>svg.hero{width:36px; height:36px; stroke-width:1.4; color:var(--ink3)}
+.pin svg{width:22px; height:22px; color:var(--brand);
+  filter:drop-shadow(0 2px 4px rgba(22,50,60,.3))}
+.lst a i svg,.warn>svg,.pst>svg.hero,.pin svg,.iconb svg{
+  display:block; fill:none; stroke:currentColor;
+  stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round;
+}
+.iconb{width:24px; height:24px; border-radius:50%; background:var(--surface);
+  box-shadow:var(--shadow); display:flex; align-items:center; justify-content:center}
+.iconb svg{width:13px; height:13px; color:var(--ink2)}
+.pay>svg{width:17px; height:17px; flex:none; fill:none; stroke:currentColor;
+  stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; color:var(--ink2)}
+</style>
+
+<!-- Tab 图标 sprite：线性图标，选中/未选中共用一套，只换颜色与描边粗细 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="ic-ocean" viewBox="0 0 24 24">
+    <path d="M2 7.5c2.2-2.4 4.4-2.4 6.6 0s4.4 2.4 6.6 0 4.4-2.4 6.6 0"/>
+    <path d="M2 13c2.2-2.4 4.4-2.4 6.6 0s4.4 2.4 6.6 0 4.4-2.4 6.6 0"/>
+    <path d="M2 18.5c2.2-2.4 4.4-2.4 6.6 0s4.4 2.4 6.6 0 4.4-2.4 6.6 0"/>
+  </symbol>
+  <symbol id="ic-discover" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M15.8 8.2l-2.1 5.5-5.5 2.1 2.1-5.5z"/>
+  </symbol>
+  <symbol id="ic-chats" viewBox="0 0 24 24">
+    <path d="M21 11.6a8.4 8.4 0 0 1-8.4 8.4 8.5 8.5 0 0 1-3.8-.9L3.4 20.6l1.5-5.4A8.4 8.4 0 1 1 21 11.6z"/>
+  </symbol>
+  <symbol id="ic-moments" viewBox="0 0 24 24">
+    <path d="M12 2.8l2.3 6.1 6.1 2.3-6.1 2.3L12 19.6l-2.3-6.1L3.6 11.2l6.1-2.3z"/>
+  </symbol>
+  <symbol id="ic-me" viewBox="0 0 24 24">
+    <circle cx="12" cy="8" r="3.7"/>
+    <path d="M4.6 20.2c0-4.1 3.3-6.5 7.4-6.5s7.4 2.4 7.4 6.5"/>
+  </symbol>
+
+  <!-- 框内图标：与上面 Tab 图标同一套线性语汇（stroke，无填充，24 栅格）。
+       §0 「Tab 图标不用 emoji」那条政策适用于手机框内的所有图标，不只是 Tab。 -->
+  <symbol id="ic-pin" viewBox="0 0 24 24">
+    <path d="M12 21.4s6.9-6.1 6.9-11.2A6.9 6.9 0 0 0 5.1 10.2c0 5.1 6.9 11.2 6.9 11.2z"/>
+    <circle cx="12" cy="10" r="2.6"/>
+  </symbol>
+  <symbol id="ic-locate" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="3.1"/><circle cx="12" cy="12" r="7.6"/>
+    <path d="M12 1.9v2.5M12 19.6v2.5M22.1 12h-2.5M4.4 12H1.9"/>
+  </symbol>
+  <symbol id="ic-link" viewBox="0 0 24 24">
+    <path d="M10.3 13.7a4.2 4.2 0 0 0 5.9 0l2.5-2.5a4.2 4.2 0 0 0-5.9-5.9l-1.2 1.2"/>
+    <path d="M13.7 10.3a4.2 4.2 0 0 0-5.9 0l-2.5 2.5a4.2 4.2 0 0 0 5.9 5.9l1.2-1.2"/>
+  </symbol>
+  <symbol id="ic-google" viewBox="0 0 24 24">
+    <path d="M20.2 12.1a8.2 8.2 0 1 1-2.5-5.9"/>
+    <path d="M12.2 12.1h8"/>
+  </symbol>
+  <symbol id="ic-apple" viewBox="0 0 24 24">
+    <path d="M16.1 12.5c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.5-.2-2.9.8-3.6.8s-1.9-.8-3.1-.8c-1.6 0-3.1 1-3.9 2.4-1.6 2.9-.4 7.1 1.2 9.4.8 1.1 1.7 2.4 2.9 2.3 1.1 0 1.6-.7 3-.7s1.8.7 3.1.7 2-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.2-2.6 0 0-2.2-.8-2.2-3z"/>
+    <path d="M13.6 5.3c.6-.8 1-1.8.9-2.9-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-.9 2.8 1 .1 2.1-.5 2.7-1.3z"/>
+  </symbol>
+  <symbol id="ic-phone" viewBox="0 0 24 24">
+    <rect x="6.9" y="2.9" width="10.2" height="18.2" rx="2.4"/>
+    <path d="M10.7 18.3h2.6"/>
+  </symbol>
+  <symbol id="ic-mail" viewBox="0 0 24 24">
+    <rect x="3.1" y="5.6" width="17.8" height="12.8" rx="2.2"/>
+    <path d="M3.7 7.1l8.3 5.9 8.3-5.9"/>
+  </symbol>
+  <symbol id="ic-key" viewBox="0 0 24 24">
+    <circle cx="8" cy="12" r="3.8"/>
+    <path d="M11.8 12h8.3M17.3 12v3.1M20.1 12v2.2"/>
+  </symbol>
+  <symbol id="ic-trash" viewBox="0 0 24 24">
+    <path d="M4.7 6.8h14.6"/>
+    <path d="M9.5 6.8V5.3A1.6 1.6 0 0 1 11.1 3.7h1.8a1.6 1.6 0 0 1 1.6 1.6v1.5"/>
+    <path d="M6.7 6.8l.9 11.9a1.8 1.8 0 0 0 1.8 1.6h5.2a1.8 1.8 0 0 0 1.8-1.6l.9-11.9"/>
+  </symbol>
+  <symbol id="ic-ban" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="8.3"/><path d="M6.1 6.1l11.8 11.8"/>
+  </symbol>
+  <symbol id="ic-alert" viewBox="0 0 24 24">
+    <path d="M12 3.7l8.9 15.6H3.1z"/><path d="M12 9.5v4.3M12 16.5h.01"/>
+  </symbol>
+  <symbol id="ic-info" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="8.5"/><path d="M12 11.1v5.1M12 8h.01"/>
+  </symbol>
+  <symbol id="ic-lock" viewBox="0 0 24 24">
+    <rect x="4.9" y="10.5" width="14.2" height="9.4" rx="2.2"/>
+    <path d="M8.4 10.5V7.9a3.6 3.6 0 0 1 7.2 0v2.6"/>
+  </symbol>
+  <symbol id="ic-people" viewBox="0 0 24 24">
+    <circle cx="9.1" cy="8.5" r="3.2"/>
+    <path d="M3.3 19.3c0-3.3 2.6-5.3 5.8-5.3s5.8 2 5.8 5.3"/>
+    <path d="M16.3 6.3a3.2 3.2 0 0 1 0 6"/>
+    <path d="M17.7 14.3c2.1.5 3.5 2.1 3.5 4.5"/>
+  </symbol>
+  <symbol id="ic-pencil" viewBox="0 0 24 24">
+    <path d="M4 20l.9-3.5L15.5 5.8a2.1 2.1 0 0 1 3 3L7.9 19.4z"/>
+    <path d="M13.9 7.5l3 3"/>
+  </symbol>
+  <symbol id="ic-refund" viewBox="0 0 24 24">
+    <path d="M4.3 10.5a8.1 8.1 0 1 1 .6 5.3"/>
+    <path d="M3.7 5.3v5.2h5.2"/>
+  </symbol>
+  <symbol id="ic-store" viewBox="0 0 24 24">
+    <path d="M5.5 3.3l11.2 8.7-11.2 8.7z"/>
+    <path d="M5.5 3.3l8 8.7-8 8.7"/>
+  </symbol>
+</svg>
+
+<div class="wrap">
+
+<header class="mast">
+  <div class="kick" style="display:flex;align-items:center">
+    漂流瓶 App · 一期技术原型
+    <button id="tg">切换昼夜</button>
+    <button id="ng" aria-pressed="false">夜场</button>
+  </div>
+  <h1>17 个模块，30 屏，一张接口地图</h1>
+  <p>
+    按产品侧给出的 V1 模块清单铺开的全量原型。每屏都标注了<b>真实存在的后端接口</b>——
+    下方所有实线接口标签均取自 <code style="font-family:var(--mono);font-size:13px">server/internal/*/handler.go</code> 的实际路由注册，
+    虚线框的是 App 端需要新增的。资质、牌照、合规等非技术前置项本页一律不展开。
+  </p>
+  <div class="meta">
+    <span>2026-09-15</span>
+    <span>Flutter · go_router · Riverpod</span>
+    <span>后端复用 ≈ 70%</span>
+    <span>实线 = 已有接口</span>
+    <span>虚线 = 待新增</span>
+  </div>
+</header>
+
+<!-- ========== 0. 信息架构 ========== -->
+<section id="ia">
+  <div class="sh"><span class="no">§0</span><h2>信息架构</h2><span class="en">Navigation &amp; routing</span></div>
+  <p class="sub">
+    17 个模块收敛为 <b>5 个底部 Tab</b>。模块 2/3/4/6 各占一个 Tab，其余全部挂在「我的」下层。
+    路由用 <code>go_router</code>，登录态守卫走 <code>redirect</code>，Tab 内页面保持各自的 Navigator 栈。
+  </p>
+
+  <div class="ia">
+    <div class="col">
+      <h4><span>🌊</span>Ocean</h4>
+      <ul><li>扔瓶 / 捞瓶</li><li>瓶子详情</li><li>回信与解锁</li><li>我的瓶子</li><li>漂流轨迹</li></ul>
+    </div>
+    <div class="col">
+      <h4><span>🧭</span>Discover</h4>
+      <ul><li>推荐人流</li><li>语言 / 兴趣 / 距离筛选</li><li>用户主页</li><li>喜欢 / 打招呼</li></ul>
+    </div>
+    <div class="col">
+      <h4><span>💬</span>Chats</h4>
+      <ul><li>会话列表</li><li>1-1 聊天</li><li>图片消息</li><li>送礼</li><li>举报 / 拉黑</li></ul>
+    </div>
+    <div class="col">
+      <h4><span>✨</span>Moments</h4>
+      <ul><li>动态广场</li><li>发动态</li><li>评论 / 点赞</li><li>动态详情</li></ul>
+    </div>
+    <div class="col">
+      <h4><span>👤</span>Me</h4>
+      <ul><li>资料 / 关系</li><li>钱包 / 充值</li><li>道具 / 礼物</li><li>签到 / 奖励</li><li>通知 / 设置</li></ul>
+    </div>
+  </div>
+
+  <div class="co">
+    <b>与小程序的一个关键差异：</b>小程序的 Tab 显隐由 <code>GET /api/tabs</code> 远程下发，用于「工具形态 / 社交形态」双形态切换。
+    App 不需要这套审核伪装，<b>5 个 Tab 固定常驻</b>。但 <code>/api/features</code> 的功能开关建议保留，用于灰度与应急关闭。
+  </div>
+
+  <div class="co">
+    <b>手机屏是按刻度画的，可直接换算成真机 pt。</b>
+    屏宽 252px 对应 375pt 设备，比例 <code>0.672</code>；页面 CSS 变量 <code>--t* / --r* / --s*</code> 注释里标了对应 pt 值。
+    字号只用 <code>11 / 12 / 13 / 15 / 17 / 20 / 24 / 28</code>；
+    圆角按层级分 <code>8 标签 · 12 按钮 · 16 卡片 · 20 大卡 · 28 模态 · 999 胶囊</code>；
+    间距走 <b>4pt 栅格</b>，屏幕左右统一 <b>16pt</b> 一条竖线对齐。
+    可点区域高度最小 <b>44pt</b>——列表行、按钮、Tab 均按此下限。
+    <b>全圆角胶囊另有一条宽高比下限：不低于 1.7 : 1</b>——只卡最小宽度不够，
+    单字标签（「男」「女」）宽 30px 高 22px 时比例才 1.35，配 <code>border-radius:99px</code> 看着仍是个圆。
+    故 <code>.cp</code> / <code>.ch</code> 取 <code>min-width:44px</code> + 左右 12px 内边距，实测约 1.8 : 1。
+    滑卡是唯一例外，故意比正文边距宽一档。
+  </div>
+
+  <div class="co">
+    <b>按钮颜色是有语义的，不是审美选择。</b>全 App 锁死四级：
+    <b style="color:var(--aqua)">海蓝实心</b> = 主线免费动作（捞瓶 / 抛瓶 / 登录 / 签到领币）·
+    <b style="color:var(--brand)">粉实心</b> = <b>要花金币或真钱</b>（解锁 / 打招呼 / 送礼 / 充值）·
+    灰描边 = 次要动作 · <b style="color:var(--warn)">警示实心</b> = 破坏性（举报并拉黑）。
+    花币的次要动作用<b>粉描边</b>，保证「粉 = 要付费」这个信号在任何层级都成立。
+    渐变只用于品牌面（头图 / Tab 选中块 / 进度条），<b>按钮一律实色</b>。
+    直接结果：<b>海洋首页的内容区整片不出现粉色</b>——这不是巧合，是在告诉用户「海里免费」。
+    底部 Tab 的选中药丸是唯一的例外：它属于<b>全局外壳</b>而不是"海"，
+    选中态用品牌色是所有 App 的通用约定，用户读它是"我在哪一页"，不会读成价格。
+  </div>
+
+  <div class="co">
+    <b>Tab 图标不用 emoji。</b>emoji 自带颜色，压在彩色选中块上会很脏；
+    未选中要靠 <code>grayscale + opacity</code> 灰掉，结果是一团没有形状的糊。
+    而且同一个 emoji 在不同机器上字形不同——本页开发过程中 <code>🖼</code> 就在测试机上渲染成了方块。
+    现在统一成<b>一套线性 SVG</b>（文档顶部 <code>&lt;symbol&gt;</code> sprite，全站引用同一份），
+    未选中 <code>stroke-width:1.7</code> 取 <code>--ink3</code>，选中 <code>2</code> 取白色。
+    图标语汇跟着产品走：海洋是三道波、发现是罗盘、动态是四角星。
+  </div>
+
+  <div class="co">
+    <b>这条政策适用于手机框内的所有图标，不只是 Tab。</b>
+    上面那三条理由（自带颜色、各平台字形不一、无法跟随 <code>--ink</code> 变色）
+    对列表图标、提示图标、地图大头针同样成立；emoji 还有一条更要命：
+    <b>暗色模式下无法反相</b>，深色底上的深色 emoji 直接糊成一团。
+    sprite 已扩到 <b>21 个 symbol</b>，新增的 16 个走同一套 24 栅格与
+    <code>stroke-width:1.7</code>。
+    <br><br>
+    两个例外，是有意保留的：<b>①</b> 注解区（<code>.tp</code> / <code>.co</code>）的
+    <code>⚠ 🆕 ✅ 🔨</code> 是<b>文档标记</b>，不是产品界面，换成图标反而更难扫读；
+    <b>②</b> <code>✕</code> <code>♡</code> <code>✓</code> 这类<b>排版符号</b>不是 emoji，
+    没有彩色字形问题，全站一致沿用。
+    <br><br>
+    <b>⏳ 尚未收敛：</b>§1 / §2 / §5–6 / §10–14 里本轮新增改动的屏已按此执行，
+    其余早期屏仍有约 200 处 emoji（头像占位 <code>👩🧑👧</code>、礼物 <code>🎁</code>、
+    相机 <code>📷</code> 等）待统一。<b>真机实现时一律以 sprite 为准，不要照抄 emoji。</b>
+  </div>
+</section>
+
+<hr>
+
+<!-- ========== 1. AUTH ========== -->
+<section>
+  <div class="sh">
+    <span class="no">§1</span><h2>登录与用户</h2><span class="en">Auth &amp; User</span>
+    <span class="vd mod">🔨 改造</span><span class="vd add">🆕 新增</span>
+  </div>
+  <p class="sub">
+    现有 <code>user.resolveLogin</code> 只有 <code>wx</code> / <code>alipay</code> 两个分支，走 code2session。
+    App 需要四条全新登录链路（手机号 / 邮箱 / Google / Apple），且 <code>model.User</code>
+    缺 email、password_hash、language / interests / 经纬度几类字段。
+  </p>
+  <p class="sub">
+    <b>日常登录是密码，验证码只用于注册与找回密码。</b>手机号额外保留一条免密（验证码直接登录）——
+    印度市场那是主流。验证码<b>必须与用途绑定</b>，否则「注册」发的码能拿去重置别人的密码，详见 A2r。
+  </p>
+
+  <div class="grid">
+
+    <div class="scr">
+      <div class="cap"><b>启动鉴权</b><i>A1</i></div>
+      <div class="ph hf">
+        <div class="splash">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div style="font-size:44px;line-height:1">🍾</div>
+          <div class="wm">DRIFT</div>
+          <div class="tag">一条瓶子，可能漂到任何地方</div>
+          <div class="ldr"><i></i></div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>分支</dt><dd>secure storage 有 JWT → 静默校验 → 进 Ocean；无或 401 → 进登录</dd>
+        <dt>接口</dt><dd><span class="ep">GET /api/user/profile</span><span class="ep">GET /api/features</span></dd>
+        <dt>要点</dt><dd>启动即并发拉 features + tabs，避免首屏二次布局抖动</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>登录（密码）</b><i>A2</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="bd">
+          <div style="text-align:center;margin:46px 0 var(--s5)">
+            <div style="font-size:34px;line-height:1">🍾</div>
+            <div style="font-size:var(--t5);font-weight:800;letter-spacing:.18em;margin-top:var(--s2)">DRIFT</div>
+          </div>
+          <div>
+            <div style="font-size:var(--t6);font-weight:800;letter-spacing:-.01em">欢迎回来</div>
+            <div style="font-size:var(--t2);color:var(--ink3);margin-top:var(--s1)">一条瓶子，可能漂到任何地方</div>
+          </div>
+          <div class="seg aq"><div class="on">手机号</div><div>邮箱</div></div>
+          <div class="fieldr">
+            <span class="cc">+91 ▾</span>
+            <span class="bar2"></span>
+            <span class="val">98765 43210</span>
+          </div>
+          <div class="fieldr">
+            <span class="val">••••••••</span>
+            <span style="margin-left:auto;color:var(--ink3)">👁</span>
+          </div>
+          <div style="text-align:right;font-size:var(--t1);font-weight:700;color:var(--ink3)">忘记密码？</div>
+          <div class="cta">登录</div>
+          <div class="cta gh">用验证码登录</div>
+          <div style="text-align:center;font-size:var(--t2);color:var(--ink3)">
+            还没有账号？<b style="color:var(--brand);font-weight:800">注册</b>
+          </div>
+          <div class="dvd">或</div>
+          <div class="oauth">用 Google 继续</div>
+          <div class="oauth">用 Apple 继续</div>
+          <div style="text-align:center;font-size:var(--t0);color:var(--ink3)">
+            「用 Apple 继续」<b style="font-weight:700">仅 iOS 构建显示</b>
+          </div>
+          <div style="margin-top:auto;text-align:center;font-size:var(--t1);color:var(--ink3);line-height:1.7">
+            继续即表示同意
+            <b style="color:var(--brand);font-weight:700">《用户协议》</b>与<b style="color:var(--brand);font-weight:700">《隐私政策》</b>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep n">POST /api/auth/login/password</span>
+          <span class="ep n">POST /api/auth/google</span>
+          <span class="ep n">POST /api/auth/apple</span>
+        </dd>
+        <dt>日常登录=密码</dt><dd>验证码只用于<b>注册</b>与<b>找回密码</b>。「用验证码登录」<b>只在手机号 Tab 出现</b>——
+          印度市场免密登录是主流；邮箱给了它会和注册流程撞车</dd>
+        <dt>错误文案</dt><dd>账号不存在与密码错误<b>返回同一句</b>「账号或密码不正确」。
+          分开说等于白送一个用户名枚举接口</dd>
+        <dt>老账号</dt><dd>验证码时代注册的用户没有密码，登录会提示「请用『忘记密码』设置一次」——
+          那条流程同时是<b>补设密码</b>的唯一入口</dd>
+        <dt>租户</dt><dd>请求带 <code>appid</code>；凭证表查不到时落 <code>APP_DEFAULT_TENANT_ID</code>——
+          App 只有一个包，租户是部署期常量，不必为它维护 <code>app_credentials</code> 行</dd>
+        <dt>硬约束</dt><dd>有 Google 登录 → iOS <b>必须</b>同时提供 Apple 登录（App Store 4.8）。
+          两个按钮的<b>尺寸 / 圆角 / 文案 / logo 都有强制品牌规范</b>，自己画会被打回——
+          用官方 SDK 提供的按钮组件，本图只标位置</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>注册 / 找回密码</b><i>A2r</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>创建账号</span></div>
+        <div class="bd" style="gap:var(--s3)">
+          <div class="seg aq" style="margin-top:var(--s3)"><div>手机号</div><div class="on">邮箱</div></div>
+          <div class="fieldr"><span class="val">meera@gmail.com</span></div>
+          <div class="otp">
+            <div class="fill">4</div><div class="fill">8</div><div class="fill">2</div>
+            <div class="cur">|</div><div></div><div></div>
+          </div>
+          <div style="font-size:var(--t2);color:var(--ink3)">42 秒后可重新发送</div>
+          <div class="fieldr">
+            <span class="val">••••••••</span>
+            <span style="margin-left:auto;color:var(--ink3)">👁</span>
+          </div>
+          <div style="font-size:var(--t1);color:var(--ink3)">之后就用这个密码登录</div>
+          <div class="cta">注册并开始</div>
+          <div style="margin-top:auto;text-align:center;font-size:var(--t1);color:var(--ink3);line-height:1.7">
+            继续即表示同意
+            <b style="color:var(--brand);font-weight:700">《用户协议》</b>与<b style="color:var(--brand);font-weight:700">《隐私政策》</b>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep n">POST /api/auth/otp/send</span>
+          <span class="ep n">POST /api/auth/register</span>
+          <span class="ep n">POST /api/auth/password/reset</span>
+        </dd>
+        <dt>一屏两用</dt><dd>注册与找回密码<b>形状完全一样</b>（标识 → 验证码 → 设密码），
+          只差标题、按钮文案和提交的接口。客户端是同一个 <code>CredentialFlowPage</code>，
+          靠 <code>flow</code> 参数分叉——写两份等于把倒计时和密码规则抄两遍</dd>
+        <dt>⚠️ 验证码必须绑用途</dt><dd>发码时带 <code>purpose=register|reset|login</code>，
+          Redis 的码键是 <code>otp:code:&lt;purpose&gt;:&lt;标识&gt;</code>。
+          <b>不绑的话，攻击者只要知道你的邮箱，就能以「注册」名义要一个码、再拿它走重置流程改掉你的密码</b>。
+          校验时 purpose 必须与发码时一致</dd>
+        <dt>状态校验</dt><dd>purpose=register 时标识已存在要拒、=reset 时不存在要拒。
+          这会暴露「某个邮箱是否已注册」，是权衡后的取舍——不然注册页只能在提交时才失败。
+          防撞库靠三维频控，不靠藏这个信息</dd>
+        <dt>密码</dt><dd>bcrypt（cost 10）存 <code>User.PasswordHash</code>，<b>永不下发</b>。
+          只卡 8 位长度<b>不卡复杂度</b>——印度用户大量在小键盘输入，强制符号会显著掉转化</dd>
+        <dt>发码闸门</dt><dd>码键带 purpose、<b>频控键不带</b>：码按用途隔离，
+          但限额按标识合并，换用途/换渠道都绕不开</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>邮箱登录（密码）</b><i>A2e</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="bd">
+          <div style="text-align:center;margin:46px 0 var(--s5)">
+            <div style="font-size:34px;line-height:1">🍾</div>
+            <div style="font-size:var(--t5);font-weight:800;letter-spacing:.18em;margin-top:var(--s2)">DRIFT</div>
+          </div>
+          <div>
+            <div style="font-size:var(--t6);font-weight:800;letter-spacing:-.01em">用邮箱开始</div>
+            <div style="font-size:var(--t2);color:var(--ink3);margin-top:var(--s1)">一条瓶子，可能漂到任何地方</div>
+          </div>
+          <div class="seg aq"><div>手机号</div><div class="on">邮箱</div></div>
+          <div class="fieldr">
+            <span class="val">meera@gmail.com</span>
+          </div>
+          <div class="fieldr">
+            <span class="val">••••••••</span>
+            <span style="margin-left:auto;color:var(--ink3)">👁</span>
+          </div>
+          <div style="text-align:right;font-size:var(--t1);font-weight:700;color:var(--ink3)">忘记密码？</div>
+          <div class="cta">登录</div>
+          <div style="text-align:center;font-size:var(--t2);color:var(--ink3)">
+            还没有账号？<b style="color:var(--brand);font-weight:800">注册</b>
+          </div>
+          <div class="dvd">或</div>
+          <div class="oauth">用 Google 继续</div>
+          <div class="oauth">用 Apple 继续</div>
+          <div style="margin-top:auto;text-align:center;font-size:var(--t1);color:var(--ink3);line-height:1.7">
+            继续即表示同意
+            <b style="color:var(--brand);font-weight:700">《用户协议》</b>与<b style="color:var(--brand);font-weight:700">《隐私政策》</b>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd><span class="ep n">POST /api/auth/login/password</span>
+          与手机号<b>同一条路由</b>，body 里 <code>email</code> 与 <code>phone</code> 二选一</dd>
+        <dt>与手机号的差别</dt><dd><b>邮箱没有「用验证码登录」</b>：那个入口只在手机号 Tab 出现。
+          邮箱的验证码只用于注册和找回密码</dd>
+        <dt>归一</dt><dd>邮箱统一转小写后存取。不归一会让 <code>Meera@…</code> 和 <code>meera@…</code>
+          注册出两个账号</dd>
+        <dt>前置</dt><dd>发信域名要配 <b>SPF / DKIM / DMARC</b>，否则注册/找回的验证码直接进垃圾箱——
+          与短信的 DLT 注册一样属开户工作，不是代码工作。未配服务商时只落日志不真发</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>Google 登录中</b><i>A2g</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">✕<span>Google 登录</span></div>
+        <div class="pst">
+          <div class="spin"></div>
+          <h5>正在校验 Google 账号</h5>
+          <p>已选择 meera@gmail.com<br>正在与服务器确认身份</p>
+          <div class="oid" style="margin-top:var(--s3)">aud · 1234…apps.googleusercontent.com</div>
+        </div>
+        <div class="foot"><div class="cta gh">取消</div></div>
+      </div>
+      <div class="tp"><dl>
+        <dt>三步</dt><dd>① 唤起<b>系统账号选择器</b>（Android 走 Credential Manager，iOS 走 Google Sign-In SDK，
+          都不是网页）② 拿到 <code>ID Token</code> ③ 发给 <span class="ep n">POST /api/auth/google</span> 换我们自己的 JWT</dd>
+        <dt>校验必须在服务端</dt><dd>客户端拿到的 ID Token <b>一律不可信</b>。服务端 <code>user/appauth.go</code> 已实现：
+          取 Google JWKS 验签 → 校验 <code>iss</code> ∈ {<code>accounts.google.com</code>,
+          <code>https://accounts.google.com</code>}（两种写法都合法）→ 校验 <code>aud</code></dd>
+        <dt>aud 填哪个</dt><dd>后台 <code>app_google_client_id</code> 填的是 <b>Web client ID</b>，
+          不是 Android / iOS 那两个。后两者只让设备端能发起授权，<b>不进后台</b>——这是最常配错的一处</dd>
+        <dt>失败回退</dt><dd>用户取消 / 无网 / 未配 Client ID 三种都退回 A2。
+          未配置时文案说「暂不支持 Google 登录」，<b>不要暴露服务端缺配置</b></dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>邮箱已注册 · 冲突</b><i>A2k</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>Google 登录</span></div>
+        <div class="pst">
+          <svg class="hero"><use href="#ic-link"/></svg>
+          <h5>这个邮箱已经有账号了</h5>
+          <p><b>meera@gmail.com</b> 之前注册过<br>为了账号安全，不会自动合并</p>
+        </div>
+        <div class="bd" style="padding-top:0;flex:0">
+          <div class="warn">
+            <svg><use href="#ic-info"/></svg>
+            <div>请先用<b>密码登录</b>这个账号，再到「我的 → 账号与安全」里绑定 Google。
+              绑定之后，下次就能直接用 Google 登录了</div>
+          </div>
+        </div>
+        <div class="foot">
+          <div class="cta">用密码登录</div>
+          <div class="cta gh">换一个 Google 账号</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>为什么不自动合并</dt><dd>自动按邮箱合并，等于把「Google 说这个邮箱是他的」当成账号所有权证明。
+          即便校验了 <code>email_verified</code>，这条链路上任何一处疏漏，都会变成<b>账号接管</b>漏洞。
+          产品选择<b>让用户自己确认</b>，多一步换确定性</dd>
+        <dt>服务端要改</dt><dd><code>loginOrCreateApp</code> 现在只按 <code>google_sub</code> 查
+          （<code>user/otp.go:416</code>），查不到就建新号。需要加一步：<code>google_sub</code> 未命中、
+          但 ID Token 的 <code>email</code> 命中已有账号时 <b>不建号</b>，返回专用错误码交给本屏</dd>
+        <dt>前置</dt><dd>现在的 <code>verifyIDToken</code> <b>没有取</b> <code>email</code> 和
+          <code>email_verified</code> 两个 claim，要先补上。<code>email_verified=false</code> 时
+          按「无邮箱」处理，不参与冲突判断</dd>
+        <dt>不构成枚举</dt><dd>本屏只出现在<b>用户自己刚授权过的那个邮箱</b>上，
+          问不出别人的邮箱有没有注册</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>Apple 登录中</b><i>A2p · 仅 iOS</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">✕<span>Apple 登录</span></div>
+        <div class="pst">
+          <div class="spin"></div>
+          <h5>正在校验 Apple ID</h5>
+          <p>你选择了「隐藏我的邮箱」<br>正在与服务器确认身份</p>
+          <div class="oid" style="margin-top:var(--s3)">x9k2…@privaterelay.appleid.com</div>
+        </div>
+        <div class="foot"><div class="cta gh">取消</div></div>
+      </div>
+      <div class="tp"><dl>
+        <dt>硬约束</dt><dd>iOS 上只要有 Google 登录，就<b>必须</b>同时提供 Apple 登录（App Store 4.8）。
+          不是可选项，缺了直接拒审。Android 端不需要</dd>
+        <dt>只有一次机会</dt><dd>昵称和邮箱<b>只在首次授权时回传</b>，而且不在 <code>identityToken</code> 里，
+          在外层回调参数中。第一次没落库就<b>再也拿不到</b>——用户得去
+          「设置 → Apple ID → 使用 Apple ID 的 App」删掉授权才能重来</dd>
+        <dt>中继邮箱</dt><dd>选了「隐藏我的邮箱」拿到的是 <code>@privaterelay.appleid.com</code>。
+          它<b>能收信，但不是用户的真实邮箱</b>：不参与 A2k 的冲突判断，也不要当成用户邮箱展示</dd>
+        <dt>服务端</dt><dd><span class="ep n">POST /api/auth/apple</span> 已实现：Apple JWKS 验签 +
+          <code>iss</code> = <code>https://appleid.apple.com</code> + <code>aud</code> =
+          后台 <code>app_apple_bundle_id</code></dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>验证码</b><i>A3</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>验证手机号</span></div>
+        <div class="bd" style="gap:var(--s4)">
+          <div style="margin-top:var(--s3)">
+            <div style="font-size:var(--t6);font-weight:800;letter-spacing:-.01em">输入验证码</div>
+            <div style="font-size:var(--t2);color:var(--ink3);margin-top:var(--s2)">
+              已发送到 <b style="color:var(--ink)">+91 98765 43210</b>
+              <b style="color:var(--brand);margin-left:var(--s2)">改号码</b>
+            </div>
+          </div>
+          <div class="otp">
+            <div class="fill">4</div><div class="fill">8</div><div class="fill">2</div>
+            <div class="cur">|</div><div></div><div></div>
+          </div>
+          <div style="font-size:var(--t2);color:var(--ink3)">42 秒后可重新发送</div>
+          <div class="warn" style="margin-top:var(--s2)">
+            <svg><use href="#ic-alert"/></svg>
+            <div>没收到？检查是否被拦截。同一号码 60 秒内只发一次，连续 5 次触发风控</div>
+          </div>
+        </div>
+        <div class="foot">
+          <div class="cta">验证并登录</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd><span class="ep n">POST /api/auth/otp/verify</span></dd>
+        <dt>返回</dt><dd>与现有 <code>/api/auth/login</code> 完全同构：<code>{token, user, is_new}</code>，下游鉴权中间件零改动</dd>
+        <dt>风控</dt><dd>验证码存 Redis 带 TTL；同号码 / 同 IP / 同设备三维频控，属模块 15 范畴</dd>
+        <dt>双渠道</dt><dd>邮箱态整屏复用本图，只换三处文字：标题「验证邮箱」、「已发送到」显示地址、
+          底部提示改成「先翻一下垃圾邮件」</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>完善资料</b><i>A4</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>完善资料</span><span class="sp2">第 1 步，共 2 步</span></div>
+        <div class="prog"><i style="width:50%"></i></div>
+        <div class="bd">
+          <div style="display:flex;gap:var(--s3);align-items:center">
+            <div class="thumb add" style="border-radius:50%">＋</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:var(--t3);font-weight:700">上传头像</div>
+              <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">有头像的人，收到的回信多得多</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:var(--s2)">
+            <div class="fieldr" style="flex:1"><span class="val">流浪的猫</span></div>
+            <div class="fieldr" style="flex:0 0 64px"><span class="val">24 岁</span></div>
+          </div>
+          <div class="sec">性别</div>
+          <div class="seg"><div class="on">女</div><div>男</div><div>保密</div></div>
+          <div class="sec">你说什么语言</div>
+          <div class="chs" style="padding:0;flex-wrap:wrap;gap:var(--s2)">
+            <span class="ch on">English</span><span class="ch on">हिन्दी</span>
+            <span class="ch">తెలుగు</span><span class="ch">தமிழ்</span>
+          </div>
+          <div class="sec">兴趣 · 至少选 3 个</div>
+          <div class="chs" style="padding:0;flex-wrap:wrap;gap:var(--s2)">
+            <span class="ch on">音乐</span><span class="ch">电影</span><span class="ch on">旅行</span>
+            <span class="ch">板球</span><span class="ch on">美食</span><span class="ch">绘画</span>
+          </div>
+          <div class="lst">
+            <a><i><svg><use href="#ic-pin"/></svg></i>
+              <div style="flex:1;min-width:0">
+                <div>开启定位</div>
+                <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">用来推荐附近的人，随时可关</div>
+              </div>
+              <span>›</span>
+            </a>
+          </div>
+        </div>
+        <div class="foot"><div class="cta">开始漂流</div></div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd><span class="ep">POST /api/user/update</span><span class="ep">POST /api/upload</span></dd>
+        <dt>建表</dt><dd><code>User</code> 加 <code>Language</code> / <code>Interests</code> / <code>Lat</code> / <code>Lng</code>，AutoMigrate 自动加列</dd>
+        <dt>要点</dt><dd>已有 <code>Gender</code> / <code>Age</code> / <code>City</code> 三个字段可直接复用；定位拒绝要能降级，不可阻断注册流程</dd>
+        <dt>定位时机</dt><dd>这里的「开启定位」<b>只是开关，不弹系统框</b>。真正的系统权限请求在 A7，
+          且发生在<b>进入主界面之后</b>——注册流程里弹权限框，拒绝率会显著变高</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>定位权限说明</b><i>A7</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="bd" style="justify-content:center">
+          <div style="text-align:center">
+            <svg class="hero" style="width:40px;height:40px;margin:0 auto;display:block;fill:none;
+                 stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;
+                 color:var(--brand)"><use href="#ic-pin"/></svg>
+            <div style="font-size:var(--t5);font-weight:800;margin-top:var(--s3)">让瓶子知道你在哪儿</div>
+            <div style="font-size:var(--t2);color:var(--ink2);margin-top:var(--s2);line-height:1.8">
+              开启后可以：
+            </div>
+          </div>
+          <div class="lst" style="margin-top:var(--s3)">
+            <a><i><svg><use href="#ic-ocean"/></svg></i><div style="flex:1;min-width:0"><div>看到瓶子漂了多远</div>
+              <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">「来自 2.4 km 外」</div></div></a>
+            <a><i><svg><use href="#ic-people"/></svg></i><div style="flex:1;min-width:0"><div>优先推荐附近的人</div>
+              <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">距离只是排序维度之一</div></div></a>
+            <a><i><svg><use href="#ic-pencil"/></svg></i><div style="flex:1;min-width:0"><div>发瓶子时自动带上地点</div>
+              <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">每次都可以改或不带</div></div></a>
+          </div>
+          <div class="warn" style="margin-top:var(--s3)">
+            <svg><use href="#ic-lock"/></svg>
+            <div>别人<b>只能看到城市和大致距离</b>，看不到你的具体位置。随时可以在设置里关掉</div>
+          </div>
+        </div>
+        <div class="foot">
+          <div class="cta">开启定位</div>
+          <div class="cta gh">暂不开启</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>为什么要这一屏</dt><dd>iOS 的定位权限框<b>一辈子只弹一次</b>，拒绝后 App 内再也唤不起来，
+          只能引导用户去系统设置——转化率极低。所以必须先用自己的界面讲清楚用途，
+          用户点了「开启定位」才去弹系统框</dd>
+        <dt>出现时机</dt><dd>首次进入主界面时，<b>不是</b>注册流程里。注册时多一个权限框会明显拉低完成率</dd>
+        <dt>「暂不开启」不是死路</dt><dd>关掉后一切功能照常，只是少了距离维度（见 Z6）。
+          发瓶 / 发动态时仍可用 M1 手选地址</dd>
+        <dt>iOS 文案</dt><dd><code>NSLocationWhenInUseUsageDescription</code> 写在 <code>Info.plist</code>，
+          <b>随包审核，不能后台配置</b>。只申请 <code>WhenInUse</code>，不要 <code>Always</code>——
+          后者会触发额外审核问询</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>账号与安全</b><i>A6</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>账号与安全</span></div>
+        <div class="bd">
+          <div class="sec">登录方式</div>
+          <div class="lst">
+            <a><i><svg><use href="#ic-phone"/></svg></i>
+              <div style="flex:1;min-width:0"><div>手机号</div>
+                <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">+91 987•• ••210</div></div>
+              <span style="font-size:var(--t1);color:var(--ink3)">已绑定</span></a>
+            <a><i><svg><use href="#ic-mail"/></svg></i>
+              <div style="flex:1;min-width:0"><div>邮箱</div>
+                <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">me•••a@gmail.com</div></div>
+              <span style="font-size:var(--t1);color:var(--ink3)">已绑定</span></a>
+            <a><i><svg><use href="#ic-google"/></svg></i>
+              <div style="flex:1;min-width:0"><div>Google</div>
+                <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">未绑定</div></div>
+              <span style="color:var(--brand);font-weight:800">绑定</span></a>
+            <a><i><svg><use href="#ic-apple"/></svg></i>
+              <div style="flex:1;min-width:0"><div>Apple</div>
+                <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">仅 iOS 可绑定</div></div>
+              <span style="font-size:var(--t1);color:var(--ink3)">—</span></a>
+          </div>
+          <div class="sec" style="margin-top:var(--s1)">安全</div>
+          <div class="lst">
+            <a><i><svg><use href="#ic-key"/></svg></i><div style="flex:1;min-width:0"><div>修改密码</div></div><span>›</span></a>
+            <a><i><svg><use href="#ic-trash"/></svg></i><div style="flex:1;min-width:0"><div style="color:var(--warn)">删除账号</div></div><span>›</span></a>
+          </div>
+          <div class="warn">
+            <svg><use href="#ic-alert"/></svg>
+            <div>至少保留<b>一种</b>可登录方式。只剩一种时，那一项的解绑入口置灰</div>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>这屏的由来</dt><dd>A2k 决定了「不自动合并」，那就<b>必须</b>有一个地方让用户自己绑。
+          没有这屏，A2k 提示的「去设置里绑定」就是一句空话</dd>
+        <dt>接口</dt><dd><span class="ep n">POST /api/auth/google/bind</span>
+          <span class="ep n">POST /api/auth/apple/bind</span>
+          <span class="ep n">POST /api/auth/unbind</span></dd>
+        <dt>绑定 = 登录 + 写入</dt><dd>绑定流程和登录完全一样（拿 ID Token → 服务端验签），
+          区别只是<b>最后一步是把 <code>google_sub</code> 写到当前登录用户上</b>，而不是查用户</dd>
+        <dt>脱敏</dt><dd>手机号和邮箱都要脱敏显示。这一屏是登录态才能进的，但截屏外泄是常态</dd>
+        <dt>合规</dt><dd>「删除账号」入口是 App Store 5.1.1(v) 强制要求，与 H1 那条是同一个要求，
+          放这里或「我的」页都行，但<b>必须存在且不能藏</b></dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>绑定结果 · 被占用</b><i>A6b</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>账号与安全</span></div>
+        <div class="bd" style="opacity:.45">
+          <div class="sec">登录方式</div>
+          <div class="lst">
+            <a><i><svg><use href="#ic-phone"/></svg></i><div style="flex:1;min-width:0"><div>手机号</div></div>
+              <span style="font-size:var(--t1);color:var(--ink3)">已绑定</span></a>
+            <a><i><svg><use href="#ic-google"/></svg></i><div style="flex:1;min-width:0"><div>Google</div></div>
+              <span style="color:var(--brand);font-weight:800">绑定</span></a>
+          </div>
+        </div>
+        <div class="mask" style="z-index:7"></div>
+        <div class="modal">
+          <div class="x">✕</div>
+          <div class="head">
+            <div class="ico"><svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.5;
+                 stroke-linecap:round;stroke-linejoin:round;width:40px"><use href="#ic-ban"/></svg></div>
+            <h4>这个 Google 账号已被占用</h4>
+            <p><b>meera@gmail.com</b> 已经绑在另一个 Drift 账号上。<br>一个 Google 账号只能绑一个 Drift 账号。</p>
+          </div>
+          <div class="body">
+            <div class="warn" style="margin:0">
+              <svg><use href="#ic-info"/></svg>
+              <div>如果那个账号也是你的，先用它登录后<b>解绑</b>，再回到这里绑定</div>
+            </div>
+            <div class="cta" style="margin-top:var(--s3)">知道了</div>
+            <div class="cta gh">换一个 Google 账号</div>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>两态</dt><dd>本图画的是<b>被占用</b>态。成功态用同一个弹层，把图标换成对勾、文案换成「已绑定 meera@gmail.com」，
+          关闭后 A6 列表那一行变「已绑定」</dd>
+        <dt>为什么必须有这屏</dt><dd><code>google_sub</code> 在 <code>User</code> 上是<b>唯一</b>的。
+          没有这个拦截，绑定要么写失败报个看不懂的错，要么把别人的绑定抢过来——后者是账号接管</dd>
+        <dt>不泄露</dt><dd>只说「已被占用」，<b>不透露是哪个账号</b>（不显示手机号尾号之类）。
+          用户自己的账号自己知道，攻击者不该从这里问出关联关系</dd>
+        <dt>解绑的前提</dt><dd>解绑时要校验<b>解绑后仍有可登录方式</b>，否则用户会把自己锁在门外</dd>
+      </dl></div>
+    </div>
+
+  </div>
+</section>
+
+<hr>
+
+<!-- ========== 2. BOTTLE ========== -->
+<section>
+  <div class="sh">
+    <span class="no">§2</span><h2>漂流瓶</h2><span class="en">Bottle</span>
+    <span class="vd keep">✅ 后端零改动</span>
+  </div>
+  <p class="sub">
+    12 个接口全部现成，<code>Bottle</code> 表自带 <code>ExpireAt</code> + <code>Status</code> 过期机制，限次走 <code>quota</code>，
+    捞瓶走 Redis 预生成 feed。App 端只需把接口接上并处理 <code>3003 CodeQuotaExceeded</code>。
+    首页动画的完整清单见 <code>docs/prototype/mvp-screens.html</code>，此处只保留骨架。
+  </p>
+
+  <div class="grid">
+
+    <div class="scr">
+      <div class="cap"><b>海洋首页</b><i>B1</i></div>
+      <div class="ph hf">
+        <div class="hdr">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="top">
+            <div class="ring sm"><u>🐱</u><span class="dot"></span></div>
+            <span class="coin"><i class="cn"></i>248</span>
+            <div class="ic">☰</div>
+          </div>
+          <h3>今晚的海</h3>
+          <div class="sc">1,284 条回应正在漂回来 · 夜场 21:00 开</div>
+        </div>
+        <div class="chs raise">
+          <span class="ch on">全部</span><span class="ch pk">🌙 夜场</span>
+          <span class="ch aq">हिन्दी</span><span class="ch">தமிழ்</span><span class="ch">English</span>
+        </div>
+        <div class="scene">
+          <div class="tide">↓ 下拉涨潮，换一批</div>
+          <div class="sun"></div>
+          <div class="lh"><div class="lp"></div><div class="tw"></div><div class="isl"></div></div>
+          <div class="lhtag" style="left:58px;bottom:112px">今日海况 ›</div>
+          <div class="sea">
+            <div class="peek" style="left:5%;top:-13%">漂了 3 天 · 2 座城市</div>
+            <div class="btl" style="left:22%;top:12%"><i></i><em>3</em></div>
+            <div class="btl" style="left:55%;top:2%"><i style="animation-delay:-1.4s"></i></div>
+            <div class="btl" style="left:76%;top:26%"><i style="animation-delay:-2.6s"></i><em>1</em></div>
+            <div class="btl" style="left:38%;top:38%"><i style="animation-delay:-3.3s"></i></div>
+          </div>
+          <div class="dock">
+            <div class="pbn glass">扔一个<small>今日还剩 3 次</small></div>
+            <div class="pbn">按住捞一个<small>今日还剩 8 次</small></div>
+          </div>
+        </div>
+        <div class="tb hf">
+          <div class="on"><svg><use href="#ic-ocean"/></svg><span>海洋</span></div>
+          <div><svg><use href="#ic-discover"/></svg><span>发现</span></div>
+          <div><svg><use href="#ic-chats"/></svg><span>消息</span><em>3</em></div>
+          <div><svg><use href="#ic-moments"/></svg><span>动态</span></div>
+          <div><svg><use href="#ic-me"/></svg><span>我的</span></div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/bottle/quota</span><span class="ep">GET /api/bottle/scoop</span>
+          <span class="ep">GET /api/hook-count</span><span class="ep">GET /api/features</span>
+        </dd>
+        <dt>可点</dt><dd>
+          <b>点瓶子</b>→ 浮出轨迹预览气泡，<b>不消耗次数</b>（读 feed 里已有的 <code>trace</code> 摘要，零新接口）；
+          <b>下拉</b>→ 涨潮刷新；<b>点灯塔</b>→ 今日海况。首页每天被打开十几次，不能只有两个可点区</dd>
+        <dt>动画</dt><dd>bob / blink / ripple / cast / rise 等 12 组，用 <code>AnimationController</code> + <code>TweenSequence</code> 复刻</dd>
+        <dt>配色</dt><dd>海里两个按钮<b>都是海蓝</b>——全 App 用「粉 = 要花币」，海面不出现粉色就是在说「这里免费」</dd>
+        <dt>要点</dt><dd>夜场瓶（night 标签）只在夜场时段可捞，缓存 key 带昼夜维度——后端已实现</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>捞取中</b><i>B1a · 按住不放</i></div>
+      <div class="ph hf">
+        <div class="scene" style="flex:1 1 auto">
+          <div class="st" style="position:absolute;left:0;right:0;top:0;z-index:6;color:rgba(255,255,255,.9)">
+            <span>9:41</span><span>▮▮▮</span>
+          </div>
+          <div style="position:absolute;inset:0;background:rgba(8,20,36,.34);z-index:2"></div>
+          <div class="ripple">
+            <i></i><i style="animation-delay:-.9s"></i><i style="animation-delay:-1.8s"></i>
+          </div>
+          <div class="rising"></div>
+          <div class="hint">
+            <b>有东西上钩了</b>
+            <s>松手打开它</s>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>手势</dt><dd><b>按住「捞一个」不放</b>并向下拖 → 水面起涟漪 → 瓶子从深处浮上来 → 松手开瓶。全程约 <b>2.5 秒</b></dd>
+        <dt>为什么</dt><dd>「捞」是写在产品名字里的动词，现在却是一个按钮点一下就跳页。
+          这 2.5 秒是<b>唯一不可复制的东西</b>——拆盲盒的期待感是留存钩子，也让「今日还剩 8 次」从惩罚变成稀缺</dd>
+        <dt>接口</dt><dd>按下瞬间就发 <code>GET /api/bottle/scoop</code>，动画跑的同时数据已在路上；
+          2.5 秒足够覆盖弱网，<b>用户感知不到加载</b></dd>
+        <dt>兜底</dt><dd>动画期间接口失败 → 瓶子沉回去 + 轻提示，<b>不扣次数</b>；空池子走 <code>Z1</code></dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>开瓶</b><i>B1b · 松手</i></div>
+      <div class="ph hf">
+        <div class="scene" style="flex:1 1 auto">
+          <div class="st" style="position:absolute;left:0;right:0;top:0;z-index:7;color:rgba(255,255,255,.9)">
+            <span>9:41</span><span>▮▮▮</span>
+          </div>
+          <div style="position:absolute;inset:0;background:rgba(8,20,36,.5);z-index:2"></div>
+          <div class="letter">
+            <div class="body3">如果有一天你也在海边，记得替我看一眼日落。</div>
+            <div class="meta2">
+              <span>匿名 · 女 24</span>
+              <span style="margin-left:auto">漂了 3 天 · Mumbai → 你这里</span>
+            </div>
+          </div>
+          <div class="dock" style="bottom:var(--s6)">
+            <div class="pbn glass">放回海里<small>不消耗次数</small></div>
+            <div class="pbn">写回信<small>对方会收到通知</small></div>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>形态</dt><dd>信纸<b>从瓶口展开</b>，暖米色纸张压在冷色海面上——全 App 唯一一处纸质材质，用来标记「这是一封信，不是一条消息」</dd>
+        <dt>两个出口</dt><dd><b>放回海里</b>（免费、不扣次数，瓶子回到池子）/ <b>写回信</b> → 进 <code>B3</code>。
+          必须给「放回」——不是每个瓶子都想回，强制回信会让人不敢捞</dd>
+        <dt>时间在场</dt><dd>「漂了 3 天 · Mumbai → 你这里」是这屏的情绪核心。
+          异步是产品本质，这句话是它<b>唯一一次被说出来</b>的地方</dd>
+        <dt>接口</dt><dd><span class="ep">GET /api/bottle/:id</span>；放回 = 记 <code>MatchLog(action=skip)</code>，不写 view</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>夜场</b><i>B1n · 21:00 起</i></div>
+      <div class="ph hf night">
+        <div class="hdr">
+          <div class="st"><span>23:18</span><span>▮▮▮</span></div>
+          <div class="top">
+            <div class="ring sm"><u>🐱</u><span class="dot"></span></div>
+            <span class="coin" style="margin-left:auto"><i class="cn"></i>248</span>
+            <div class="ic" style="margin-left:0">☰</div>
+          </div>
+          <h3>夜场开始了</h3>
+          <div class="sc">只有深夜瓶在漂 · 还剩 1 小时 42 分</div>
+        </div>
+        <div class="chs raise">
+          <span class="ch on">🌙 深夜</span><span class="ch">树洞</span>
+          <span class="ch aq">हिन्दी</span><span class="ch">தமிழ்</span>
+        </div>
+        <div class="scene">
+          <div class="sun"></div>
+          <div class="lh"><div class="lp"></div><div class="tw"></div><div class="isl"></div></div>
+          <div class="lhtag" style="left:58px;bottom:112px">今晚 312 人在线 ›</div>
+          <div class="sea">
+            <div class="btl" style="left:24%;top:14%"><i></i><em>5</em></div>
+            <div class="btl" style="left:58%;top:4%"><i style="animation-delay:-1.4s"></i></div>
+            <div class="btl" style="left:78%;top:28%"><i style="animation-delay:-2.6s"></i><em>2</em></div>
+            <div class="btl" style="left:40%;top:36%"><i style="animation-delay:-3.3s"></i></div>
+            <div class="btl" style="left:12%;top:30%"><i style="animation-delay:-2s"></i></div>
+          </div>
+          <div class="dock">
+            <div class="pbn glass">扔一个<small>深夜瓶不限次</small></div>
+            <div class="pbn">按住捞一个<small>今日还剩 8 次</small></div>
+          </div>
+        </div>
+        <div class="tb hf">
+          <div class="on"><svg><use href="#ic-ocean"/></svg><span>海洋</span></div>
+          <div><svg><use href="#ic-discover"/></svg><span>发现</span></div>
+          <div><svg><use href="#ic-chats"/></svg><span>消息</span><em>3</em></div>
+          <div><svg><use href="#ic-moments"/></svg><span>动态</span></div>
+          <div><svg><use href="#ic-me"/></svg><span>我的</span></div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>这不是暗色模式</dt><dd><b>夜场是产品状态，系统暗色是显示偏好，两根独立的轴。</b>
+          页面右上角两个开关可以分别切，四种组合都要成立</dd>
+        <dt>为什么值得做</dt><dd>后端已有 night 标签 + 昼夜维度缓存，<code>push/scheduler.go</code> 也已经有
+          「开场前 5 分钟」的定时推送——<b>机制全都在，只差让用户感觉到它是个事件</b>。
+          现在这套东西只体现为一行小字，白白浪费了一个每天 21:00 的固定召回点</dd>
+        <dt>变了什么</dt><dd>头图转深蓝紫、海面入夜、月亮替太阳、星空浮现、瓶子发微光、灯塔更亮。
+          <b>粉色不变</b>——它只代表「要花币」，不参与昼夜叙事</dd>
+        <dt>内容差异</dt><dd>只捞得到 night 标签的瓶子（后端已实现）；扔深夜瓶<b>不限次</b>，
+          用配额差异把人留在这个时段</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>写瓶子</b><i>B2</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">✕<span>写一个瓶子</span><span class="sp2">今天还能扔 3 个</span></div>
+        <div class="bd">
+          <div class="ta">
+            今天在海边捡到一枚很好看的贝壳，突然想把它送给某个陌生人……
+            <div class="cnt">68 / 500</div>
+          </div>
+          <div style="display:flex;gap:var(--s2)">
+            <div class="thumb">📷</div>
+            <div class="thumb add">＋</div>
+          </div>
+          <div class="sec">标签</div>
+          <div class="chs" style="padding:0;flex-wrap:wrap;gap:var(--s2)">
+            <span class="ch on">🌙 深夜</span><span class="ch">树洞</span><span class="ch">音乐</span>
+          </div>
+          <div class="sec">投放范围</div>
+          <div class="chs" style="padding:0">
+            <span class="ch on">全国</span><span class="ch">同城</span>
+          </div>
+          <div class="sec">地点</div>
+          <div class="lst">
+            <a><i><svg><use href="#ic-pin"/></svg></i>
+              <div style="flex:1;min-width:0"><div>Mumbai · Bandra West</div>
+                <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">当前定位，点击可改</div></div>
+              <span>›</span></a>
+          </div>
+        </div>
+        <div class="foot">
+          <div class="cta">抛向大海</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd><span class="ep">POST /api/bottle/create</span><span class="ep">POST /api/upload</span>
+          <span class="ep n">GET /geo/regeo</span></dd>
+        <dt>限流</dt><dd>后端已挂 <code>throwLimit</code> 中间件，前端拿 <code>quota</code> 做预判即可</dd>
+        <dt>内容安全</dt><dd>微信 <code>msgSecCheck</code> 在 App 失效，需换第三方文本审核（见 §9）</dd>
+        <dt>🆕 地点</dt><dd>默认填<b>当前定位</b>逆地理出来的地址，点进去走 M1 手选，也可以清空（M2）。
+          没开定位时这一行显示「添加地点」，点进去同样是 M1</dd>
+        <dt>🆕 建表</dt><dd><code>Bottle</code> 现在只有 <code>City</code> 和 <code>Scope</code>，
+          <b>没有经纬度</b>。要加 <code>Lat</code> / <code>Lng</code> / <code>PlaceName</code>，AutoMigrate 自动加列</dd>
+        <dt>⚠ 存量数据</dt><dd>加列后<b>老瓶子的经纬度是 0</b>。算距离时必须先判空回退到 <code>City</code> 维度，
+          否则所有老瓶子会被算成在几内亚湾（0,0），距离排序全乱</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>地图选点</b><i>M1 · B2/F2 复用</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">✕<span>选择地点</span></div>
+        <div style="flex:1;position:relative;background:
+             linear-gradient(0deg,rgba(157,189,200,.18) 1px,transparent 1px) 0 0/100% 26px,
+             linear-gradient(90deg,rgba(157,189,200,.18) 1px,transparent 1px) 0 0/26px 100%,
+             var(--sea);overflow:hidden">
+          <div style="position:absolute;left:-10%;top:52%;width:130%;height:46%;
+               background:rgba(18,181,206,.14);border-radius:40% 60% 0 0/22px"></div>
+          <div style="position:absolute;left:14%;top:18%;width:38%;height:8px;background:rgba(22,50,60,.08);border-radius:4px"></div>
+          <div style="position:absolute;left:26%;top:40%;width:48%;height:8px;background:rgba(22,50,60,.08);border-radius:4px"></div>
+          <div style="position:absolute;left:50%;top:44%;transform:translate(-50%,-100%);text-align:center">
+            <span class="pin"><svg><use href="#ic-pin"/></svg></span>
+          </div>
+          <div style="position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
+               width:9px;height:4px;background:rgba(22,50,60,.22);border-radius:50%"></div>
+          <span class="iconb" style="position:absolute;right:var(--s3);bottom:var(--s3)">
+            <svg><use href="#ic-locate"/></svg></span>
+          <div style="position:absolute;left:var(--s3);top:var(--s3);font-size:var(--t0);
+               color:var(--ink3);background:rgba(251,254,255,.85);padding:2px 6px;border-radius:var(--r1)">
+            拖动地图来移动大头针
+          </div>
+        </div>
+        <div class="bd" style="flex:0;padding-top:var(--s3)">
+          <div class="lst">
+            <a><i><svg><use href="#ic-pin"/></svg></i>
+              <div style="flex:1;min-width:0"><div>Bandra West</div>
+                <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">Mumbai, Maharashtra</div></div>
+            </a>
+          </div>
+        </div>
+        <div class="foot">
+          <div class="cta">用这个地点</div>
+          <div class="cta gh">不显示地点</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>只显示自己</dt><dd>地图上<b>永远只有一个大头针，就是用户自己选的那个点</b>。
+          绝不在地图上标注其他用户——匿名社交产品把人标在地图上，即使做了模糊化，
+          也能靠多点采样反推真实住址。这是 Tinder / Grindr 都真实出过事的攻击面</dd>
+        <dt>交互</dt><dd>大头针<b>固定在屏幕中心不动</b>，拖动的是地图。这比「拖动大头针」精度高得多，
+          手指不会挡住目标点</dd>
+        <dt>地址从哪来</dt><dd>地图停止移动 → 取中心经纬度 → 调 <span class="ep n">GET /geo/regeo</span>
+          拿地址。<b>服务端代理，Key 不下发客户端</b>。<code>geo/geo.go</code> 已实现按
+          <code>app_maps_provider</code> 分派到 Google Geocoding</dd>
+        <dt>本期不做搜索</dt><dd>Places Autocomplete 是<b>另一个计费 API</b>（按会话计费，比 Maps 贵），
+          拖图选点已经够用。要加放下一期</dd>
+        <dt>三把 Key</dt><dd>Android（包名+SHA-1）、iOS（Bundle ID）、服务端（IP 白名单 + Geocoding）
+          是<b>三把不同限制的 Key</b>，不要共用一把。Maps Key 裸奔被刷爆账单是常见事故</dd>
+        <dt>降级</dt><dd>地图 SDK 加载失败或无 Key 时，本屏退化成一个纯地址列表（只有当前城市），
+          <b>不能白屏</b></dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>地点已选 / 不显示</b><i>M2</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">✕<span>写一个瓶子</span><span class="sp2">今天还能扔 3 个</span></div>
+        <div class="bd">
+          <div class="ta">
+            今天在海边捡到一枚很好看的贝壳，突然想把它送给某个陌生人……
+            <div class="cnt">68 / 500</div>
+          </div>
+          <div class="sec">地点 · 已选</div>
+          <div class="lst">
+            <a><i><svg><use href="#ic-pin"/></svg></i>
+              <div style="flex:1;min-width:0"><div>Bandra West</div>
+                <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">Mumbai, Maharashtra</div></div>
+              <span style="color:var(--ink3);font-size:var(--t3)">✕</span></a>
+          </div>
+          <div class="sec" style="margin-top:var(--s1)">地点 · 不显示</div>
+          <div class="lst">
+            <a><i><svg><use href="#ic-ban"/></svg></i>
+              <div style="flex:1;min-width:0"><div style="color:var(--ink3)">添加地点</div>
+                <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">这个瓶子不会带位置</div></div>
+              <span>›</span></a>
+          </div>
+          <div class="warn">
+            <svg><use href="#ic-lock"/></svg>
+            <div>捞到的人看到的是 <b>「Mumbai · 2.4 km」</b>，不是具体地址，更不是经纬度</div>
+          </div>
+        </div>
+        <div class="foot"><div class="cta">抛向大海</div></div>
+      </div>
+      <div class="tp"><dl>
+        <dt>两态并排</dt><dd>上半是已选地点（可一键 ✕ 清除），下半是不带地点的样子。
+          实际是同一行的两个状态，这里并排画便于对照</dd>
+        <dt>「不显示地点」是一等选项</dt><dd>不能只靠「不去选」来实现。
+          默认带当前定位意味着<b>用户不做任何操作就会暴露位置</b>，必须给一个显式的关闭动作</dd>
+        <dt>⚠ 下发口径</dt><dd>数据库存精确经纬度（算距离要用），但<b>下发给其他用户时只给城市名 + 距离</b>，
+          原始坐标绝不出现在任何面向他人的响应里。这条要写死在 DTO 层，
+          不能靠调用方自觉——参照 <code>discover/service.go</code> 里 <code>Lat</code>/<code>Lng</code>
+          标了 <code>json:"-"</code> 的做法</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>瓶子详情</b><i>B3</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">
+          ←<span>捞到的瓶子</span>
+          <span class="sp2" style="font-size:var(--t4)">♡</span>
+          <span style="font-size:var(--t4)">⋯</span>
+        </div>
+        <div class="bd">
+          <div class="btlc">
+            <div style="display:flex;align-items:center;gap:var(--s2)">
+              <div class="ring sm"><u>🙂</u></div>
+              <div style="font-size:var(--t2);color:var(--ink2)">匿名 · 女 24</div>
+              <span class="tg" style="margin-left:auto">漂了 3 天</span>
+            </div>
+            <div class="body2">如果有一天你也在海边，记得替我看一眼日落。</div>
+          </div>
+          <div class="sec">3 条回信 · 最近一条 12 分钟前</div>
+          <div class="rws">
+            <a>
+              <div class="ring sm"><u>🧑</u></div>
+              <div class="tx2"><b>匿名 · 男 26</b><s class="blur">我昨天刚好在果阿看了日落，那天云特别厚</s></div>
+              <div class="mt">2 天前</div>
+            </a>
+            <a>
+              <div class="ring sm"><u>👧</u></div>
+              <div class="tx2"><b>匿名 · 女 22</b><s class="blur">我也想去，可惜一直没时间</s></div>
+              <div class="mt">昨天</div>
+            </a>
+            <a>
+              <div class="ring sm"><u>🙂</u></div>
+              <div class="tx2"><b>匿名 · 女 24</b><s class="blur">日落这种东西，还是要有人一起看</s></div>
+              <div class="mt">12 分钟前</div>
+            </a>
+          </div>
+          <div class="cta pay" style="margin-top:auto">🔒 解锁 3 条回信 <i class="cn"></i>2</div>
+        </div>
+        <div class="inp">
+          <div class="fd">写下你的回信…</div>
+          <div class="snd">➤</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/bottle/:id</span><span class="ep">GET /api/bottle/:id/replies</span>
+          <span class="ep">POST /api/bottle/:id/reply</span><span class="ep">POST /api/bottle/reply/:rid/unlock</span>
+        </dd>
+        <dt>扣费</dt><dd>解锁 <code>price_unlock</code> 默认 2 币，走 <code>wallet</code> 事务，scene=<code>unlock</code></dd>
+        <dt>要点</dt><dd><code>ReplyUnlock</code> 按 viewer 维度记录，任何人付费即可看，非仅瓶主</dd>
+        <dt>时间口径</dt><dd>瓶子说<b>「漂了 3 天」</b>（时长），回信说<b>「12 分钟前」</b>（时刻）——
+          两种口径不能混。异步是这个产品的本质，时间是它<b>唯一能被看见的形式</b>。
+          <b>⚠ 全部用 UTC 存、按用户本地时区渲染</b>：印度是 IST（UTC+5:30，带半小时偏移），
+          后端 KPI 却是东八区口径（硬约束第 4 条），三套时区混用必出「跨天」错位</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>我的瓶子 · 轨迹</b><i>B4</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>我的瓶子</span></div>
+        <div class="bd">
+          <div class="chs" style="padding:0">
+            <span class="ch on">我扔的</span><span class="ch">我捞的</span><span class="ch">已收藏</span>
+          </div>
+          <div class="mcd">
+            <div style="font-size:var(--t3);line-height:1.6">如果有一天你也在海边，记得替我看一眼日落。</div>
+            <div class="bar5" style="margin-top:var(--s2)">
+              <span>👁 42</span><span>💬 3</span><span>♡ 8</span>
+              <span style="margin-left:auto">漂了 3 天</span>
+            </div>
+          </div>
+          <div class="sec">这个瓶子漂过哪些地方</div>
+          <div class="mcd">
+            <div class="tl">
+              <div>Mumbai · 你扔出<span>3 天前</span></div>
+              <div>Pune · 被 18 人看到<span>1 小时前</span></div>
+              <div>Delhi · 收到 3 条回信<span>12 分钟前</span></div>
+            </div>
+            <div style="font-size:var(--t1);color:var(--ink3);margin-top:var(--s3)">
+              一共被 42 个人看到，跨越 3 座城市
+            </div>
+          </div>
+          <div class="mcd">
+            <div style="font-size:var(--t3);line-height:1.6">有人在听周杰伦吗，随便哪首都行。</div>
+            <div class="bar5" style="margin-top:var(--s2)">
+              <span>👁 7</span><span>💬 0</span><span>♡ 1</span>
+              <span style="margin-left:auto">1 天前</span>
+            </div>
+          </div>
+          <div class="mcd" style="opacity:.5">
+            <div style="font-size:var(--t3);line-height:1.6">深夜写的那句话…</div>
+            <div class="bar5" style="margin-top:var(--s2)">
+              <span>已过期</span><span style="margin-left:auto">7 天前</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/bottle/mine</span><span class="ep">GET /api/bottle/:id/trace</span>
+          <span class="ep">GET /api/collection/list</span>
+        </dd>
+        <dt>数据源</dt><dd>轨迹由 <code>MatchLog</code>（action=view/reply/like/skip）聚合，不是独立表</dd>
+        <dt>开关</dt><dd>轨迹功能受 <code>bottle_trace_enabled</code> 控制，默认关</dd>
+        <dt>出口</dt><dd>轨迹卡右上角进 <code>B4s 漂流海图</code>——这是全 App 唯一的自传播点，不该只是一行小字</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>漂流海图</b><i>B4s · 可分享</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>这个瓶子漂过的路</span></div>
+        <div class="bd">
+          <div class="poster">
+            <div class="ttl2">一封信的旅程</div>
+            <div class="sub2">2026-09-13 从 Mumbai 出发</div>
+            <div class="tl">
+              <div>Mumbai · 你把它扔进海里<span>3 天前</span></div>
+              <div>Pune · 被 18 人看到<span>1 小时前</span></div>
+              <div>Delhi · 收到 3 条回信<span>12 分钟前</span></div>
+            </div>
+            <svg class="wave" viewBox="0 0 220 22" fill="none" stroke="#fff" stroke-linecap="round">
+              <path d="M4 9c9-6 18-6 27 0s18 6 27 0 18-6 27 0 18 6 27 0 18-6 27 0 18 6 27 0 18-6 27 0" stroke-width="1.6"/>
+              <path d="M10 18c8-5 16-5 24 0s16 5 24 0 16-5 24 0 16 5 24 0 16-5 24 0" stroke-width="1.3" opacity=".5"/>
+            </svg>
+            <div class="stats2">
+              <div><b>42</b><s>个人看到</s></div>
+              <div><b>3</b><s>座城市</s></div>
+              <div><b>1,180</b><s>公里</s></div>
+            </div>
+            <div class="quote">如果有一天你也在海边，记得替我看一眼日落。</div>
+            <div class="wm2">DRIFT<span>ambertu.com</span></div>
+          </div>
+          <div class="warn" style="margin-top:var(--s1)">
+            <svg><use href="#ic-lock"/></svg>
+            <div>海报<b>只包含你写的内容和城市</b>，不会出现任何回信者的信息</div>
+          </div>
+        </div>
+        <div class="foot">
+          <div style="display:flex;gap:var(--s2)">
+            <div class="cta gh" style="flex:1">保存图片</div>
+            <div class="cta" style="flex:1.3">分享到 WhatsApp</div>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>为什么单独成屏</dt><dd>这是全 App <b>唯一值得截图外发的东西</b>。
+          「被 42 个人看到，跨越 3 座城市」的数据 <code>B4</code> 早就有了，
+          但它藏在二级页的一行小字里，等于没有</dd>
+        <dt>渲染</dt><dd>客户端本地合成图片（Flutter <code>RepaintBoundary</code> + <code>toImage</code>），
+          <b>不要走服务端出图</b>——多一次网络往返，分享意愿掉一半</dd>
+        <dt>复用</dt><dd>时间线用的就是 <code>B4</code> 那套 <code>.tl</code> 组件，只换深海配色。
+          同一个数据、同一个组件，两种密度</dd>
+        <dt>隐私</dt><dd>海报<b>只出现瓶子内容和城市</b>，不出现任何回信者信息——
+          回信是匿名的，分享出去等于泄露</dd>
+        <dt>水印</dt><dd>右下角带域名，这是自传播的回流入口。没有水印的分享图等于白送</dd>
+      </dl></div>
+    </div>
+
+  </div>
+</section>
+
+<hr>
+
+<!-- ========== 3. MATCH ========== -->
+<section>
+  <div class="sh">
+    <span class="no">§3</span><h2>匹配发现</h2><span class="en">Match</span>
+    <span class="vd mod">🔨 语义重定义</span>
+  </div>
+  <p class="sub">
+    <b>这是全清单里最容易误判的一项。</b>现有 <code>match</code> 模块只有
+    <code>/api/city/users</code>（同城）和 <code>/api/expand/wall</code>（扩列墙）两个接口，
+    本质是「瓶子推荐打分 + <code>MatchLog</code> 行为记录」。
+    V1 要的「按语言 / 兴趣 / 地理找人」是<b>新的候选集来源</b>（用户池而非瓶子池）与<b>新的相似度维度</b>，
+    需先等 §1 补齐 language / interests / 经纬度字段。
+  </p>
+
+  <div class="grid">
+
+    <div class="scr">
+      <div class="cap"><b>滑卡发现</b><i>C1</i></div>
+      <div class="ph hf">
+        <div class="hdr slim">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="top">
+            <div class="ring sm"><u>🐱</u><span class="dot"></span></div>
+            <span class="ttl">今天在线的人</span>
+            <span class="coin" style="margin-left:auto"><i class="cn"></i>248</span>
+            <div class="ic" style="margin-left:0">⚙</div>
+          </div>
+        </div>
+        <div class="chs raise">
+          <span class="ch on">推荐</span><span class="ch pk">附近</span>
+          <span class="ch">新人</span><span class="ch aq">हिन्दी</span><span class="ch">தமிழ்</span>
+        </div>
+        <div class="deck">
+          <div class="swc b2"></div>
+          <div class="swc b1"></div>
+          <div class="swc fr">
+            <div class="pic">
+              👩
+              <span class="live">在线</span>
+              <span class="stamp">喜欢</span>
+            </div>
+            <div class="info">
+              <div class="nm">Aanya, 23<span class="go">主页 ›</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">
+                <span class="tg pk">📍 2.4 km</span><span class="tg">हिन्दी</span>
+                <span class="tg pu">Music</span><span class="tg">Travel</span>
+              </div>
+              <div class="bio">喜欢在深夜听歌，偶尔写点没人看的东西。</div>
+              <div class="acts">
+                <div class="ab"><i>✕</i></div>
+                <div class="hi">💬 打招呼 <i class="cn"></i>5</div>
+                <div class="ab lk"><i>♥</i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tb hf">
+          <div><svg><use href="#ic-ocean"/></svg><span>海洋</span></div>
+          <div class="on"><svg><use href="#ic-discover"/></svg><span>发现</span></div>
+          <div><svg><use href="#ic-chats"/></svg><span>消息</span><em>3</em></div>
+          <div><svg><use href="#ic-moments"/></svg><span>动态</span></div>
+          <div><svg><use href="#ic-me"/></svg><span>我的</span></div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep n">GET /api/discover/users</span>
+          <span class="ep">POST /api/relation/like</span>
+          <span class="ep">POST /api/chat/start</span>
+          <span class="ep">GET /api/city/users</span>
+        </dd>
+        <dt>滑动</dt><dd>右滑 = <code>relation/like</code>，左滑 = 仅落 <code>MatchLog(action=skip)</code>。
+          <b>两个动作都必须落库</b>——否则下次拉人去重不掉，同一个人会反复推上来。
+          MatchLog 与捞瓶共用同一张表，字段现成</dd>
+        <dt>预取</dt><dd>一次拉 15~20 人缓存在本地，剩 5 张时静默续拉。
+          <b>不可一张一请求</b>：滑动是连续手势，等接口会直接卡住手感</dd>
+        <dt>打分</dt><dd>语言重合度 × 兴趣 Jaccard × 距离衰减 × 活跃度，权重建议进 sysconfig 可调（对齐捞瓶 feed 的做法）</dd>
+        <dt>依赖</dt><dd><b>阻塞于 §1</b>：没有 language / interests / 经纬度就没有排序维度</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>筛选</b><i>C2</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">✕<span>筛选</span><span class="sp2" style="color:var(--brand);font-weight:700">重置</span></div>
+        <div class="bd">
+          <div class="sec">语言</div>
+          <div class="chs" style="padding:0;flex-wrap:wrap;gap:var(--s2)">
+            <span class="ch on">English</span><span class="ch on">हिन्दी</span>
+            <span class="ch">తెలుగు</span><span class="ch">தமிழ்</span><span class="ch">বাংলা</span>
+          </div>
+          <div class="sec">兴趣</div>
+          <div class="chs" style="padding:0;flex-wrap:wrap;gap:var(--s2)">
+            <span class="ch on">音乐</span><span class="ch">电影</span>
+            <span class="ch on">旅行</span><span class="ch">板球</span>
+          </div>
+          <div class="sec">距离</div>
+          <div class="sld">
+            <div class="bar3"><i></i><u></u></div>
+            <div class="lbl">
+              <span>1 km</span><span style="color:var(--ink);font-weight:700">25 km</span><span>不限</span>
+            </div>
+          </div>
+          <div class="sec">性别</div>
+          <div class="seg"><div class="on">全部</div><div>女</div><div>男</div></div>
+          <div class="sec">年龄</div>
+          <div class="fieldr"><span class="val">18 – 30 岁</span></div>
+        </div>
+        <div class="foot">
+          <div class="cta">应用筛选 · 34 人符合</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>状态</dt><dd>筛选条件本地持久化（<code>shared_preferences</code>），随请求下发</dd>
+        <dt>性能</dt><dd>地理筛选需给 <code>User</code> 的 lat/lng 建索引，或引入 geohash 前缀查询——直接 <code>WHERE</code> 算距离全表扫会很慢</dd>
+        <dt>租户</dt><dd>候选集必须按 <code>tenant_id</code> 过滤（项目硬约束）</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>用户主页</b><i>C3 · 滑卡点进来</i></div>
+      <div class="ph hf">
+        <div class="hero">
+          👩
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="bar">←<span>⋯</span></div>
+          <span class="live">在线</span>
+        </div>
+        <div class="bd" style="gap:9px">
+          <div style="display:flex;align-items:baseline;gap:7px">
+            <div style="font-size:16px;font-weight:800;letter-spacing:-.01em">Aanya, 23</div>
+            <span class="charm" style="margin-left:auto">✦ 1,280</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px">
+            <span class="tg pk">📍 Mumbai · 2.4 km</span><span class="tg">हिन्दी</span>
+            <span class="tg pu">Music</span><span class="tg">Travel</span><span class="tg">Foodie</span>
+          </div>
+          <div style="font-size:10px;color:var(--ink2);line-height:1.65">
+            喜欢在深夜听歌，偶尔写点没人看的东西。
+          </div>
+          <div class="stats">
+            <div><b>28</b><s>瓶子</s></div>
+            <div><b>64</b><s>动态</s></div>
+            <div><b>熟悉</b><s>关系</s></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:auto">
+            <div class="jn gh pay" style="flex:0 0 76px">🎁 送礼</div>
+            <div class="jn pay" style="flex:1">打招呼 <small><i class="cn"></i>5</small></div>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/user/card/:id</span><span class="ep">POST /api/relation/like</span>
+          <span class="ep">POST /api/chat/start</span><span class="ep">GET /api/item/list</span>
+        </dd>
+        <dt>扣费</dt><dd>开聊 <code>price_chat</code> 默认 5 币，scene=<code>chat</code>，在 <code>chat/service.go</code> 已实现</dd>
+        <dt>合规</dt><dd>举报 / 拉黑入口必须常驻右上角，不可藏在二级页</dd>
+      </dl></div>
+    </div>
+
+  </div>
+</section>
+
+<hr>
+
+<!-- ========== 4. CHAT ========== -->
+<section>
+  <div class="sh">
+    <span class="no">§4</span><h2>私聊</h2><span class="en">Chat</span>
+    <span class="vd keep">✅ 复用</span><span class="vd mod">🔨 补在线状态</span>
+  </div>
+  <p class="sub">
+    6 个接口 + WebSocket 全部现成。<code>Message.Type</code> 已支持 <code>image</code>，<code>Message.ReadStatus</code> 字段已有，
+    <code>Block</code> 表已有。<b>唯一缺口是在线状态</b>——可用 <code>User.LastActiveAt</code> 做「最近活跃」降级。
+  </p>
+
+  <div class="grid">
+
+    <div class="scr">
+      <div class="cap"><b>会话列表</b><i>D1</i></div>
+      <div class="ph hf">
+        <div class="hdr slim">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="top">
+            <span class="ttl">消息</span>
+            <span class="coin" style="margin-left:auto"><i class="cn"></i>248</span>
+            <div class="ic" style="margin-left:0">🔔</div>
+          </div>
+        </div>
+        <div class="chs raise">
+          <span class="ch on">全部</span><span class="ch pk">未读 3</span><span class="ch">瓶友</span>
+        </div>
+        <div class="bd" style="padding-top:18px">
+          <div class="rws">
+            <a>
+              <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+              <div class="tx2"><b>Aanya</b><s>那你今晚也会看日落吗？</s></div>
+              <div class="mt">2 分钟<span class="ub2">2</span></div>
+            </a>
+            <a>
+              <div class="ring sm"><u>🧑</u></div>
+              <div class="tx2"><b>Rohan</b><s>［图片］</s></div>
+              <div class="mt">1 小时</div>
+            </a>
+            <a>
+              <div class="ring sm"><u>🙂</u></div>
+              <div class="tx2"><b>匿名瓶友</b><s>🎁 送出了「小星星」</s></div>
+              <div class="mt">昨天</div>
+            </a>
+            <a>
+              <div class="ring sm"><u>👧</u></div>
+              <div class="tx2"><b>Meera</b><s>好呀，那就这样说定了</s></div>
+              <div class="mt">3 天前</div>
+            </a>
+            <a>
+              <div class="ring sm"><u>🙂</u></div>
+              <div class="tx2"><b>匿名瓶友</b><s>你捞到的那个瓶子，是我扔的</s></div>
+              <div class="mt">5 天前</div>
+            </a>
+            <a>
+              <div class="ring sm"><u>🧔</u></div>
+              <div class="tx2"><b>Vikram</b><s>好的，晚点聊</s></div>
+              <div class="mt">上周</div>
+            </a>
+            <a style="opacity:.55">
+              <div class="ring sm"><u>👤</u></div>
+              <div class="tx2"><b>已注销用户</b><s>对方已注销，会话只读</s></div>
+              <div class="mt">上周</div>
+            </a>
+          </div>
+        </div>
+        <div class="tb hf">
+          <div><svg><use href="#ic-ocean"/></svg><span>海洋</span></div>
+          <div><svg><use href="#ic-discover"/></svg><span>发现</span></div>
+          <div class="on"><svg><use href="#ic-chats"/></svg><span>消息</span></div>
+          <div><svg><use href="#ic-moments"/></svg><span>动态</span></div>
+          <div><svg><use href="#ic-me"/></svg><span>我的</span></div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd><span class="ep">GET /api/chat/list</span><span class="ep">GET /api/chat/unread</span></dd>
+        <dt>实时</dt><dd>WS 推新消息时本地更新列表，不重拉——否则每条消息一次全量请求</dd>
+        <dt>补充</dt><dd>在线绿点需要 presence 能力：WS 连接态广播，或轮询 <code>LastActiveAt</code></dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>聊天窗</b><i>D2</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">
+          ←
+          <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+          <span>Aanya</span>
+          <span class="tg" style="color:#2FBF77">在线</span>
+          <span class="sp2" style="font-size:var(--t4)">⋯</span>
+        </div>
+        <div class="bd" style="gap:var(--s2);justify-content:flex-end">
+          <div class="sys">你们从一个瓶子开始聊天</div>
+          <div class="bub you">我昨天刚好在果阿看了日落 🌅</div>
+          <div class="bub me">真的吗！好羡慕<span class="rd2">已读</span></div>
+          <div class="bub you">下次一起去？</div>
+          <div class="bub me" style="padding:3px">
+            <div style="width:80px;height:56px;border-radius:var(--r2);background:rgba(255,255,255,.35)"></div>
+            <span class="rd2">已读</span>
+          </div>
+          <div class="gift">🎁 对方送来「小星星」<b style="color:var(--gold)">魅力 +10</b></div>
+        </div>
+        <div class="inp">
+          <span style="font-size:var(--t6)">📷</span>
+          <span style="font-size:var(--t6)">🎁</span>
+          <div class="fd">说点什么…</div>
+          <div class="snd">➤</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/chat/:id/messages</span><span class="ep">POST /api/chat/:id/send</span>
+          <span class="ep">POST /api/chat/:id/gift</span><span class="ep">wss://…/ws?token=</span>
+        </dd>
+        <dt>扣费</dt><dd>每条消息 <code>price_msg</code> 默认 <b>0（关闭）</b>；送礼走 <code>ItemOrder</code> + <code>User.Charm</code> 累加</dd>
+        <dt>⚠ 架构</dt><dd>chat Hub 是<b>单实例内存态</b>，多实例部署会丢消息。V1 若要水平扩容需改 Redis Pub/Sub</dd>
+        <dt>App 特有</dt><dd>前后台切换断连 / 指数退避重连 / 重连后拉增量补齐断线消息</dd>
+      </dl></div>
+    </div>
+
+  </div>
+</section>
+
+<hr>
+
+<!-- ========== 5-6. RELATION + MOMENT ========== -->
+<section>
+  <div class="sh">
+    <span class="no">§5–6</span><h2>关系与动态</h2><span class="en">Relation &amp; Moment</span>
+    <span class="vd keep">✅ 两个模块均零改动</span>
+  </div>
+  <p class="sub">
+    <code>model.Relation</code> 已含 <code>Type(like/viewed/friend)</code> / <code>StrengthScore(0~100)</code> /
+    <code>Stage</code> / <code>InteractionCount</code>，与清单里的 "interaction/relationship strength" 逐字对应。
+    动态三表（<code>Moment</code> / <code>MomentLike</code> / <code>MomentComment</code>）含图片、单层回复、礼物评论，全部现成。
+  </p>
+
+  <div class="grid">
+
+    <div class="scr">
+      <div class="cap"><b>关系</b><i>E1</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>我的关系</span></div>
+        <div class="bd">
+          <div class="chs" style="padding:0">
+            <span class="ch on">喜欢我的 12</span><span class="ch">我喜欢的 8</span><span class="ch">看过我</span>
+          </div>
+          <div class="rws">
+            <a>
+              <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+              <div class="tx2"><b>Aanya</b><s>互动 24 次 · 熟悉</s></div>
+              <div class="mt">
+                <div class="bar4"><i style="width:72%"></i></div>
+                <div style="margin-top:3px">72</div>
+              </div>
+            </a>
+            <a>
+              <div class="ring sm"><u>🧑</u></div>
+              <div class="tx2"><b>Rohan</b><s>互动 6 次 · 认识</s></div>
+              <div class="mt">
+                <div class="bar4"><i style="width:31%;background:var(--mist)"></i></div>
+                <div style="margin-top:3px">31</div>
+              </div>
+            </a>
+            <a>
+              <div class="ring sm"><u>👧</u></div>
+              <div class="tx2"><b>Meera</b><s>互动 1 次 · 陌生</s></div>
+              <div class="mt">
+                <div class="bar4"><i style="width:9%;background:var(--mist)"></i></div>
+                <div style="margin-top:3px">9</div>
+              </div>
+            </a>
+            <a>
+              <div class="ring sm"><u>🧔</u></div>
+              <div class="tx2"><b>Vikram</b><s>互动 11 次 · 认识</s></div>
+              <div class="mt">
+                <div class="bar4"><i style="width:48%;background:var(--mist)"></i></div>
+                <div style="margin-top:3px">48</div>
+              </div>
+            </a>
+            <a>
+              <div class="ring sm"><u>🙂</u></div>
+              <div class="tx2"><b>匿名瓶友</b><s>互动 3 次 · 陌生</s></div>
+              <div class="mt">
+                <div class="bar4"><i style="width:17%;background:var(--mist)"></i></div>
+                <div style="margin-top:3px">17</div>
+              </div>
+            </a>
+          </div>
+          <div class="warn" style="margin-top:var(--s1)">
+            <svg><use href="#ic-info"/></svg>
+            <div>强度分由 <b>互动次数 × 时间衰减</b> 算出，30 天不互动会回落。这条曲线的参数进 sysconfig</div>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/relation/stats</span><span class="ep">GET /api/relation/list</span>
+          <span class="ep">GET /api/relation/i-viewed</span><span class="ep">POST /api/relation/like</span>
+        </dd>
+        <dt>字段</dt><dd>进度条 = <code>StrengthScore</code>，文案 = <code>Stage</code>（stranger / 认识 / 熟悉）</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>动态广场</b><i>F1</i></div>
+      <div class="ph hf">
+        <div class="hdr slim">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="top">
+            <span class="ttl">动态</span>
+            <span class="coin" style="margin-left:auto"><i class="cn"></i>248</span>
+            <div class="ic" style="margin-left:0">✏️</div>
+          </div>
+        </div>
+        <div class="chs raise">
+          <span class="ch on">推荐</span><span class="ch pk">关注</span><span class="ch">同城</span>
+        </div>
+        <div class="bd" style="padding-top:18px">
+          <div class="mcd">
+            <div style="display:flex;align-items:center;gap:var(--s2)">
+              <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:var(--t3);font-weight:700">Aanya</div>
+                <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">2 小时前 · Mumbai</div>
+              </div>
+            </div>
+            <div class="txt3">果阿的日落，值得跑一趟。</div>
+            <div class="pics"><div></div><div></div><div></div></div>
+            <div class="bar5"><span>♡ 42</span><span>💬 8</span><span>🎁 送礼</span></div>
+          </div>
+          <div class="mcd">
+            <div style="display:flex;align-items:center;gap:var(--s2)">
+              <div class="ring sm"><u>🧑</u></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:var(--t3);font-weight:700">Rohan</div>
+                <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">5 小时前</div>
+              </div>
+            </div>
+            <div class="txt3">今天的 chai 格外好喝。</div>
+            <div class="bar5"><span>♡ 6</span><span>💬 1</span><span>🎁 送礼</span></div>
+          </div>
+          <div class="mcd">
+            <div style="display:flex;align-items:center;gap:var(--s2)">
+              <div class="ring sm"><u>👧</u></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:var(--t3);font-weight:700">Meera</div>
+                <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">昨天 · Pune</div>
+              </div>
+            </div>
+            <div class="txt3">有人扔了个瓶子问我在哪，我说在等雨停。</div>
+            <div class="pics"><div></div><div></div></div>
+            <div class="bar5"><span>♡ 128</span><span>💬 24</span><span>🎁 送礼</span></div>
+          </div>
+        </div>
+        <div class="tb hf">
+          <div><svg><use href="#ic-ocean"/></svg><span>海洋</span></div>
+          <div><svg><use href="#ic-discover"/></svg><span>发现</span></div>
+          <div><svg><use href="#ic-chats"/></svg><span>消息</span><em>3</em></div>
+          <div class="on"><svg><use href="#ic-moments"/></svg><span>动态</span></div>
+          <div><svg><use href="#ic-me"/></svg><span>我的</span></div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/moment/feed</span><span class="ep">POST /api/moment/:id/like</span>
+          <span class="ep">POST /api/moment</span>
+        </dd>
+        <dt>开关</dt><dd>受 <code>square_enabled</code> 控制，默认关——App 端需在后台打开</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>发动态</b><i>F2 · 原型补缺</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">✕<span>发动态</span><span class="sp2" style="color:var(--brand);font-weight:800">发布</span></div>
+        <div class="bd">
+          <div class="ta">
+            雨停了，楼下那只橘猫又回来了。
+            <div class="cnt">18 / 500</div>
+          </div>
+          <div class="g9">
+            <div><div class="ovl">✕</div></div>
+            <div><div class="ovl">✕</div></div>
+            <div class="empty">＋</div>
+          </div>
+          <div class="sec">地点</div>
+          <div class="lst">
+            <a><i><svg><use href="#ic-pin"/></svg></i>
+              <div style="flex:1;min-width:0"><div>Pune · Koregaon Park</div>
+                <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">当前定位，点击可改</div></div>
+              <span>›</span></a>
+          </div>
+          <div class="sec" style="margin-top:var(--s1)">谁可以看</div>
+          <div class="chs" style="padding:0">
+            <span class="ch on">公开</span><span class="ch">仅好友</span><span class="ch">仅自己</span>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>⚠ 这屏原本不存在</dt><dd>原型从 F1 动态广场直接跳到 F3 动态详情，<b>发动态屏是缺的</b>。
+          这是既有缺口，不是本次需求引入的——但「发动态可以选地址」需要它作宿主，所以一并补上</dd>
+        <dt>接口</dt><dd><span class="ep">POST /api/moment</span><span class="ep">POST /api/upload</span>
+          <span class="ep n">GET /geo/regeo</span></dd>
+        <dt>🆕 建表</dt><dd><code>Moment</code> 目前<b>一个位置字段都没有</b>（只有
+          <code>Content</code> / <code>Images</code> / <code>Visible</code> 等）。
+          要加 <code>City</code> / <code>Lat</code> / <code>Lng</code> / <code>PlaceName</code></dd>
+        <dt>地点</dt><dd>与 B2 完全同构：默认当前定位，点进 M1 改，可清除。两处共用一个组件</dd>
+        <dt>图片</dt><dd>≤9 张，走已有的 <code>Images</code> 字段（JSON 数组存 URL）。
+          上传链路复用 G1</dd>
+        <dt>开关</dt><dd>同 F1，受 <code>square_enabled</code> 控制</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>动态详情</b><i>F3</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>动态</span><span class="sp2" style="font-size:var(--t4)">⋯</span></div>
+        <div class="bd">
+          <div style="display:flex;align-items:center;gap:var(--s2)">
+            <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:var(--t3);font-weight:700">Aanya</div>
+              <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">2 小时前 · Mumbai</div>
+            </div>
+            <div class="jn gh">＋ 关注</div>
+          </div>
+          <div style="font-size:var(--t3);line-height:1.6">果阿的日落，值得跑一趟。</div>
+          <div style="aspect-ratio:16/10;border-radius:var(--r3);background:var(--sea)"></div>
+          <div class="bar5" style="margin:0"><span>♡ 42</span><span>💬 8</span><span>🎁 送礼</span></div>
+          <div class="sec">8 条评论</div>
+          <div class="rws">
+            <a>
+              <div class="ring sm"><u>🧑</u></div>
+              <div class="tx2"><b>Rohan</b><s style="color:var(--ink2)">下次带上我</s></div>
+            </a>
+            <a>
+              <div class="ring sm"><u>👧</u></div>
+              <div class="tx2"><b>Meera</b><s style="color:var(--gold)">🎁 送出「小星星」</s></div>
+            </a>
+          </div>
+        </div>
+        <div class="inp">
+          <div class="fd">写评论…</div>
+          <span style="font-size:var(--t6)">🎁</span>
+          <span style="font-size:var(--t6)">♡</span>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/moment/:id</span><span class="ep">GET /api/moment/:id/comments</span>
+          <span class="ep">POST /api/moment/:id/comment</span><span class="ep">POST /api/moment/:id/gift</span>
+        </dd>
+        <dt>限流</dt><dd>评论已挂 <code>commentLimit</code> 中间件</dd>
+        <dt>礼物</dt><dd><code>MomentComment.Type=gift</code> 时 content 存 JSON <code>{name,icon,coins}</code></dd>
+      </dl></div>
+    </div>
+
+  </div>
+</section>
+
+<hr>
+
+<!-- ========== 7-9. MEDIA / PUSH / SAFETY ========== -->
+<section>
+  <div class="sh">
+    <span class="no">§7–9</span><h2>媒体、推送、内容安全</h2><span class="en">Media · Push · Safety</span>
+    <span class="vd mod">🔨 改造</span><span class="vd add">🆕 新增</span>
+  </div>
+  <p class="sub">
+    这三块是 App 与小程序差异最大的地方：<code>upload</code> 落本地磁盘裸服务 <code>/static</code>；
+    <code>push</code> 是微信订阅消息专用，App 端完全不可用；图片审核依赖的
+    <code>mediaCheckAsync</code> 同样是小程序专用接口。
+  </p>
+
+  <div class="grid">
+
+    <div class="scr">
+      <div class="cap"><b>媒体上传</b><i>G1 · Media</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">✕<span>选择图片</span><span class="sp2">已选 3 / 9</span></div>
+        <div class="bd">
+          <div class="g9">
+            <div><span class="num">1</span></div>
+            <div><span class="num">2</span></div>
+            <div><span class="ovl">压缩中 62%</span></div>
+            <div class="empty">＋</div>
+          </div>
+          <div class="mcd">
+            <div style="display:flex;font-size:var(--t2);color:var(--ink2)">
+              <span>原图 4.2 MB</span><span style="margin-left:auto;color:var(--ink)">压缩后 480 KB</span>
+            </div>
+            <div class="bar4" style="width:100%;margin-top:var(--s2)"><i style="width:66%"></i></div>
+            <div style="display:flex;align-items:center;gap:var(--s2);margin-top:var(--s2);font-size:var(--t1)">
+              <span style="color:var(--ink3)">上传中 2 / 3</span>
+              <span style="margin-left:auto;color:var(--brand);font-weight:700">1 张失败，重试</span>
+            </div>
+          </div>
+        </div>
+        <div class="foot">
+          <div class="cta">完成</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd><span class="ep">POST /api/upload</span></dd>
+        <dt>⚠ 现状</dt><dd>落<b>本地磁盘</b>，<code>/static</code> 裸服务，无压缩、无缩略图、无 CDN。代码注释本身写着「生产切对象存储」</dd>
+        <dt>必做</dt><dd>对象存储 + CDN；服务端生成缩略图；客户端先压缩再传。V1 新增的 <b>video</b> 需要转码链路，是全新工作</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>通知中心</b><i>G2 · Notify</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>通知</span><span class="sp2" style="color:var(--brand);font-weight:700">全部已读</span></div>
+        <div class="bd">
+          <div class="btlc" style="display:flex;align-items:center;gap:var(--s3)">
+            <span style="font-size:var(--t6)">🔔</span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:var(--t3);font-weight:700">开启推送</div>
+              <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">有人回你的瓶子时第一时间知道</div>
+            </div>
+            <div class="jn">开启</div>
+          </div>
+          <div class="rws">
+            <a>
+              <div class="thumb" style="width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font-size:var(--t3)">💬</div>
+              <div class="tx2"><b>你的瓶子收到新回信</b><s>「我昨天刚好在果阿看了日落…」</s></div>
+              <div class="mt">2 分钟</div>
+            </a>
+            <a>
+              <div class="thumb" style="width:30px;height:30px;border-radius:50%;background:var(--coin);color:#5A3E00;font-size:var(--t3)">🎁</div>
+              <div class="tx2"><b>Meera 送了你一份礼物</b><s>小星星 · 魅力 +10</s></div>
+              <div class="mt">1 小时</div>
+            </a>
+            <a style="opacity:.55">
+              <div class="thumb" style="width:30px;height:30px;border-radius:50%;background:var(--sea);font-size:var(--t3)">♡</div>
+              <div class="tx2"><b>Rohan 赞了你的动态</b><s>果阿的日落，值得跑一趟。</s></div>
+              <div class="mt">昨天</div>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/notify/list</span><span class="ep">GET /api/notify/unread</span>
+          <span class="ep">POST /api/notify/read</span><span class="ep n">POST /api/push/device</span>
+        </dd>
+        <dt>站内信</dt><dd>✅ 完全复用</dd>
+        <dt>⚠ 推送</dt><dd>现有 <code>push</code> 绑死微信：模板 ID、<code>PushSubscription.OpenID</code>、access_token 同源机制，
+          <b>App 端全部作废</b>。FCM + APNs 需新建设备 token 表、证书管理、多端去重，并改造 <code>push/scheduler.go</code></dd>
+        <dt>时机</dt><dd>权限弹窗别放在启动时——放在用户首次发出瓶子之后，授权率高得多</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>举报与拉黑</b><i>G3 · Safety</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">
+          ←
+          <div class="ring sm"><u>👩</u></div>
+          <span>Aanya</span>
+          <span class="sp2" style="font-size:var(--t4)">⋯</span>
+        </div>
+        <div class="bd" style="gap:var(--s2)">
+          <div class="sys">你们从一个瓶子开始聊天</div>
+          <div class="bub you">我昨天刚好在果阿看了日落 🌅</div>
+          <div class="bub me">真的吗！好羡慕</div>
+          <div class="bub you">加我这个号，那边发你原图 👉 wx_8821</div>
+          <div class="bub you">便宜，帮你开会员</div>
+        </div>
+        <div class="mask" style="z-index:7"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <div style="font-size:var(--t3);font-weight:800;margin-bottom:var(--s3)">举报 Aanya</div>
+          <div style="display:flex;flex-direction:column;gap:var(--s2)">
+            <div class="pay"><span style="flex:1">色情或低俗内容</span><u></u></div>
+            <div class="pay on"><span style="flex:1">引流 / 广告 / 诈骗</span><u></u></div>
+            <div class="pay"><span style="flex:1">骚扰或人身攻击</span><u></u></div>
+            <div class="pay"><span style="flex:1">未成年人相关</span><u></u></div>
+          </div>
+          <div style="display:flex;gap:var(--s2);margin-top:var(--s3)">
+            <div class="cta gh" style="flex:1">仅拉黑</div>
+            <div class="cta dg" style="flex:1">举报并拉黑</div>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">POST /api/report</span><span class="ep">POST /api/block</span>
+          <span class="ep">GET /api/block/list</span><span class="ep">POST /api/block/remove</span>
+        </dd>
+        <dt>✅ 复用</dt><dd>举报表、拉黑表、本地敏感词库与防引流全部现成</dd>
+        <dt>⚠ 替换</dt><dd>图片审核的 <code>mediaCheckAsync</code> 是小程序专用，App 端需换第三方（OpenAI Moderation / Rekognition / 本地模型）</dd>
+        <dt>合规</dt><dd>举报入口必须出现在<b>聊天、瓶子详情、动态、用户主页</b>四处，缺一处都可能被拒审</dd>
+      </dl></div>
+    </div>
+
+  </div>
+</section>
+
+<hr>
+
+<!-- ========== 10-14. MONETIZATION ========== -->
+<section>
+  <div class="sh">
+    <span class="no">§10–14</span><h2>变现闭环</h2><span class="en">Wallet · Payment · Items · Quota · Rewards</span>
+    <span class="vd keep">✅ 钱包/道具/次数零改动</span><span class="vd money">💰 支付需新增</span>
+  </div>
+  <p class="sub">
+    五个变现模块里，<b>钱包、道具礼物、次数配额三个后端几乎零改动</b>——
+    <code>Wallet</code> + <code>WalletTxn</code>（credit/debit + scene + <code>BalanceAfter</code> 可对账）、
+    <code>Item</code> / <code>ItemOrder</code>、次数包全部现成，现有 5 个扣费点接上即可。
+    真正的新增只有支付渠道，而 <code>pay</code> 已有 <code>Driver</code> 接口抽象，<b>新增一个渠道只需实现一份 Driver</b>。
+  </p>
+
+  <div class="grid">
+
+    <div class="scr">
+      <div class="cap"><b>我的</b><i>H1</i></div>
+      <div class="ph hf">
+        <div class="hdr" style="padding-bottom:30px">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="top">
+            <div class="ring"><u>🐱</u><span class="dot"></span></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:var(--t5);font-weight:800;letter-spacing:-.01em">流浪的猫</div>
+              <div style="font-size:var(--t1);opacity:.85;margin-top:2px">ID 8842103 · 女 24</div>
+            </div>
+            <div class="ic" style="margin-left:0">⚙</div>
+          </div>
+        </div>
+        <div class="pcard">
+          <i class="cn" style="width:22px;height:22px"></i>
+          <div style="flex:1">
+            <div class="amt">248</div>
+            <div class="unit">金币余额</div>
+          </div>
+          <div class="jn pay">充值</div>
+        </div>
+        <div class="bd">
+          <div class="quad">
+            <div><b>📅</b>签到</div><div><b>🎁</b>道具</div>
+            <div><b>📺</b>看视频</div><div><b>💗</b>关系</div>
+          </div>
+          <div class="lst">
+            <a><i>💰</i>钱包流水<span>›</span></a>
+            <a><i>🍾</i>我的瓶子<span>28 个 ›</span></a>
+            <a><i><svg><use href="#ic-ban"/></svg></i>黑名单<span>›</span></a>
+            <a><i>⚙</i>设置<span>›</span></a>
+          </div>
+        </div>
+        <div class="tb hf">
+          <div><svg><use href="#ic-ocean"/></svg><span>海洋</span></div>
+          <div><svg><use href="#ic-discover"/></svg><span>发现</span></div>
+          <div><svg><use href="#ic-chats"/></svg><span>消息</span><em>3</em></div>
+          <div><svg><use href="#ic-moments"/></svg><span>动态</span></div>
+          <div class="on"><svg><use href="#ic-me"/></svg><span>我的</span></div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/user/profile</span><span class="ep">GET /api/wallet/balance</span>
+          <span class="ep">GET /api/mine-functions</span>
+        </dd>
+        <dt>配置</dt><dd>各入口显隐由 <code>/api/mine-functions</code> 远程下发，已有 14 个开关</dd>
+        <dt>合规</dt><dd>设置页内必须有<b>账号删除</b>入口（App Store 5.1.1(v)）</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>钱包流水</b><i>H2</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>钱包</span><span class="sp2" style="color:var(--brand);font-weight:700">去充值</span></div>
+        <div class="bd">
+          <div class="bal">
+            <div class="n">248</div>
+            <div class="l">当前金币余额</div>
+            <div class="r"><span>累计充值 <b>500</b></span><span>累计消费 <b>252</b></span></div>
+          </div>
+          <div class="chs" style="padding:0">
+            <span class="ch on">全部</span><span class="ch">收入</span><span class="ch">支出</span>
+          </div>
+          <div class="rws">
+            <a>
+              <div class="tx2"><b>解锁回信</b><s>unlock · 10-14 21:03</s></div>
+              <div class="mt" style="font-size:var(--t4);font-weight:800;color:var(--brand)">−2</div>
+            </a>
+            <a>
+              <div class="tx2"><b>开启聊天</b><s>chat · 10-14 20:41</s></div>
+              <div class="mt" style="font-size:var(--t4);font-weight:800;color:var(--brand)">−5</div>
+            </a>
+            <a>
+              <div class="tx2"><b>每日签到</b><s>checkin · 10-14 09:12</s></div>
+              <div class="mt" style="font-size:var(--t4);font-weight:800;color:#2FBF77">+10</div>
+            </a>
+            <a>
+              <div class="tx2"><b>充值 · 60 档</b><s>recharge · 10-13 19:28</s></div>
+              <div class="mt" style="font-size:var(--t4);font-weight:800;color:#2FBF77">+120</div>
+            </a>
+            <a>
+              <div class="tx2"><b>送出「小星星」</b><s>gift · 10-13 15:02</s></div>
+              <div class="mt" style="font-size:var(--t4);font-weight:800;color:var(--brand)">−10</div>
+            </a>
+            <a>
+              <div class="tx2"><b>看激励视频</b><s>ad_reward · 10-13 11:40</s></div>
+              <div class="mt" style="font-size:var(--t4);font-weight:800;color:#2FBF77">+5</div>
+            </a>
+            <a>
+              <div class="tx2"><b>捞瓶次数包 ×20</b><s>gift · 10-12 22:15</s></div>
+              <div class="mt" style="font-size:var(--t4);font-weight:800;color:var(--brand)">−20</div>
+            </a>
+          </div>
+          <div class="warn" style="margin-top:var(--s1)">
+            <svg><use href="#ic-info"/></svg>
+            <div><code>WalletTxn.BalanceAfter</code> 逐条记录变动后余额，流水天然可对账，不需要额外快照表</div>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd><span class="ep">GET /api/wallet/balance</span><span class="ep">GET /api/wallet/txns</span></dd>
+        <dt>scene</dt><dd>支出 <code>chat</code> / <code>unlock</code> / <code>msg</code> / <code>gift</code>；
+          收入 <code>recharge</code> / <code>reward</code> / <code>checkin</code> / <code>share</code> / <code>ad_reward</code></dd>
+        <dt>✅ 零改动</dt><dd><code>WalletTxn.BalanceAfter</code> 使流水天然可对账</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>充值 · 平台分叉</b><i>H3</i></div>
+      <div class="ph hf">
+        <div class="hdr" style="padding-bottom:var(--s3)">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="top">
+            <span style="font-size:var(--t4)">←</span>
+            <span class="ttl">充值金币</span>
+            <span class="coin" style="margin-left:auto"><i class="cn"></i>248</span>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="sec">选择档位</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)">
+            <div class="pkg"><b><i class="cn"></i>60</b><s>₹49</s></div>
+            <div class="pkg on">
+              <em>多送 20%</em>
+              <b><i class="cn"></i>300</b><s>₹199 <del>₹249</del></s>
+            </div>
+            <div class="pkg"><b><i class="cn"></i>680</b><s>₹449</s></div>
+            <div class="pkg"><b><i class="cn"></i>1980</b><s>₹1299</s></div>
+          </div>
+          <div class="sec" style="margin-top:var(--s1)">支付方式</div>
+          <div class="pay on">
+            <svg><use href="#ic-store"/></svg>
+            <div style="flex:1;min-width:0">
+              <b style="font-weight:700">Google Play</b>
+              <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">由 Play 结算，支持 UPI / 卡 / 话费</div>
+            </div>
+            <u></u>
+          </div>
+          <div class="warn">
+            <svg><use href="#ic-alert"/></svg>
+            <div>Android 只有<b>这一个</b>渠道。iOS 构建下本屏整屏替换为 <b>IAP 商品列表</b>（H3i）</div>
+          </div>
+        </div>
+        <div class="foot">
+          <div class="cta pay">支付 ₹199 · 得 <i class="cn"></i>300</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>🔁 本屏已改</dt><dd>原图 Android 侧画的是 <b>UPI（GPay / PhonePe / Paytm）+ Card / Netbanking</b>，
+          那是<b>违规的</b>：Google Play 要求应用内销售的数字商品（金币、次数包、礼物）
+          <b>必须走 Google Play Billing</b>，第三方渠道只允许用于实物和线下服务。
+          按原图做会被拒审，已上架会被下架</dd>
+        <dt>用户其实没损失</dt><dd>Play 结算内部<b>照样支持 UPI、卡、话费代扣</b>，印度用户熟悉的付款方式一个不少，
+          只是收银台换成了 Google 的。改动是合规层面的，不是体验降级</dd>
+        <dt>两端对称</dt><dd>改完之后 Android 和 iOS 都是<b>各自平台的应用内计费</b>。
+          原图那句「iOS 整屏替换」的措辞要跟着改——现在不是「一边正常一边特殊」，
+          而是两边各有各的商店</dd>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/pay/packages</span><span class="ep">GET /api/pay/orders</span>
+          <span class="ep n">POST /api/pay/play/verify</span><span class="ep n">POST /api/pay/iap/verify</span>
+        </dd>
+        <dt>⚠ 没有下单接口</dt><dd>Play / IAP 链路<b>不调 <code>POST /api/pay/order</code></b>：
+          订单是商店那边创建的，我们只在拿到票据后校验入账。
+          <code>pay.Driver</code> 的 <code>Prepay</code> / <code>VerifyCallback</code> 那套是给
+          微信/支付宝那种「服务端预下单 + 异步回调」用的，<b>套不上应用内计费</b>，
+          参照已有的 <code>pay/iap.go</code> 另起一条链路</dd>
+        <dt>⚠ 价格口径</dt><dd>价格以<b>后台 <code>CoinPackage</code> 为准</b>，Play Console 手工对齐。
+          服务端校验时会比对 Play 回传的实付金额，<b>不一致就拒绝入账并告警</b>，不照发金币。
+          多市场按 ISO 国家码拆价（<code>region</code> 维度），<code>*</code> 兜底</dd>
+        <dt>⚠ 币种</dt><dd><code>PayOrder.PriceFen</code> 是「分」，隐含人民币；
+          Play 返回的是各国本地货币。<b>必须补 <code>currency</code> 字段</b>，
+          否则后台 <code>overview.go</code> 按 <code>price_fen/100</code> 当元统计，跨币种会算出假数据</dd>
+        <dt>⚠ Platform 字段长度</dt><dd><code>PayOrder.Platform</code> 是 <code>size:8</code>，
+          塞 <code>google_play</code>（11 字符）会被<b>静默截断</b>。用短码 <code>gplay</code> 或把列加宽</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>礼物面板</b><i>H4</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">
+          ←
+          <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+          <span>Aanya</span>
+          <span class="sp2" style="font-size:var(--t4)">⋯</span>
+        </div>
+        <div class="bd" style="gap:var(--s2)">
+          <div class="sys">你们从一个瓶子开始聊天</div>
+          <div class="bub you">我昨天刚好在果阿看了日落 🌅</div>
+          <div class="bub me">真的吗！好羡慕</div>
+          <div class="bub you">下次一起去？</div>
+          <div class="bub me">那说定了，我请你吃海边的烤鱼</div>
+          <div class="bub you">成交 🤝</div>
+        </div>
+        <div class="mask" style="z-index:7"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <div style="display:flex;align-items:center;margin-bottom:var(--s3)">
+            <span style="font-size:var(--t3);font-weight:800">送出礼物</span>
+            <span class="coin ink" style="margin-left:auto"><i class="cn"></i>248</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2)">
+            <div class="gitem on"><b>⭐</b><s>10</s></div>
+            <div class="gitem"><b>🌹</b><s>20</s></div>
+            <div class="gitem"><b>🍰</b><s>66</s></div>
+            <div class="gitem"><b>💎</b><s>188</s></div>
+          </div>
+          <div style="display:flex;gap:var(--s2);margin-top:var(--s3)">
+            <div class="qty">×1 ▾</div>
+            <div class="cta pay" style="flex:1">送出 <i class="cn"></i>10</div>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/item/list</span><span class="ep">POST /api/item/buy</span>
+          <span class="ep">POST /api/chat/:id/gift</span><span class="ep">POST /api/moment/:id/gift</span>
+        </dd>
+        <dt>✅ 零改动</dt><dd>送礼三处（聊天 / 动态 / 用户主页）统一链路：扣币事务 + <code>ItemOrder(target)</code> +
+          <code>User.Charm</code> 累加 + 通知，已实现</dd>
+        <dt>注意</dt><dd>送礼后需调 <code>rank.InvalidateWeekCache</code> 刷新魅力周榜</dd>
+        <dt>数量</dt><dd>×1 / ×10 / ×99 连送是客单价杠杆，<code>ItemOrder</code> 需加 <code>Qty</code> 字段，
+          扣费与 <code>Charm</code> 累加按倍数走；连送要<b>合并成一条通知</b>，否则刷屏</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>次数用尽</b><i>H5 · Quota</i></div>
+      <div class="ph hf">
+        <div class="hdr" style="padding-bottom:var(--s3)">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="top">
+            <div class="ring sm"><u>🐱</u><span class="dot"></span></div>
+            <span class="coin" style="margin-left:auto"><i class="cn"></i>248</span>
+          </div>
+        </div>
+        <div class="scene">
+          <div class="sun"></div>
+          <div class="sea">
+            <div class="btl" style="left:22%;top:14%"><i></i></div>
+            <div class="btl" style="left:62%;top:6%"><i style="animation-delay:-2s"></i></div>
+          </div>
+        </div>
+        <div class="mask"></div>
+        <div class="modal">
+          <div class="x">✕</div>
+          <div class="head">
+            <div class="ico">
+              <svg viewBox="0 0 56 52" fill="none" stroke="currentColor" stroke-linecap="round">
+                <path d="M10 9h36l-4.6 25.4A14.2 14.2 0 0 1 28 46a14.2 14.2 0 0 1-13.4-11.6z" stroke-width="2.2"/>
+                <path d="M19 9l2.6 33M28 9v36.5M37 9l-2.6 33" stroke-width="1.3" opacity=".5"/>
+                <path d="M12.2 21h31.6M14.8 32.5h26.4" stroke-width="1.3" opacity=".5"/>
+              </svg>
+            </div>
+            <h4>今天的 8 次捞完了</h4>
+            <p>明天 00:00 自动恢复。<br>想现在继续，有两个办法。</p>
+          </div>
+          <div class="body">
+            <div class="offer">
+              <span style="font-size:var(--t6)">🎣</span>
+              <div style="min-width:0">
+                <b>捞瓶次数包 ×20</b>
+                <s>立即到账，不过期</s>
+              </div>
+              <span class="pz"><i class="cn"></i>20</span>
+            </div>
+            <div class="cta pay">用 <i class="cn"></i>20 购买</div>
+            <div class="cta gh">📺 看段视频，免费 +1 次</div>
+          </div>
+        </div>
+        <div class="tb hf">
+          <div class="on"><svg><use href="#ic-ocean"/></svg><span>海洋</span></div>
+          <div><svg><use href="#ic-discover"/></svg><span>发现</span></div>
+          <div><svg><use href="#ic-chats"/></svg><span>消息</span><em>3</em></div>
+          <div><svg><use href="#ic-moments"/></svg><span>动态</span></div>
+          <div><svg><use href="#ic-me"/></svg><span>我的</span></div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/bottle/quota</span><span class="ep">POST /api/item/buy</span>
+          <span class="ep">POST /api/ad/reward</span>
+        </dd>
+        <dt>配置</dt><dd><code>quota_throw_pack</code> 默认 10、<code>quota_scoop_pack</code> 默认 20，scene=<code>gift</code></dd>
+        <dt>错误码</dt><dd>后端返回 <code>3003 CodeQuotaExceeded</code>，前端拦截后弹本屏，<b>不要弹成通用错误提示</b>——这是转化入口</dd>
+        <dt>可用性</dt><dd>弹窗<b>必须可关闭</b>（右上角 ✕ + 点遮罩）。余额不足时「用 20 购买」直接跳 H3 充值并带回跳参数，不要只弹「余额不足」</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>签到与奖励</b><i>H6 · Rewards</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>每日奖励</span><span class="sp2">已连签 4 天</span></div>
+        <div class="bd">
+          <div class="btlc">
+            <div style="display:flex;align-items:baseline">
+              <span style="font-size:var(--t3);font-weight:800">连续签到 4 天</span>
+              <span style="margin-left:auto;font-size:var(--t1);color:var(--ink3)">第 7 天有大奖</span>
+            </div>
+            <div class="ck" style="margin-top:var(--s3)">
+              <div class="ok">✓</div><div class="ok">✓</div><div class="ok">✓</div><div class="ok">✓</div>
+              <div class="now">+20</div><div class="soon">6</div><div class="soon">7</div>
+            </div>
+            <div class="cta" style="margin-top:var(--s3)">签到领 <i class="cn"></i>20</div>
+          </div>
+          <div class="sec">还能这样赚</div>
+          <div class="lst">
+            <a><i>📺</i>
+              <div style="flex:1;min-width:0">
+                <div>看激励视频</div>
+                <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">今天 2 / 5 次 · 每次 +5</div>
+              </div>
+              <span>去看 ›</span>
+            </a>
+            <a><i>🔗</i>
+              <div style="flex:1;min-width:0">
+                <div>邀请好友</div>
+                <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">好友注册后，双方各得 50</div>
+              </div>
+              <span>邀请 ›</span>
+            </a>
+            <a><i>✨</i>
+              <div style="flex:1;min-width:0">
+                <div>发一条动态</div>
+                <div style="font-size:var(--t1);font-weight:400;color:var(--ink3);margin-top:1px">每天第一条 +5</div>
+              </div>
+              <span>去发 ›</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd>
+          <span class="ep">GET /api/checkin/status</span><span class="ep">POST /api/checkin</span>
+          <span class="ep">POST /api/checkin/makeup</span><span class="ep">POST /api/ad/reward</span>
+          <span class="ep">POST /api/share/reward</span>
+        </dd>
+        <dt>✅ 复用</dt><dd><code>CheckinLog</code> 唯一索引 <code>(user_id, date)</code> 保证一人一天一次，资金可对账</dd>
+        <dt>⚠ 替换</dt><dd>现有 <code>ad</code> 模块是<b>微信流量主</b>，16 个广告位配置在 App 端作废，需换 AdMob 并重做配置体系</dd>
+        <dt>反作弊</dt><dd>邀请奖励是薅羊毛重灾区，属模块 15 范畴——设备指纹 + 同 IP 限制 + 新用户留存门槛</dd>
+      </dl></div>
+    </div>
+
+  </div>
+</section>
+
+<hr>
+
+<!-- ========== 11+ 支付全链路 ========== -->
+<section>
+  <div class="sh">
+    <span class="no">§11⁺</span><h2>支付全链路</h2><span class="en">Payment flows</span>
+    <span class="vd money">💰 双端分叉</span>
+  </div>
+  <p class="sub">
+    <code>H3</code> 只画了「选档位」这一步，但<b>钱从用户口袋到账户余额之间还有四个状态</b>，
+    每一个都会产生客诉：跳出去付还没回来、扣了款没到账、付完不知道该去哪、想查上个月付了多少。
+    这几屏没有任何新的业务逻辑，却直接决定<b>支付成功率与重复支付率</b>。
+    iOS 与 Android 在这段路上几乎处处不同，所以全部**双端分开画**。
+  </p>
+
+  <div class="grid">
+
+    <div class="scr">
+      <div class="cap"><b>IAP 商品列表</b><i>H3i · iOS 整屏替换</i></div>
+      <div class="ph hf">
+        <div class="hdr" style="padding-bottom:var(--s3)">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="top">
+            <span style="font-size:var(--t4)">←</span>
+            <span class="ttl">充值金币</span>
+            <span class="coin" style="margin-left:auto"><i class="cn"></i>248</span>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="sec">App Store 商品</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)">
+            <div class="pkg"><b><i class="cn"></i>60</b><s>₹59</s></div>
+            <div class="pkg on">
+              <em>多送 20%</em>
+              <b><i class="cn"></i>300</b><s>₹249</s>
+            </div>
+            <div class="pkg"><b><i class="cn"></i>680</b><s>₹549</s></div>
+            <div class="pkg"><b><i class="cn"></i>1980</b><s>₹1599</s></div>
+          </div>
+          <div class="sec" style="margin-top:var(--s1)">支付方式</div>
+          <div class="pay on">
+            <span style="font-size:var(--t5)">🍎</span>
+            <div style="flex:1;min-width:0">
+              <b style="font-weight:700">App Store</b>
+              <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">
+                Apple ID 余额 / 已绑定的支付方式
+              </div>
+            </div>
+            <u></u>
+          </div>
+          <div class="warn">
+            <span>💳</span>
+            <div>同样 300 币，Android 卖 <b>₹199</b>、iOS 卖 <b>₹249</b>——
+              苹果 30% 抽成只能在定价里吃掉，两端档位必须分开配</div>
+          </div>
+        </div>
+        <div class="foot">
+          <div class="cta pay">通过 App Store 购买 ₹249</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>为什么整屏换掉</dt><dd>App Store 3.1.1：App 内消费的数字商品必须走 IAP。
+          UPI / Card 出现在 iOS 构建里会被直接拒审；引导去站外网页充值同样违规（3.1.3 / 4.2）。
+          <b>这条没有绕过路径</b></dd>
+        <dt>档位来源</dt><dd><b>不是</b> <code>GET /api/pay/packages</code>，而是 StoreKit 拉回的商品列表
+          （商品 ID 在 App Store Connect 配置）。价格必须用商店返回的<b>本地化字符串</b>，
+          不能自己拼 <code>₹</code> —— 用户所在区可能是 $、€</dd>
+        <dt>接口</dt><dd><span class="ep n">POST /api/pay/iap/verify</span></dd>
+        <dt>⚠ 未决</dt><dd>档位分叉会让「多送 20%」这类运营活动在两端不同步，
+          后台配置要按 <code>PayOrder.Platform</code> 拆开维护</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>支付处理中</b><i>H7a · Android</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">✕<span>支付</span></div>
+        <div class="pst">
+          <div class="spin"></div>
+          <h5>Play 已扣款</h5>
+          <p>正在为你的账户到账<br>通常几秒内完成，请不要关闭 App</p>
+          <div class="oid" style="margin-top:var(--s3)">GPA.3382-1094-7752-51284 · ₹199</div>
+        </div>
+        <div class="foot">
+          <div class="cta gh">遇到问题？</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>🔁 本屏已改</dt><dd>原图画的是「正在打开 GPay / 完成支付后回到这里」+
+          「取消 / 我已完成支付」两个按钮——那是<b>跳出去付再跳回来</b>的第三方渠道流程。
+          换成 Play Billing 后<b>不存在跳出去这一段</b>：结算浮层由 Play 在 App 内弹出，
+          回调是同步拿到的，所以「我已完成支付」这个按钮<b>没有意义，删掉</b></dd>
+        <dt>真正的四步</dt><dd>① <code>launchBillingFlow</code> 弹 Play 浮层 →
+          ② 拿到 <code>purchaseToken</code> → ③ 发给
+          <span class="ep n">POST /api/pay/play/verify</span>，服务端用<b>服务账号</b>调
+          Play Developer API 核实 → ④ 服务端入账成功后，客户端才
+          <code>consumeAsync</code>（金币是消耗型商品）</dd>
+        <dt>⚠ 顺序不能反</dt><dd><b>服务端校验成功前，绝不能 consume / acknowledge。</b>
+          提前确认 = Google 认为已交付，钱扣了、币没到，且这笔交易<b>再也查不回来</b>。
+          这和 iOS 那边「必须等服务端返回成功才 <code>finish</code>」是同一类坑，
+          <code>pay/iap.go:175</code> 的注释写过一次了</dd>
+        <dt>⚠ 三天不确认会自动退款</dt><dd>Play 规定购买后 <b>3 天内未 acknowledge 就自动退款</b>。
+          所以服务端校验失败时不能一直挂着，要有兜底重试，超时就主动放弃并让用户走 H9</dd>
+        <dt>幂等</dt><dd>以 Play 的 <code>orderId</code> 为幂等键。App 冷启动时
+          <code>queryPurchasesAsync</code> 会把未 consume 的交易<b>重新推上来</b>，
+          不幂等就会一笔钱发两次币——与 Apple 那边 <code>transactionId</code> 的处理一致</dd>
+        <dt>接口</dt><dd><span class="ep n">POST /api/pay/play/verify</span><span class="ep">GET /api/pay/orders</span></dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>票据校验中</b><i>H7b · iOS</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">✕<span>支付</span></div>
+        <div class="pst">
+          <div class="spin"></div>
+          <h5>App Store 已扣款</h5>
+          <p>正在为你的账户到账<br>通常几秒内完成</p>
+          <div class="oid" style="margin-top:var(--s3)">2000000912345678</div>
+        </div>
+        <div class="foot">
+          <div class="cta gh">遇到问题？</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>和 Android 不同在哪</dt><dd>iOS 没有「跳出去」这一步——支付弹窗是系统的，
+          扣款瞬间完成。<b>这屏等的不是支付，是服务端向苹果校验票据</b></dd>
+        <dt>⚠ finish 时机</dt><dd>StoreKit 的 transaction <b>必须等服务端确认入账后才 finish</b>。
+          提前 finish = 苹果认为交付完成，用户钱扣了币没到，且<b>再也拿不到这笔交易</b></dd>
+        <dt>冷启动重放</dt><dd>没 finish 的交易会在下次启动时重新推给 App，
+          所以入账接口必须<b>按 transaction_id 幂等</b>，否则一笔钱发两次币</dd>
+        <dt>接口</dt><dd><span class="ep n">POST /api/pay/iap/verify</span></dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>支付成功</b><i>H8 · 双端一致</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">✕<span>支付成功</span></div>
+        <div class="pst">
+          <div class="rng ok">✓</div>
+          <div class="amt2"><i class="cn" style="width:20px;height:20px"></i> +300</div>
+          <h5 style="margin-top:var(--s2)">到账了</h5>
+          <p>余额 248 → <b style="color:var(--ink)">548</b></p>
+        </div>
+        <div class="foot">
+          <div class="cta pay">继续送出「限定礼盒」</div>
+          <div class="cta gh" style="margin-top:var(--s2)">查看充值记录</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>主按钮不是「完成」</dt><dd>用户来充值<b>从来不是为了充值本身</b>，
+          而是刚才有件事没做成（送礼 / 解锁 / 买次数包）。
+          主按钮直接把那件事做完，这一跳就是 <code>Z4</code> 说的「回跳原场景」</dd>
+        <dt>为什么给余额变化</dt><dd>「248 → 548」比单说「充值成功」更能消除疑虑，
+          尤其在有赠送币的档位上，用户要确认赠的那部分真的到了</dd>
+        <dt>接口</dt><dd><span class="ep">GET /api/wallet/balance</span><span class="ep">GET /api/wallet/txns</span></dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>已扣款未到账</b><i>H9 · 掉单</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>支付</span></div>
+        <div class="pst">
+          <div class="rng err">!</div>
+          <h5>钱已扣，到账还在路上</h5>
+          <p>商店已确认扣款，我们正在核对<br>通常 5 分钟内自动完成</p>
+          <div class="oid" style="margin-top:var(--s3)">GPA.3382-1094-7752-51284 · ₹199 · 09:31</div>
+        </div>
+        <div class="bd" style="flex:0 0 auto">
+          <div class="warn">
+            <svg><use href="#ic-alert"/></svg>
+            <div><b>不要重复支付。</b>这笔订单还在处理，再付一次会产生第二笔扣款</div>
+          </div>
+        </div>
+        <div class="foot">
+          <div class="cta">重新检查</div>
+          <div class="cta gh" style="margin-top:var(--s2)">联系客服</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>三种失败要分开</dt><dd><b>用户取消</b> → 静默退回充值页，不报错；
+          <b>渠道失败</b> → 可直接重试，钱没扣；
+          <b>已扣款未到账</b> → 就是本屏，<b>唯一一种绝不能让用户重试支付的情况</b></dd>
+        <dt>🆕 第四种：Play 的 PENDING</dt><dd>印度的 UPI 延迟付款、话费代扣、现金支付在 Play Billing 里
+          会返回 <code>PENDING</code> 状态——这是<b>合法的中间态，不是掉单</b>，可能要等几小时甚至几天。
+          文案必须和真掉单分开：PENDING 说「等待付款确认，完成后自动到账」，
+          <b>不要说「正在核对」</b>，那会让用户以为系统出错而反复重试或投诉</dd>
+        <dt>⚠ PENDING 不能发货</dt><dd><code>PENDING</code> 期间<b>绝不能入账金币</b>，
+          也不能 acknowledge。要等状态转成 <code>PURCHASED</code> 才发币——
+          靠客户端 <code>queryPurchasesAsync</code> 重放 + 服务端复查，本期不接 RTDN（见 H11）。
+          提前发币而用户最终没付，就是白送</dd>
+        <dt>订单号要能复制</dt><dd>它是用户找客服时唯一能说清「我付的是哪一笔」的东西，
+          所以等宽显示、可长按复制，不要藏进二级页。Play 侧用 <code>orderId</code>（<code>GPA.</code> 开头），
+          iOS 侧用 <code>transactionId</code></dd>
+        <dt>自动补单</dt><dd>Android 靠 <code>queryPurchasesAsync</code> 在冷启动时重放未 consume 的交易；
+          iOS 靠未 finish 的 transaction 重放。两端都不依赖用户手动点「重新检查」</dd>
+        <dt>接口</dt><dd><span class="ep">GET /api/pay/orders</span>
+          <span class="ep n">POST /api/pay/play/verify</span><span class="ep n">POST /api/pay/iap/verify</span></dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>充值记录</b><i>H10</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">
+          ←<span>充值记录</span>
+          <span class="sp2" style="color:var(--brand);font-weight:700">恢复购买</span>
+        </div>
+        <div class="bd">
+          <div class="ordr">
+            <a>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:var(--t3);font-weight:700"><i class="cn"></i> 300 金币</div>
+                <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">UPI · 今天 09:31</div>
+              </div>
+              <div style="text-align:right">
+                <span class="stt ok">已到账</span>
+                <div style="font-size:var(--t2);font-weight:800;margin-top:3px">₹199</div>
+              </div>
+            </a>
+            <a>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:var(--t3);font-weight:700"><i class="cn"></i> 60 金币</div>
+                <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">UPI · 今天 09:28</div>
+              </div>
+              <div style="text-align:right">
+                <span class="stt ing">处理中</span>
+                <div style="font-size:var(--t2);font-weight:800;margin-top:3px">₹49</div>
+              </div>
+            </a>
+            <a>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:var(--t3);font-weight:700"><i class="cn"></i> 680 金币</div>
+                <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">Card · 昨天 21:04</div>
+              </div>
+              <div style="text-align:right">
+                <span class="stt err">支付失败</span>
+                <div style="font-size:var(--t2);font-weight:800;margin-top:3px">₹449</div>
+              </div>
+            </a>
+            <a style="opacity:.6">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:var(--t3);font-weight:700"><i class="cn"></i> 300 金币</div>
+                <div style="font-size:var(--t1);color:var(--ink3);margin-top:1px">App Store · 10-12</div>
+              </div>
+              <div style="text-align:right">
+                <span class="stt rfd">已退款</span>
+                <div style="font-size:var(--t2);font-weight:800;margin-top:3px">₹249</div>
+              </div>
+            </a>
+          </div>
+          <div class="warn" style="margin-top:var(--s1)">
+            <svg><use href="#ic-info"/></svg>
+            <div>处理中的订单点一下可<b>主动查单</b>；超过 24 小时仍未到账的，走客服人工补单</div>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd><span class="ep">GET /api/pay/orders</span></dd>
+        <dt>「恢复购买」</dt><dd>金币是<b>消耗型</b>商品，苹果不强制提供恢复入口，
+          但它是掉单时用户能自救的唯一按钮：重新拉取未 finish 的 transaction 交服务端校验。
+          <b>Android 侧同样需要</b>（查渠道未完成订单），文案统一叫「恢复购买」</dd>
+        <dt>⚠ 已退款</dt><dd>用户直接向苹果申请退款时 App 不会收到任何同步通知，
+          必须靠 <b>App Store Server Notifications</b>（见下方补充）扣回已发放的金币，
+          否则等于白送——这是印度市场退款率高的类目里最容易被薅的口子</dd>
+      </dl></div>
+    </div>
+
+  </div>
+
+  <div class="co">
+    <b>这 6 屏一个新业务逻辑都没有，全是状态的可见化。</b>
+    但支付链路的客诉集中在两处：<b>「我付了钱没到账」</b>和<b>「我不小心付了两次」</b>。
+    前者需要 H9 + H10 让用户自己查到订单状态，后者需要 H7a 在跳转期间明确告诉用户「交易还在进行」。
+    少了这几屏，省下的前端工时会以十倍的客服成本还回来。
+  </div>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>维度</th><th>Android</th><th>iOS</th></tr></thead>
+      <tbody>
+        <tr><td><b>渠道</b></td><td>UPI / Card / Netbanking（聚合支付）</td><td><b>仅 App Store IAP</b>，无选择项</td></tr>
+        <tr><td><b>档位来源</b></td><td><code>GET /api/pay/packages</code>，后端可随时改</td><td>StoreKit 商品列表，商品 ID 在 App Store Connect 配</td></tr>
+        <tr><td><b>价格</b></td><td>自由定价，₹199 = 300 币</td><td>只能选苹果固定价格档，改价要审核；₹249 = 300 币</td></tr>
+        <tr><td><b>抽成</b></td><td>渠道费约 2%</td><td><b>30%</b>（小企业计划 15%）</td></tr>
+        <tr><td><b>凭证</b></td><td>渠道异步回调 + 签名校验</td><td>StoreKit Transaction / receipt，服务端向苹果校验</td></tr>
+        <tr><td><b>掉单</b></td><td>定时对账 + 主动查单补发</td><td>未 finish 的交易冷启动重放，入账须按 transaction_id 幂等</td></tr>
+        <tr><td><b>退款</b></td><td>商户后台操作，自己可控</td><td>用户直接找苹果，<b>只能靠服务端通知感知</b></td></tr>
+        <tr><td><b>外部引导</b></td><td>允许</td><td><b>禁止</b>——不能出现任何「去网页更便宜」的暗示</td></tr>
+        <tr><td><b>测试</b></td><td>渠道沙箱账号</td><td>Sandbox 测试员 + TestFlight，与生产环境完全隔离</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="co">
+    <b>iOS 的退款必须靠服务端通知感知，这是 §18 里
+    <span class="ep n">POST /api/pay/iap/notify</span> 存在的唯一理由。</b>
+    用户直接向苹果申请退款时，App 端不会收到任何同步信号——
+    苹果通过 <b>App Store Server Notifications V2</b> 推送到服务端回调地址。
+    没有这个端点，退款发生时金币已经发出去甚至花掉，账永远对不平。
+    实现上：验签 JWS，按 <code>REFUND</code> / <code>REVOKE</code> 类型扣回余额，
+    余额不足则记负账并冻结账号交人工处理——这是印度这类退款率偏高的市场里最容易被薅的口子。
+  </div>
+</section>
+
+<hr>
+
+<!-- ========== 15-17 ========== -->
+<section>
+  <div class="sh">
+    <span class="no">§15–17</span><h2>无 App 界面的三个模块</h2><span class="en">Fraud · Admin · Analytics</span>
+  </div>
+  <p class="sub">这三个模块不产出 App 端界面，但都需要技术设计，不能因为「没有原型图」就漏排期。</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>模块</th><th>现状</th><th>V1 工作</th><th>落点</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>15 Fraud Protection</b></td>
+          <td>无统一模块，只有零散频控中间件（<code>throwLimit</code> / <code>replyLimit</code> / <code>commentLimit</code>）</td>
+          <td>支付欺诈、金币异常流水告警、邀请奖励反薅。设备指纹 + 行为频次 + 规则引擎</td>
+          <td>🆕 新包 <code>internal/risk</code></td>
+        </tr>
+        <tr>
+          <td><b>16 Admin</b></td>
+          <td>22 个视图、166 项配置白名单齐备</td>
+          <td>加 OTP 日志、印度支付订单、FCM 推送记录、反作弊规则四个视图</td>
+          <td>✅ <code>internal/admin</code> 扩展。新 key <b>必须</b>同时写 <code>sysconfig.defaults</code> 与 <code>admin/meta.go</code> 白名单</td>
+        </tr>
+        <tr>
+          <td><b>17 Analytics</b></td>
+          <td><code>admin/overview.go</code> 有 KPI 聚合，<b>无事件埋点体系</b></td>
+          <td>signup / bottle / match / chat / purchase / retention 事件上报</td>
+          <td>🔨 自建事件表，或接 Firebase Analytics</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="co">
+    <b>Analytics 有个隐蔽的坑：</b>现有 KPI 全部按<b>东八区</b>口径计算（<code>admin/overview.go</code> 的 <code>periodStarts</code>，
+    项目硬约束第 4 条明确禁止用 <code>time.Now().Truncate(24h)</code>）。
+    若接第三方分析，其默认时区是 UTC 或用户本地时区，<b>两套数据的「今日」不是同一天</b>，对账时会得出互相矛盾的结论。
+    做印度市场还要再叠一层 IST（UTC+5:30，带半小时偏移）。<b>时区口径必须在埋点前统一定义</b>。
+  </div>
+</section>
+
+<hr>
+
+<!-- ========== 汇总 ========== -->
+<section>
+  <div class="sh"><span class="no">§18</span><h2>新增接口汇总</h2><span class="en">New endpoints</span></div>
+  <p class="sub">全量 V1 需要新增的后端接口只有 10 个。其余 60+ 个接口全部现成，直接接即可。</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>方法</th><th>路径</th><th>模块</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>POST</td><td><code>/api/auth/otp/send</code></td><td>1</td><td>发送短信 / 邮件验证码（phone 与 email 二选一）+ <b>purpose 绑定用途</b>，Redis 存码 + 三维频控</td></tr>
+        <tr><td>POST</td><td><code>/api/auth/otp/verify</code></td><td>1</td><td>手机号免密登录：校验并登录/注册</td></tr>
+        <tr><td>POST</td><td><code>/api/auth/register</code></td><td>1</td><td>验证码 + 密码一次建号，bcrypt 存 hash</td></tr>
+        <tr><td>POST</td><td><code>/api/auth/login/password</code></td><td>1</td><td>日常登录。账号不存在与密码错误返回同一句，防枚举</td></tr>
+        <tr><td>POST</td><td><code>/api/auth/password/reset</code></td><td>1</td><td>找回密码；也是老账号补设密码的唯一入口，成功后直接签发令牌</td></tr>
+        <tr><td>POST</td><td><code>/api/auth/google</code></td><td>1</td><td>校验 Google ID Token</td></tr>
+        <tr><td>POST</td><td><code>/api/auth/apple</code></td><td>1</td><td>校验 Apple identityToken（有 Google 则强制）</td></tr>
+        <tr><td>DELETE</td><td><code>/api/user/account</code></td><td>1</td><td>账号删除：匿名化 + 释放标识，单事务</td></tr>
+        <tr><td>GET</td><td><code>/api/discover/users</code></td><td>3</td><td>按语言/兴趣/距离推荐人</td></tr>
+        <tr><td>POST</td><td><code>/api/push/device</code></td><td>8</td><td>注册 FCM / APNs 设备 token</td></tr>
+        <tr><td>POST</td><td><code>/api/pay/iap/verify</code></td><td>11</td><td>iOS 票据校验 + 入账（按 transaction_id 幂等）</td></tr>
+        <tr><td>POST</td><td><code>/api/pay/iap/notify</code></td><td>11</td><td>接收 App Store Server Notifications V2，退款/撤销时扣回金币</td></tr>
+        <tr><td>GET</td><td><code>/api/chat/presence</code></td><td>4</td><td>在线状态（或改由 WS 广播，二选一）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="co">
+    <b>所有后端改动必须是加法。</b>小程序与 App 共用同一套 Go 服务，任何对现有接口的行为修改都会波及线上小程序。
+    新增字段走 GORM AutoMigrate 自动加列；<code>User.DeletedAt</code> 必须用 <code>*time.Time</code> 而非
+    <code>gorm.DeletedAt</code>——后者会开启全局软删除，静默改变现有<b>所有</b>查询的行为。
+  </div>
+</section>
+
+<hr>
+
+
+<section>
+  <div class="sh"><span class="no">§19</span><h2>技术侧待决</h2><span class="en">Open technical questions</span></div>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>#</th><th>问题</th><th>为什么现在就要定</th></tr></thead>
+      <tbody>
+        <tr><td>T1</td><td>App 与小程序是否共用同一 <code>tenant_id</code></td>
+          <td>共用则 App 冷启动就能捞到小程序用户的瓶子；隔离则是空池子，需要机器人填充。<b>影响 §2 全部内容策略</b></td></tr>
+        <tr><td>T2</td><td>chat Hub 是否改 Redis Pub/Sub</td>
+          <td>不改则后端只能单实例部署，直接决定 V1 的容量上限与发布方式</td></tr>
+        <tr><td>T3</td><td>对象存储与 CDN 选型</td>
+          <td>阻塞 §7；且印度用户拉国内磁盘图片的体验问题无法靠前端优化绕开</td></tr>
+        <tr><td>T4</td><td>地理检索方案：lat/lng 索引 还是 geohash</td>
+          <td>阻塞 §3 的距离筛选；用户量上来后直接 <code>WHERE</code> 算距离会全表扫</td></tr>
+        <tr><td>T5</td><td>Analytics 自建还是接三方</td>
+          <td>决定东八区 / UTC / IST 的时区口径，埋点后再改要洗数据</td></tr>
+        <tr><td>T6</td><td>图片审核换哪家</td>
+          <td>阻塞 §9；<code>mediaCheckAsync</code> 在 App 端直接失效，不是「降级」而是「没有」</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr>
+
+<!-- ========== 20. STATES ========== -->
+<section>
+  <div class="sh">
+    <span class="no">§20</span><h2>状态兜底</h2><span class="en">Empty · Loading · Failure</span>
+    <span class="vd add">🆕 前端专属</span>
+  </div>
+  <p class="sub">
+    前面 33 屏画的都是<b>理想数据</b>。真实 App 里这三类状态占的比重很大，且后端<b>不会为它们提供任何接口</b>——
+    全是前端的活。漏掉它们的后果是线上白屏、无限转圈、用户不知道自己做错了什么。
+    这里只画有决策价值的 8 个，其余按同一套模板推。
+  </p>
+
+  <div class="grid">
+
+    <div class="scr">
+      <div class="cap"><b>退款已撤销</b><i>H11 · Voided</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">←<span>钱包</span></div>
+        <div class="bd">
+          <div class="bal">
+            <div class="n" style="color:var(--warn)">−12</div>
+            <div class="l">当前金币余额</div>
+            <div class="r"><span>累计充值 <b>300</b></span><span>累计消费 <b>312</b></span></div>
+          </div>
+          <div class="warn">
+            <svg><use href="#ic-refund"/></svg>
+            <div><b>有一笔充值被退款了</b><br>
+              Google Play 于 10-15 退还了 ₹199，对应的 <b>300 金币</b>已从账户扣回。
+              由于其中一部分已经消费，余额出现负数</div>
+          </div>
+          <div class="sec">相关流水</div>
+          <div class="rws">
+            <a>
+              <div class="tx2"><b>充值退款 · 300 档</b><s>refund · 10-15 11:20</s></div>
+              <div class="mt" style="font-size:var(--t4);font-weight:800;color:var(--brand)">−300</div>
+            </a>
+            <a>
+              <div class="tx2"><b>充值 · 300 档</b><s>recharge · 10-13 19:28</s></div>
+              <div class="mt" style="font-size:var(--t4);font-weight:800;color:#2FBF77">+300</div>
+            </a>
+          </div>
+          <div class="warn" style="margin-top:var(--s1)">
+            <svg><use href="#ic-lock"/></svg>
+            <div>余额为负时，<b>消费类功能暂停</b>（扔瓶 / 解锁 / 送礼），充值仍然可用。
+              补足后自动恢复</div>
+          </div>
+        </div>
+        <div class="foot">
+          <div class="cta">去充值</div>
+          <div class="cta gh">这不是我操作的</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>为什么必须有这屏</dt><dd>用户直接向 Google 申请退款时，App 端<b>收不到任何同步信号</b>——
+          服务端主动查是感知退款的唯一途径（<code>pay/iap.go:295</code> 对 Apple 侧写过同一句话）。
+          后端 <code>revokeIAP</code> 的注释明确说了「<b>允许扣成负数</b>，币可能已经花掉，
+          装作没发生只会让账永远对不平」。那么<b>用户界面就必须有个说法</b>，
+          否则用户打开钱包看到负数余额，只会认为是系统 bug 并直接投诉</dd>
+        <dt>接口</dt><dd><span class="ep">GET /api/wallet/txns</span>
+          （退款由服务端定时任务发现，无对外接口）</dd>
+        <dt>⚠ 不要想当然用 RTDN</dt><dd>RTDN（Pub/Sub 实时通知）主要推<b>订阅</b>事件，
+          <b>一次性商品的退款不在标准 RTDN 里</b>。金币包是一次性商品，只接 RTDN 等于感知不到退款。
+          正确通道是轮询 <code>purchases.voidedpurchases.list</code>，支持按时间增量拉</dd>
+        <dt>本期方案</dt><dd>每小时轮询一次 Voided Purchases，挂在 <code>push/scheduler.go</code>
+          已有的定时任务骨架上。<b>本期不接 Pub/Sub</b>——本期不做订阅，
+          为未做的功能配一套 Pub/Sub（建主题 + 授权 + Console 填写三步）不划算。
+          将来上订阅时再补</dd>
+        <dt>「这不是我操作的」</dt><dd>退款可能是家人误操作或盗刷。这个入口转人工，
+          <b>不要自动恢复金币</b>——自动恢复等于「退款还留着货」，会被撸羊毛</dd>
+        <dt>负余额的处置</dt><dd>冻结消费、保留充值。不要直接封号：多数退款是正常行为，
+          封号会误伤。反复退款的用户交给 §15 反作弊</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>海面空了</b><i>Z1 · Empty</i></div>
+      <div class="ph hf">
+        <div class="hdr">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="top">
+            <div class="ring sm"><u>🐱</u><span class="dot"></span></div>
+            <span class="coin" style="margin-left:auto"><i class="cn"></i>248</span>
+          </div>
+          <h3>今晚的海</h3>
+          <div class="sc">这一带暂时没有瓶子漂过来</div>
+        </div>
+        <div class="scene">
+          <div class="empty2" style="color:#fff;position:relative;z-index:3">
+            <div class="ico2" style="color:rgba(255,255,255,.88)">
+              <svg viewBox="0 0 96 60" fill="none" stroke="currentColor" stroke-linecap="round">
+                <circle cx="71" cy="17" r="7.5" stroke-width="2" opacity=".4"/>
+                <path d="M20 30c4-3.2 8-3.2 12 0s8 3.2 12 0" stroke-width="2" opacity=".32"/>
+                <path d="M7 42c6.5-5 13-5 19.5 0s13 5 19.5 0 13-5 19.5 0 13 5 19.5 0" stroke-width="2.6"/>
+                <path d="M16 52c5.5-4 11-4 16.5 0s11 4 16.5 0 11-4 16.5 0" stroke-width="2.2" opacity=".5"/>
+              </svg>
+            </div>
+            <h5 style="color:#fff">海面很安静</h5>
+            <p style="color:rgba(255,255,255,.85)">换个语言筛选，或者自己先扔一个<br>通常十几分钟就会有人捞到</p>
+            <div class="cta">扔一个瓶子</div>
+          </div>
+        </div>
+        <div class="tb hf">
+          <div class="on"><svg><use href="#ic-ocean"/></svg><span>海洋</span></div>
+          <div><svg><use href="#ic-discover"/></svg><span>发现</span></div>
+          <div><svg><use href="#ic-chats"/></svg><span>消息</span><em>3</em></div>
+          <div><svg><use href="#ic-moments"/></svg><span>动态</span></div>
+          <div><svg><use href="#ic-me"/></svg><span>我的</span></div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>触发</dt><dd><code>GET /api/bottle/scoop</code> 返回空数组，<b>不是错误</b>——别走错误分支弹 toast</dd>
+        <dt>出路</dt><dd>空态必须给<b>下一步动作</b>。这里给「扔一个瓶子」，把死路转成投放量</dd>
+        <dt>根因</dt><dd>冷启动池子空是 <b>T1（是否与小程序共用 tenant）</b> 的直接后果，见 §19</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>还没有会话</b><i>Z2 · Empty</i></div>
+      <div class="ph hf">
+        <div class="hdr slim">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="top">
+            <span class="ttl">消息</span>
+            <span class="coin" style="margin-left:auto"><i class="cn"></i>248</span>
+          </div>
+        </div>
+        <div class="empty2">
+          <div class="ico2">
+            <svg viewBox="0 0 108 56" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round">
+              <path d="M16 20v-6h7v6c0 2.4 3.4 3.4 3.4 6.4v17a4.4 4.4 0 0 1-4.4 4.4h-5A4.4 4.4 0 0 1 12.6 43.4v-17c0-3 3.4-4 3.4-6.4z"/>
+              <g opacity=".42">
+                <path d="M85 20v-6h7v6c0 2.4 3.4 3.4 3.4 6.4v17a4.4 4.4 0 0 1-4.4 4.4h-5A4.4 4.4 0 0 1 81.6 43.4v-17c0-3 3.4-4 3.4-6.4z"/>
+              </g>
+              <path d="M36 34h36" stroke-width="2" stroke-dasharray="3 6" stroke-linecap="round" opacity=".38"/>
+            </svg>
+          </div>
+          <h5>还没有人和你说话</h5>
+          <p>回一个你捞到的瓶子，<br>或者去发现页打个招呼</p>
+          <div class="cta">去捞一个瓶子</div>
+          <div class="oauth" style="margin-top:var(--s2)">看看谁在线</div>
+        </div>
+        <div class="tb hf">
+          <div><svg><use href="#ic-ocean"/></svg><span>海洋</span></div>
+          <div><svg><use href="#ic-discover"/></svg><span>发现</span></div>
+          <div class="on"><svg><use href="#ic-chats"/></svg><span>消息</span></div>
+          <div><svg><use href="#ic-moments"/></svg><span>动态</span></div>
+          <div><svg><use href="#ic-me"/></svg><span>我的</span></div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>接口</dt><dd><code>GET /api/chat/list</code> 空数组</dd>
+        <dt>双出口</dt><dd>给<b>两条</b>路：主按钮回瓶子主线，次按钮去发现页。只给一条会把人堵死在一个入口</dd>
+        <dt>反例</dt><dd>别画一张「暂无数据」灰图——它不告诉用户该干什么</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>捞瓶加载中</b><i>Z3 · Loading</i></div>
+      <div class="ph hf">
+        <div class="hdr slim">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="top">
+            <span class="ttl">今天在线的人</span>
+            <span class="coin" style="margin-left:auto"><i class="cn"></i>248</span>
+          </div>
+        </div>
+        <div class="chs raise">
+          <span class="ch on">推荐</span><span class="ch">附近</span><span class="ch">新人</span>
+        </div>
+        <div class="bd" style="padding-top:18px">
+          <div class="skel" style="flex:1 1 auto;border-radius:var(--r5);min-height:200px"></div>
+          <div style="display:flex;gap:var(--s2);align-items:center">
+            <div class="skel" style="width:34px;height:34px;border-radius:50%"></div>
+            <div class="skel" style="flex:1;height:34px;border-radius:99px"></div>
+            <div class="skel" style="width:34px;height:34px;border-radius:50%"></div>
+          </div>
+        </div>
+        <div class="tb hf">
+          <div><svg><use href="#ic-ocean"/></svg><span>海洋</span></div>
+          <div class="on"><svg><use href="#ic-discover"/></svg><span>发现</span></div>
+          <div><svg><use href="#ic-chats"/></svg><span>消息</span><em>3</em></div>
+          <div><svg><use href="#ic-moments"/></svg><span>动态</span></div>
+          <div><svg><use href="#ic-me"/></svg><span>我的</span></div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>形态</dt><dd><b>骨架屏，不是转圈</b>。骨架保持与真实内容同构，数据到位时不发生布局跳动</dd>
+        <dt>时机</dt><dd>&lt;300ms 不显示任何加载态（闪一下更烦）；&gt;8s 转成失败态 Z6</dd>
+        <dt>滑卡特有</dt><dd>预取队列见 C1，只有<b>首次冷启</b>会看到这屏，续拉全程静默</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>余额不足</b><i>Z4 · Blocked</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">
+          ←<div class="ring sm"><u>👩</u></div><span>Aanya</span>
+          <span class="sp2" style="font-size:var(--t4)">⋯</span>
+        </div>
+        <div class="bd" style="gap:var(--s2)">
+          <div class="bub you">下次一起去？</div>
+          <div class="bub me">那说定了</div>
+        </div>
+        <div class="mask" style="z-index:7"></div>
+        <div class="modal">
+          <div class="x">✕</div>
+          <div class="head">
+            <div class="ico"><i class="cn" style="width:30px;height:30px"></i></div>
+            <h4>还差 190 金币</h4>
+            <p>「限定礼盒」需要 <b>438</b>，<br>你现在有 <b>248</b>。</p>
+          </div>
+          <div class="body">
+            <div class="offer">
+              <span style="font-size:var(--t6)">🎁</span>
+              <div style="min-width:0">
+                <b>300 金币 · 多送 20%</b>
+                <s>原价 ₹249，够买 2 次</s>
+              </div>
+              <span class="pz">₹199</span>
+            </div>
+            <div class="cta pay">去充值</div>
+            <div class="cta gh">换一个便宜的礼物</div>
+          </div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>错误码</dt><dd>后端 <code>wallet</code> 扣费事务失败返回余额不足码，前端<b>拦截后弹本屏</b>，不要弹通用 toast</dd>
+        <dt>关键</dt><dd>带<b>推荐档位</b>直达充值，并回跳原场景续做。少一跳，转化差很多</dd>
+        <dt>退路</dt><dd>必须有「换个便宜的」——不是每个人都会当场充值，别把会话堵死</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>网络断了</b><i>Z5 · Failure</i></div>
+      <div class="ph hf">
+        <div class="hdr slim">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="top">
+            <span class="ttl">动态</span>
+            <span class="coin" style="margin-left:auto"><i class="cn"></i>248</span>
+          </div>
+        </div>
+        <div class="empty2">
+          <div class="ico2">
+            <svg viewBox="0 0 96 62" fill="none" stroke="currentColor" stroke-linecap="round">
+              <circle cx="48" cy="16" r="9.5" stroke-width="2.4"/>
+              <path d="M48 26v7" stroke-width="2.4"/>
+              <path d="M48 38v4" stroke-width="2.4" opacity=".45"/>
+              <path d="M48 47v3" stroke-width="2.4" opacity=".22"/>
+              <path d="M10 56c6-4.5 12-4.5 18 0s12 4.5 18 0 12-4.5 18 0 12 4.5 18 0" stroke-width="2.2" opacity=".55"/>
+            </svg>
+          </div>
+          <h5>没连上服务器</h5>
+          <p>检查一下网络，或者稍后再试。<br>你写了一半的内容已经存在本地。</p>
+          <div class="cta">重试</div>
+          <div class="oauth" style="margin-top:var(--s2)">看看已缓存的内容</div>
+        </div>
+        <div class="tb hf">
+          <div><svg><use href="#ic-ocean"/></svg><span>海洋</span></div>
+          <div><svg><use href="#ic-discover"/></svg><span>发现</span></div>
+          <div><svg><use href="#ic-chats"/></svg><span>消息</span><em>3</em></div>
+          <div class="on"><svg><use href="#ic-moments"/></svg><span>动态</span></div>
+          <div><svg><use href="#ic-me"/></svg><span>我的</span></div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>分档</dt><dd>超时 / 5xx / 断网三种文案不同。<b>别把 5xx 说成「请检查网络」</b>——用户查了也没用</dd>
+        <dt>草稿</dt><dd>写瓶子、发动态、评论的输入内容必须<b>本地留存</b>，失败后可恢复，这是最伤的数据丢失点</dd>
+        <dt>退避</dt><dd>自动重试用指数退避（1s / 2s / 4s，上限 3 次），再失败才露出本屏</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>定位被拒</b><i>Z6 · Degrade</i></div>
+      <div class="ph hf">
+        <div class="hdr slim">
+          <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+          <div class="top">
+            <span class="ttl">今天在线的人</span>
+            <span class="coin" style="margin-left:auto"><i class="cn"></i>248</span>
+            <div class="ic" style="margin-left:0">⚙</div>
+          </div>
+        </div>
+        <div class="chs raise">
+          <span class="ch on">推荐</span><span class="ch">新人</span><span class="ch aq">हिन्दी</span>
+        </div>
+        <div class="bd" style="padding-top:18px">
+          <div class="warn">
+            <svg><use href="#ic-pin"/></svg>
+            <div><b>没开定位，「附近」用不了</b><br>推荐仍然按语言和兴趣排，只是少了距离这一维</div>
+          </div>
+          <div class="oauth">去系统设置里打开</div>
+          <div class="sec" style="margin-top:var(--s1)">按语言和兴趣推荐</div>
+          <div class="mcd">
+            <div style="display:flex;align-items:center;gap:var(--s2)">
+              <div class="ring sm"><u>👩</u><span class="dot"></span></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:var(--t3);font-weight:700">Aanya, 23</div>
+                <div style="display:flex;gap:4px;margin-top:3px">
+                  <span class="tg">हिन्दी</span><span class="tg pu">Music</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tb hf">
+          <div><svg><use href="#ic-ocean"/></svg><span>海洋</span></div>
+          <div class="on"><svg><use href="#ic-discover"/></svg><span>发现</span></div>
+          <div><svg><use href="#ic-chats"/></svg><span>消息</span><em>3</em></div>
+          <div><svg><use href="#ic-moments"/></svg><span>动态</span></div>
+          <div><svg><use href="#ic-me"/></svg><span>我的</span></div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>原则</dt><dd><b>降级，不是阻断</b>。拒绝定位后功能照常，只是少一个排序维度。见 A4 的同一条约束</dd>
+        <dt>禁止</dt><dd>不要反复弹系统授权框——iOS 只给一次机会，弹完就只能去设置里开。
+          说明屏在 A7，且只在<b>点了「开启定位」之后</b>才真弹系统框</dd>
+        <dt>打分</dt><dd>无经纬度时 <code>discover/users</code> 的距离权重置 0，其余权重归一化重算</dd>
+        <dt>🆕 第二条降级路径</dt><dd>拒绝定位<b>不等于不能带地点</b>：发瓶（B2）和发动态（F2）里仍可用
+          M1 <b>手选</b>地址。这条路径要在 M1 的空态里明确给出，否则用户以为拒绝一次就永久失去了地点能力</dd>
+        <dt>🆕 瓶子距离</dt><dd>同理，自己没有经纬度时捞到的瓶子不显示「x km」，
+          只显示城市名。<b>不要显示成 0 km 或「未知」</b>——前者是错的，后者像故障</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>会话已失效</b><i>Z7 · Blocked</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">
+          ←<div class="ring sm"><u>👤</u></div><span>Aanya</span>
+          <span class="sp2" style="font-size:var(--t4)">⋯</span>
+        </div>
+        <div class="bd" style="gap:var(--s2);justify-content:flex-end">
+          <div class="bub you" style="opacity:.5">下次一起去？</div>
+          <div class="bub me" style="opacity:.5">那说定了</div>
+          <div class="warn" style="margin-top:var(--s3)">
+            <svg><use href="#ic-lock"/></svg>
+            <div><b>无法再发送消息</b><br>对方可能修改了隐私设置、拉黑了你，或已注销账号。历史消息仍可查看。</div>
+          </div>
+        </div>
+        <div class="inp">
+          <div class="fd" style="opacity:.5">已不能发送</div>
+          <div class="snd" style="background:var(--line);color:var(--ink3)">➤</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>合规</dt><dd>文案<b>必须模糊</b>——不能让用户确认自己被谁拉黑了，否则会引发骚扰与报复</dd>
+        <dt>三合一</dt><dd>拉黑 / 注销 / 隐私设置三种情况共用一套文案与 UI，前端无需区分</dd>
+        <dt>历史</dt><dd>已有消息保持可读，输入区置灰而不是移除——突然消失会让人以为是 bug</dd>
+      </dl></div>
+    </div>
+
+    <div class="scr">
+      <div class="cap"><b>上传失败</b><i>Z8 · Failure</i></div>
+      <div class="ph hf">
+        <div class="st"><span>9:41</span><span>▮▮▮</span></div>
+        <div class="nv">✕<span>选择图片</span><span class="sp2">已选 3 / 9</span></div>
+        <div class="bd">
+          <div class="g9">
+            <div><span class="num">1</span></div>
+            <div><span class="num">2</span></div>
+            <div><span class="ovl" style="background:rgba(200,40,70,.6)">失败</span></div>
+            <div class="empty">＋</div>
+          </div>
+          <div class="warn">
+            <svg><use href="#ic-alert"/></svg>
+            <div><b>第 3 张没传上去</b><br>可能是文件过大或网络中断。已成功 2 张，不影响继续。</div>
+          </div>
+          <div style="display:flex;gap:var(--s2)">
+            <div class="cta gh" style="flex:1">移除这张</div>
+            <div class="cta" style="flex:1">重新上传</div>
+          </div>
+        </div>
+        <div class="foot">
+          <div class="cta">先用这 2 张</div>
+        </div>
+      </div>
+      <div class="tp"><dl>
+        <dt>粒度</dt><dd>失败要落到<b>具体哪一张</b>，不能整批回滚——用户重选 9 张的成本极高</dd>
+        <dt>三选一</dt><dd>重传 / 移除 / 带着成功的继续，三条路都给。只给「重试」会卡死在弱网环境</dd>
+        <dt>前置</dt><dd>客户端先压缩再传（见 G1）。多数「上传失败」其实是原图过大，压缩后自然消失</dd>
+      </dl></div>
+    </div>
+
+  </div>
+
+  <div class="co">
+    <b>这 8 屏没有任何一个后端接口。</b>但它们决定了线上崩溃率、客诉量和支付转化——
+    排期时最容易被当成「样式微调」砍掉，砍完就会在灰度期集中爆发。
+    建议把 <b>Z1 空态、Z4 余额不足、Z5 网络失败</b> 三个列为 P0，与主流程同批提测。
+  </div>
+</section>
+
+<hr>
+
+<section>
+  <div class="sh">
+    <span class="no">§21</span><h2>交互与转场</h2><span class="en">Gestures &amp; motion</span>
+    <span class="vd add">🆕 前端专属</span>
+  </div>
+  <p class="sub">
+    静态图标不出手势和时长，每个人就会各拍一个，最后整个 App 的节奏是碎的。
+    这里给 Flutter 侧可直接落值的参数。<b>统一原则：响应用户动作的动画要快（≤300ms），自动播放的装饰要慢且可关。</b>
+  </p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>场景</th><th>手势 / 触发</th><th>动画</th><th>要点</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>C1 滑卡</b></td>
+          <td>水平拖拽，位移 &gt; <b>屏宽 25%</b> 或甩速 &gt; 800 px/s 判定成立；否则回弹</td>
+          <td>跟手 1:1，旋转 = 位移 × 0.06°（上限 12°）；飞出 <code>easeOutCubic 280ms</code>，回弹 <code>spring(0.6, 18)</code></td>
+          <td>判定阈值要<b>位移与速度双通道</b>，只看位移则快速轻扫失效，只看速度则慢速长拖失效</td>
+        </tr>
+        <tr>
+          <td><b>C1 印章</b></td>
+          <td>拖拽过程中实时显隐</td>
+          <td>opacity 随位移线性映射 0→1，在 25% 处到满</td>
+          <td>阈值处到满不透明，让用户<b>松手前就知道结果</b>——这是滑卡最关键的反馈</td>
+        </tr>
+        <tr>
+          <td><b>B1a 捞瓶仪式</b></td>
+          <td><b>按住</b>「捞一个」并下拖 &gt; 30pt 触发；中途松手则瓶子沉回，不扣次数</td>
+          <td>涟漪 <code>2.6s ease-out</code> 三环错相；瓶子上浮 <code>rise 2.6s ease-in-out</code>；
+            松手后瓶身放大淡出 <code>220ms</code>，信纸 <code>scaleY 0.3→1 easeOutCubic 340ms</code></td>
+          <td><b>按下瞬间就发请求</b>，动画与网络并行。2.5 秒足够覆盖弱网，用户感知不到加载——
+            这是把"加载态"藏进"仪式感"的标准做法</td>
+        </tr>
+        <tr>
+          <td><b>B1 海面可点</b></td>
+          <td>点瓶子出气泡；下拉 &gt; 60pt 涨潮刷新；点灯塔进海况</td>
+          <td>气泡 <code>spring(0.7,20) 240ms</code> 从瓶口弹出；涨潮 = 海平面 <code>translateY</code> 上移 12pt 后回落</td>
+          <td>气泡<b>不消耗捞瓶次数</b>。首页每天开十几次，必须有零成本可玩的东西，否则只剩两个按钮</td>
+        </tr>
+        <tr>
+          <td><b>B1 抛瓶</b></td>
+          <td>点「扔一个」后</td>
+          <td>抛物线 <code>easeOutQuad 600ms</code> + 落水涟漪 <code>400ms</code>，随后瓶子缩小淡出</td>
+          <td>这是仪式感动画，<b>全程不可阻塞</b>：接口失败要能中途切错误态，不能等动画放完</td>
+        </tr>
+        <tr>
+          <td><b>B1 瓶子浮动</b></td>
+          <td>自动循环</td>
+          <td><code>bob 4.5s ease-in-out infinite</code>，各瓶随机相位偏移</td>
+          <td>必须响应 <code>prefers-reduced-motion</code>；相位不打散会出现整齐划一的「军训感」</td>
+        </tr>
+        <tr>
+          <td><b>底部弹层</b><br>（H4 礼物 / G3 举报）</td>
+          <td>上滑呼出；下拉超过 <b>40%</b> 或点遮罩关闭</td>
+          <td>进 <code>spring(0.75, 22) 320ms</code>，出 <code>easeInCubic 220ms</code>；遮罩透明度同步补间</td>
+          <td>出场比进场<b>快 100ms</b>——关闭要利落，打开可以有弹性</td>
+        </tr>
+        <tr>
+          <td><b>H5 / Z4 模态</b></td>
+          <td>被动弹出，点 ✕ 或遮罩关</td>
+          <td>scale 0.92→1 + opacity，<code>spring(0.8, 20) 280ms</code></td>
+          <td>被动弹窗<b>不要从底部滑入</b>，会和主动呼出的弹层混淆</td>
+        </tr>
+        <tr>
+          <td><b>Tab 切换</b></td>
+          <td>点底部 Tab</td>
+          <td>内容<b>无转场</b>直接替换；选中色块 <code>spring(0.7, 20) 260ms</code> 位移</td>
+          <td>Tab 间加淡入淡出会显得迟钝。各 Tab 保留自己的 Navigator 栈与滚动位置</td>
+        </tr>
+        <tr>
+          <td><b>Tab 未读红点</b></td>
+          <td>WS 推来新消息即出现；进入该 Tab 后<b>延迟 400ms</b> 再消失</td>
+          <td>出现 <code>spring(0.6,16) 200ms</code> 由 0 弹到 1；消失直接淡出 <code>120ms</code></td>
+          <td>立刻消失会让人怀疑自己看错了。数字 &gt;99 显示 <code>99+</code>；
+            <b>红点的白边取 <code>--surface</code></b>，暗色下自动变深，不能写死白色</td>
+        </tr>
+        <tr>
+          <td><b>安全区</b></td>
+          <td>—</td>
+          <td>Tab 栏下方预留 <code>env(safe-area-inset-bottom)</code>，本页用一条 home indicator 占位</td>
+          <td>全面屏机型不留会被手势条压住。<b>底部固定 CTA（<code>.foot</code>）同样要留</b></td>
+        </tr>
+        <tr>
+          <td><b>页面推入</b></td>
+          <td>C1→C3、列表→详情</td>
+          <td>平台原生：iOS 右滑推入 + 边缘返回手势，Android <code>fadeThrough 300ms</code></td>
+          <td>别自己写统一转场。<b>iOS 的边缘返回手势是肌肉记忆，禁用必被吐槽</b></td>
+        </tr>
+        <tr>
+          <td><b>C1 → C3</b></td>
+          <td>点卡片</td>
+          <td>照片区 <code>Hero</code> 共享元素放大，<code>300ms easeInOutCubic</code></td>
+          <td>两处照片区用同一段渐变就是为这个转场准备的，卡片「撑开」成主页</td>
+        </tr>
+        <tr>
+          <td><b>骨架屏 → 内容</b></td>
+          <td>数据到位</td>
+          <td>交叉淡入 <code>160ms</code>，<b>不做位移</b></td>
+          <td>骨架与真实内容必须同尺寸，否则淡入瞬间会跳一下</td>
+        </tr>
+        <tr>
+          <td><b>送礼特效</b></td>
+          <td>送出后</td>
+          <td>礼物图标飞向对方头像 <code>700ms</code>；大额礼物叠加全屏特效</td>
+          <td>连送 ×10 时<b>合并成一次特效</b>，否则连播 10 遍会卡住聊天</td>
+        </tr>
+        <tr>
+          <td><b>下拉刷新</b></td>
+          <td>列表顶部下拉 <b>&gt; 60pt</b></td>
+          <td>平台原生指示器</td>
+          <td>刷新中<b>不清空旧数据</b>，否则用户会以为内容丢了</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="sub" style="margin-top:44px">
+    <b>声音。</b>漂流瓶是沉浸式异步产品，现在整份原型里没有任何声音的位置。
+    成本很低，氛围提升很大——但<b>默认全关，首次进海洋页问一次</b>，
+    印度用户大量在公共场合用手机，静音是默认预期。
+  </p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>声音</th><th>触发</th><th>特征</th><th>要点</th></tr></thead>
+      <tbody>
+        <tr><td><b>海浪底噪</b></td><td>停留在 <code>B1</code> 海洋页</td>
+          <td>循环，−28dB，8 秒无缝；夜场换一条更低沉的</td>
+          <td><b>唯一的持续音</b>，也是唯一需要单独开关的。离开 Tab 立即淡出 300ms</td></tr>
+        <tr><td><b>抛瓶入水</b></td><td><code>B2</code> 点「抛向大海」</td><td>一声闷响 + 短涟漪尾音，约 500ms</td>
+          <td>与抛物线动画的落点对齐，早或晚 100ms 都会"脱手"</td></tr>
+        <tr><td><b>瓶子上浮</b></td><td><code>B1a</code> 按住期间</td><td>低频气泡音，随拖拽位移升调</td>
+          <td><b>随手势变化</b>的音高是这 2.5 秒张力的一半。松手瞬间截断</td></tr>
+        <tr><td><b>开瓶</b></td><td><code>B1b</code> 松手</td><td>软木塞「啵」+ 纸张展开的窸窣，约 400ms</td>
+          <td>这是整个 App 的<b>标志音</b>，值得单独找人做。像微信的"叮咚"</td></tr>
+        <tr><td><b>收到回信</b></td><td>前台收到 <code>bottle_reply</code></td><td>单颗水滴，约 200ms</td>
+          <td>与系统通知音区分。同一秒内多条只响一次</td></tr>
+        <tr><td><b>送礼</b></td><td><code>H4</code> 送出</td><td>按礼物档位分三档，188 币的带一段和弦</td>
+          <td>连送 ×10 合并成一次，不叠播</td></tr>
+        <tr><td><b>滑卡</b></td><td><code>C1</code> 飞出</td><td>极轻的风声，−34dB，120ms</td>
+          <td>可有可无。连续滑动时<b>只播每第三次</b>，否则很吵</td></tr>
+        <tr><td colspan="4" style="color:var(--ink3)">
+          <b>不做的：</b>按钮点击音、Tab 切换音、输入键盘音 —— 这些交给系统，自己做只会打架。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="co">
+    <b>唯一一条硬性要求：</b>所有<b>自动播放</b>的动画（瓶子浮动、灯塔闪烁、骨架呼吸、礼物特效）
+    必须在系统「减弱动态效果」开启时降级为静态。这既是 App Store 无障碍审核项，
+    也是本页 CSS 已经做了的事（见 <code>@media (prefers-reduced-motion:reduce)</code>）——Flutter 侧对应
+    <code>MediaQuery.disableAnimations</code>。
+  </div>
+</section>
+
+
+</div>
+
+<script>
+(function(){
+  var b = document.getElementById('tg');
+  if(!b) return;
+  b.addEventListener('click', function(){
+    var r = document.documentElement;
+    var cur = r.getAttribute('data-theme');
+    if(!cur){
+      cur = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    r.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+  });
+})();
+(function(){
+  var n = document.getElementById('ng');
+  if(!n) return;
+  n.addEventListener('click', function(){
+    var r = document.documentElement;
+    var on = !r.hasAttribute('data-night');
+    if(on){ r.setAttribute('data-night',''); } else { r.removeAttribute('data-night'); }
+    n.setAttribute('aria-pressed', String(on));
+    n.textContent = on ? '夜场 · 开' : '夜场';
+  });
+})();
+</script>

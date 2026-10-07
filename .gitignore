@@ -1,0 +1,50 @@
+# ===== 密钥/环境(绝不提交) =====
+**/.env
+**/*.local.json
+deploy.local.json
+# MCP server 配置:env 块里放的是生图密钥
+.mcp.json
+*.merged.json
+server/cert/
+seed_tenant329.js
+# Google 控制台下载的 OAuth 凭证:文件名自带 client_secret_ 前缀,
+# 放在仓库目录里一次 `git add .` 就进历史了。项目本身不需要这个文件
+# (后端用 JWKS 验签,只要 client_id),见 docs/GOOGLE_SERVICES_SETUP.html
+client_secret_*.json
+
+# ===== Go =====
+server/bin/
+server/tmp/
+**/*.exe
+server/uploads/
+server/driftbottle-linux
+server/driftbottle
+
+# ===== Node / uni-app =====
+node_modules/
+client/node_modules/
+client/dist/
+client/unpackage/
+
+# ===== App 打包产物(单个 57MB,不进仓库) =====
+*.apk
+*.aab
+
+# ===== 测试报告 =====
+server/api-tests/reports/
+
+# ===== misc =====
+.DS_Store
+*.log
+*.bak
+
+# superpowers plan workspaces (scratch)
+.superpowers/
+
+# ===== 含明文服务器/数据库密码的一次性本地脚本(绝不提交) =====
+fix_nginx.js
+seed_robots.js
+
+# ===== 设计稿/参考图素材(体积大,不进仓库) =====
+漂流瓶/
+效果图/
