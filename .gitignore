@@ -40,11 +40,3 @@ server/api-tests/reports/
 
 # superpowers plan workspaces (scratch)
 .superpowers/
-
-# ===== 含明文服务器/数据库密码的一次性本地脚本(绝不提交) =====
-fix_nginx.js
-seed_robots.js
-
-# ===== 设计稿/参考图素材(体积大,不进仓库) =====
-漂流瓶/
-效果图/
